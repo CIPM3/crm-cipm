@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, Menu, Search, X } from "lucide-react"
+import { Bell, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
@@ -19,14 +19,14 @@ export function Header() {
         <span className="sr-only">Toggle menu</span>
       </Button>
       <div className="w-full flex-1">
-        <form className="relative">
+        {/* <form className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <input
             type="search"
             placeholder="Buscar..."
             className="w-full rounded-md border border-input bg-background pl-8 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-        </form>
+        </form> */}
       </div>
       <Button variant="ghost" size="icon" className="ml-auto">
         <Bell className="h-5 w-5" />
