@@ -28,7 +28,7 @@ const VideosDestacados = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2">
                     {featuredVideos.map((video, index) => (
-                        <VideoCard key={index} video={video}/>
+                        <VideoCard key={index} video={video} type='cliente'/>
                     ))}
                 </div>
             </div>

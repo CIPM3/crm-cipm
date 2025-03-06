@@ -1,15 +1,18 @@
 import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Star } from 'lucide-react'
+import { Clock, Edit, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CursoType } from '@/types'
+import Link from 'next/link'
+import { DeleteCursoDialog } from '../dialog/delete-curso-dialog'
 
 interface Props {
-  curso: CursoType
+  curso: CursoType,
+  type?: 'cliente' | 'crm'
 }
 
-const CursoCard = ({curso}:Props) => {
+const CursoCard = ({ curso, type }: Props) => {
   return (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video w-full overflow-hidden bg-muted">
@@ -39,10 +42,32 @@ const CursoCard = ({curso}:Props) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="text-lg font-bold">${curso.price.toLocaleString()}</div>
-        <Button>Ver Detalles</Button>
-      </CardFooter>
+      <div>
+
+      </div>
+      {
+        type === "cliente"
+          ? (
+            <CardFooter className="flex justify-between">
+              <div className="text-lg font-bold">${curso.price.toLocaleString()}</div>
+              <Button>Ver Detalles</Button>
+            </CardFooter>)
+          : (
+            <div className="flex justify-between gap-2 px-4 mb-2">
+              <Button variant="outline" size="sm" asChild className="flex-1">
+                <Link href={`/admin/cursos/${curso.id}`}>
+                  <Edit className="mr-2 h-4 w-4" /> Editar
+                </Link>
+              </Button>
+              <DeleteCursoDialog
+                cursoId={curso.id}
+                cursoTitle={curso.title}
+                variant="outline"
+                size="sm"
+                className="flex-1"
+              />
+            </div>)
+      }
     </Card>
   )
 }

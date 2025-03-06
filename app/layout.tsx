@@ -7,7 +7,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "CIPM",
   description: "Plataforma de gestión de cursos y estudiantes",
-
 }
 
 export default function RootLayout({
@@ -20,7 +19,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.svg" sizes="any" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <Providers>
+        <body className={inter.className}>{children}</body>
+      </Providers>
     </html>
   )
 }
@@ -28,3 +29,4 @@ export default function RootLayout({
 
 
 import './globals.css'
+import Providers from "@/components/provider/Provider"

@@ -3,13 +3,15 @@
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { Menu, User, X } from 'lucide-react'
 import { cn, NavClient } from '@/lib/utils'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useLogout } from '@/hooks/user/useLogout'
 
 const HeaderCliente = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false)
-    const pathname = usePathname()
+    const UserData = useAuthStore((state) => state.user)
+    const logout = useLogout()
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
             <div className="container flex h-16 items-center justify-between">
@@ -27,12 +29,21 @@ const HeaderCliente = () => {
                     }
                 </nav>
                 <div className="hidden md:flex items-center gap-2">
-                    <Button variant="outline" asChild>
-                        <Link href="/login">Iniciar Sesión</Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/register">Registrarse</Link>
-                    </Button>
+                    {
+                        UserData
+                            ? (
+                                <Button onClick={logout} className='w-full gap-2' variant="outline" asChild>
+                                    <Link href="/"><User className='w-4 h-4' /> {UserData.name}</Link>
+                                </Button>)
+                            : (<>
+                                <Button className='w-full' variant="outline" asChild>
+                                    <Link href="/login">Iniciar Sesión</Link>
+                                </Button>
+                                <Button className='w-full' asChild>
+                                    <Link href="/register">Registrarse</Link>
+                                </Button>
+                            </>)
+                    }
                 </div>
                 <Button variant="outline" size="icon" className="md:hidden" onClick={() => setShowMobileMenu(true)}>
                     <Menu className="h-5 w-5" />
@@ -66,12 +77,22 @@ const HeaderCliente = () => {
                         </div>
 
                         <div className='w-full flex gap-2  justify-between px-4'>
-                            <Button className='w-full' variant="outline" asChild>
-                                <Link href="/login">Iniciar Sesión</Link>
-                            </Button>
-                            <Button className='w-full' asChild>
-                                <Link href="/register">Registrarse</Link>
-                            </Button>
+                            {
+                                UserData
+                                    ? (
+                                        <Button onClick={logout} className='w-full gap-2' variant="outline" asChild>
+                                            <Link href="/"><User className='w-4 h-4' /> {UserData.name}</Link>
+                                        </Button>)
+                                    : (<>
+                                        <Button className='w-full' variant="outline" asChild>
+                                            <Link href="/login">Iniciar Sesión</Link>
+                                        </Button>
+                                        <Button className='w-full' asChild>
+                                            <Link href="/register">Registrarse</Link>
+                                        </Button>
+                                    </>)
+                            }
+
                         </div>
                     </div>
                 )}

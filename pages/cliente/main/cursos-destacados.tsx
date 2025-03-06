@@ -23,7 +23,7 @@ const CursosDestacados = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2 lg:grid-cols-3">
                     {featuredCourses.map((course) => (
-                        <CursoCard key={course.id} curso={course}/>
+                        <CursoCard key={course.id} curso={course} type='cliente'/>
                     ))}
                 </div>
                 <div className="flex justify-center mt-12">

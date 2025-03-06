@@ -54,6 +54,7 @@ export default function VideosPage() {
               <Link href={`/videos/${video.id}`} key={index} className="h-full">
                 <VideoCard
                   video={video}
+                  type="cliente"
                 />
               </Link>
             ))}

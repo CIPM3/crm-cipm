@@ -2,12 +2,8 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { modules, getCourseById } from "@/lib/utils"
-import { Plus, Search, Filter, MoreHorizontal, FileText, CheckCircle, Video, Edit, Trash2 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Plus, Search, Filter } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { ContenidoForm, type ContenidoFormValues } from "@/components/form/contenido-form"
+import { type ContenidoFormValues } from "@/components/form/contenido-form"
+import ContenidoCard from "@/components/card/contenido-card"
+import CreateContenidoDialog from "@/components/dialog/contenido/create-contenido-dialog"
+import EditContenidoDialog from "@/components/dialog/contenido/edit-contenido-dialog"
+import DeleteContenidoDialog from "@/components/dialog/contenido/delete-contenido-dialog"
 
 export default function ContentPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -219,145 +219,43 @@ export default function ContentPage() {
         {filteredContent.map((content) => {
           const course = getCourseById(content.courseId)
           return (
-            <Card key={content.id} className="hover:bg-muted/50 transition-colors">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div className="flex items-center gap-2">
-                  {content.type === "video" && (
-                    <div className="rounded-full bg-red-100 p-2">
-                      <Video className="h-4 w-4 text-red-600" />
-                    </div>
-                  )}
-                  {content.type === "document" && (
-                    <div className="rounded-full bg-blue-100 p-2">
-                      <FileText className="h-4 w-4 text-blue-600" />
-                    </div>
-                  )}
-                  {content.type === "quiz" && (
-                    <div className="rounded-full bg-green-100 p-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    </div>
-                  )}
-                  <CardTitle className="text-lg font-medium">{content.title}</CardTitle>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={content.status === "Activo" ? "default" : "secondary"}>{content.status}</Badge>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(content)}>
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Editar</span>
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDeleteDialog(content)}>
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Eliminar</span>
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Más opciones</span>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2">
-                  <div className="text-sm">
-                    <span className="font-medium">Curso:</span> {course?.title}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Módulo:</span> {content.moduleTitle}
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="text-sm">
-                      <span className="font-medium">Tipo:</span> <span className="capitalize">{content.type}</span>
-                      {content.type === "video" && content.duration && (
-                        <span className="ml-2 text-muted-foreground">({content.duration})</span>
-                      )}
-                      {content.type === "quiz" && content.questions && (
-                        <span className="ml-2 text-muted-foreground">({content.questions} preguntas)</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Estado:</span>
-                      <Switch
-                        size="sm"
-                        checked={content.status === "Activo"}
-                        onCheckedChange={() => toggleContentStatus(content)}
-                      />
-                    </div>
-                  </div>
-                  {content.url && (
-                    <div className="text-sm mt-2">
-                      <span className="font-medium">URL:</span>{" "}
-                      <a
-                        href={content.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {content.url.length > 40 ? content.url.substring(0, 40) + "..." : content.url}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <ContenidoCard
+              key={content.id}
+              contenido={content}
+              openEditDialog={()=> openEditDialog(content)}
+              openDeleteDialog={()=> openDeleteDialog(content)}
+              toggleContentStatus={()=>toggleContentStatus(true)}
+            />
           )
         })}
       </div>
 
       {/* Diálogo para crear contenido */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Añadir Nuevo Contenido</DialogTitle>
-          </DialogHeader>
-          <ContenidoForm
-            modules={allModules}
-            onSubmit={handleCreateContent}
-            onCancel={() => setIsCreateDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      <CreateContenidoDialog
+        isCreateDialogOpen={isCreateDialogOpen}
+        setIsCreateDialogOpen={setIsCreateDialogOpen}
+        allModules={allModules}
+        handleCreateContent={handleCreateContent}
+      />
 
       {/* Diálogo para editar contenido */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Editar Contenido</DialogTitle>
-          </DialogHeader>
-          {selectedContent && (
-            <ContenidoForm
-              modules={allModules}
-              initialValues={{
-                title: selectedContent.title,
-                type: selectedContent.type,
-                moduleId: selectedContent.moduleId,
-                url: selectedContent.url || "",
-                duration: selectedContent.duration || "",
-                questions: selectedContent.questions ? String(selectedContent.questions) : "",
-              }}
-              onSubmit={handleUpdateContent}
-              onCancel={() => setIsEditDialogOpen(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditContenidoDialog
+        allModules={allModules}
+        handleUpdateContent={handleUpdateContent}
+        onOpenChange={setIsEditDialogOpen}
+        open={isEditDialogOpen}
+        selectedContent={selectedContent}
+        setIsEditDialogOpen={()=>setIsEditDialogOpen(false)}
+      />
 
       {/* Diálogo de confirmación para eliminar contenido */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Esto eliminará permanentemente el contenido
-              <span className="font-semibold"> {selectedContent?.title}</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteContent} className="bg-destructive text-destructive-foreground">
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      
+      <DeleteContenidoDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        handleDeleteContent={handleDeleteContent}
+        selectedContent={selectedContent}
+      />
     </div>
   )
 }

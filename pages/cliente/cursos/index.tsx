@@ -52,7 +52,7 @@ export default function CoursesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {availableCourses.map((course, index) => (
               <Link href={`/cursos/${course.id}`} key={course.id} className="h-full">
-                <CursoCard key={index} curso={course} />
+                <CursoCard key={index} curso={course} type="cliente" />
               </Link>
             ))}
           </div>

@@ -1,63 +1,64 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
-import { Checkbox } from "@/components/ui/checkbox"
-import HeaderAuth from "@/components/header/header-auth"
-import FooterAuth from "@/components/footer/footer-auth"
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import HeaderAuth from "@/components/header/header-auth";
+import FooterAuth from "@/components/footer/footer-auth";
+import { useLoginUser } from "@/hooks/login"; // Importa el hook de inicio de sesión
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [isAdmin, setIsAdmin] = useState(true) // Cambiado a true por defecto
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const { mutate: loginUser, isPending: isLoggingIn } = useLoginUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      setError("Por favor, completa todos los campos")
-      return
+      setError("Por favor, completa todos los campos");
+      return;
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
 
-      // Simulación de inicio de sesión
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // En una implementación real, aquí se haría la petición al backend
-      // y se manejaría la respuesta
-
-      // Redirección basada en el tipo de usuario
-      if (isAdmin) {
-        router.push("/admin/dashboard")
-      } else {
-        router.push("/")
-      }
+      // Iniciar sesión usando el hook de mutación
+      loginUser(
+        { email, password },
+        {
+          onSuccess: () => {
+            // Redirección después del inicio de sesión exitoso
+            router.push("/");
+          },
+          onError: (error) => {
+            setError("Error al iniciar sesión. Verifica tus credenciales.");
+            console.error(error);
+          },
+        }
+      );
     } catch (err) {
-      setError("Error al iniciar sesión. Verifica tus credenciales.")
-      console.error(err)
+      setError("Error al iniciar sesión. Verifica tus credenciales.");
+      console.error(err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <HeaderAuth/>
+      <HeaderAuth />
 
       <main className="flex-1 flex items-center justify-center p-4 md:p-8">
         <Card className="mx-auto max-w-md w-full">
@@ -115,22 +116,8 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember" className="text-sm">
-                  Recordar mi sesión
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox id="admin" checked={isAdmin} onCheckedChange={(checked) => setIsAdmin(!!checked)} />
-                <Label htmlFor="admin" className="text-sm">
-                  Iniciar como administrador
-                </Label>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+              <Button type="submit" className="w-full" disabled={isLoading || isLoggingIn}>
+                {isLoading || isLoggingIn ? (<span className="flex items-center gap-2"><Loader2 className="animate-spin w-6 h-6 text-white" /> Iniciando Sesion...</span>) : "Iniciar Sesion"}
               </Button>
             </form>
 
@@ -150,7 +137,7 @@ export default function LoginPage() {
                 <span className="bg-background px-2 text-muted-foreground">O continúa con</span>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 w-full">
+            <div className="grid grid-cols-1 gap-4 w-full">
               <Button variant="outline">
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -172,19 +159,12 @@ export default function LoginPage() {
                 </svg>
                 Google
               </Button>
-              <Button variant="outline">
-                <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                </svg>
-                Facebook
-              </Button>
             </div>
           </CardFooter>
         </Card>
       </main>
 
-      <FooterAuth/>
+      <FooterAuth />
     </div>
-  )
+  );
 }
-

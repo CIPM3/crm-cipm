@@ -4,6 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Users, BookOpen, BarChart, Settings, LogOut, FileText, Video } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from "@/store/useAuthStore"
+import { useLogout } from "@/hooks/user/useLogout"
 
 export const navItems = [
   {
@@ -46,6 +48,9 @@ export const navItems = [
 export function Sidebar() {
   const pathname = usePathname()
 
+  const UserData = useAuthStore((state)=>state.user)
+  const logout = useLogout()
+
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-white border-r shadow-sm">
       <div className="flex flex-col flex-1 min-h-0">
@@ -79,8 +84,8 @@ export function Sidebar() {
           <button className="flex-shrink-0 w-full group block">
             <div className="flex items-center">
               <div className="ml-3 ">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Adrian Leal</p>
-                <div className="flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{UserData?.name}</p>
+                <div onClick={logout} className="flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700">
                   <LogOut className="mr-1 h-4 w-4" />
                   Cerrar sesión
                 </div>
