@@ -153,7 +153,7 @@ const Index = ({ params }: { params: { id: string } }) => {
                 <TableFooter className="hidden">
                     <TableRow>
                         <TableCell colSpan={8}>Total</TableCell>
-                        <TableCell className="text-right">$2,500.00</TableCell>
+                        <TableCell className="text-right">$2,400.00</TableCell>
                     </TableRow>
                 </TableFooter>
             </Table>
