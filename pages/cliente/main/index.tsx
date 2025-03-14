@@ -15,27 +15,20 @@ export default function HomePage() {
       <HeaderCliente/>
 
       <main className="flex-1">
-        {/* Hero Section */}
         <Hero/>
 
-        {/* Características */}
-        <Caracteristicas/>
+        {/* <Caracteristicas/>
 
-        {/* Cursos Destacados */}
         <CursosDestacados/>
 
-        {/* Videos Destacados */}
         <VideosDestacados/>
 
-        {/* Testimonios */}
         <Testimonios/>
 
-        {/* CTA */}
-        <CTA/>
+        <CTA/> */}
       </main>
 
-      {/* Footer */}
-      <Footer/>
+      {/* <Footer/> */}
     </div>
   )
 }

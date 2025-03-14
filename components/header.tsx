@@ -1,16 +1,26 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Bell, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { usePathname } from "next/navigation"
+import { redirect, usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { navItems } from "@/components/sidebar"
+import { ADMIN_NAVS } from "@/lib/constants"
+import { auth } from "@/lib/firebase"
 
 export function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const pathname = usePathname()
+
+  const IS_DEV = process.env.NEXT_PUBLIC_IS_DEV
+
+  useEffect(() => {
+    if (auth.currentUser === null && !IS_DEV) {
+      redirect('/login')
+    }
+  }, [auth.currentUser])
+
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -49,7 +59,7 @@ export function Header() {
           </div>
           <div className="grid gap-2 p-4 overflow-y-auto max-h-[calc(100vh-4rem)]">
             <nav className="flex-1 px-2 space-y-1">
-              {navItems.map((item) => (
+              {ADMIN_NAVS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

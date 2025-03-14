@@ -5,21 +5,23 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { users } from "@/lib/utils"
 import {
   Save,
-  User,
   Lock,
   Globe,
   Palette,
-  Key,
   Plus,
-  Trash2,
   Database,
   HelpCircle,
 } from "lucide-react"
+import { useAuthStore } from "@/store/useAuthStore"
+import UsuarioCard from "@/components/card/usuario-card"
+import { getQueryClient } from "@/components/provider/get-query-client"
+import { Get } from "@/api/Usuarios/get"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { SkeletonDemo } from "@/components/card/usuario-skeleton"
+import CreateUserDialog from "@/components/dialog/usuarios/create-user.dialog"
 
 export default function ConfigurationPage() {
   const [activeTab, setActiveTab] = useState("perfil")
@@ -28,7 +30,16 @@ export default function ConfigurationPage() {
   const [primaryColor, setPrimaryColor] = useState("#0066FF")
   const [accentColor, setAccentColor] = useState("#FFBB28")
 
-  const currentUser = users[0]
+  const [OpenCreateDialog, setOpenCreateDialog] = useState(false)
+
+  const queryClient = getQueryClient()
+
+  void queryClient.prefetchQuery(Get)
+  const { data: Users, isLoading: LoadingUsers } = useSuspenseQuery(Get);
+
+  const UserData = useAuthStore((state) => state.user)
+
+  const currentUser = UserData
 
   return (
     <div className="space-y-6">
@@ -38,11 +49,15 @@ export default function ConfigurationPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-wrap">
+        <TabsList className="flex overflow-x-auto pl-16 md:pl-0">
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
           <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
           <TabsTrigger value="apariencia">Apariencia</TabsTrigger>
-          <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
+          {
+            currentUser?.role === "admin" || "develop" ? (
+              <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
+            ) : (<></>)
+          }
           <TabsTrigger value="sistema">Sistema</TabsTrigger>
 
         </TabsList>
@@ -57,8 +72,8 @@ export default function ConfigurationPage() {
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex flex-col items-center gap-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                    <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={currentUser?.avatar!!} alt={currentUser?.name} />
+                    <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <Button variant="outline" size="sm">
                     Cambiar Imagen
@@ -73,7 +88,7 @@ export default function ConfigurationPage() {
                     <input
                       id="name"
                       className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      defaultValue={currentUser.name}
+                      defaultValue={currentUser?.name}
                     />
                   </div>
 
@@ -85,24 +100,10 @@ export default function ConfigurationPage() {
                       id="email"
                       type="email"
                       className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      defaultValue={currentUser.email}
+                      defaultValue={currentUser?.email}
                     />
                   </div>
 
-                  <div className="grid gap-2">
-                    <label htmlFor="role" className="text-sm font-medium">
-                      Rol
-                    </label>
-                    <select
-                      id="role"
-                      className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      defaultValue={currentUser.role}
-                    >
-                      <option value="Administrador">Administrador</option>
-                      <option value="Instructor">Instructor</option>
-                      <option value="Asistente">Asistente</option>
-                    </select>
-                  </div>
                 </div>
               </div>
 
@@ -273,46 +274,30 @@ export default function ConfigurationPage() {
         <TabsContent value="usuarios" className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Usuarios del Sistema</h3>
-            <Button size="sm">
+            <Button onClick={()=>setOpenCreateDialog(true)} size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Añadir Usuario
             </Button>
           </div>
 
+          <CreateUserDialog
+            open={OpenCreateDialog}
+            setIsOpen={setOpenCreateDialog}
+          />
+
           <Card>
             <CardContent className="p-0">
               <div className="divide-y">
-                {users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{user.name}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge>{user.role}</Badge>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <User className="h-4 w-4" />
-                          <span className="sr-only">Editar</span>
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Key className="h-4 w-4" />
-                          <span className="sr-only">Permisos</span>
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Eliminar</span>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                {Users.filter((user)=>user.role!=='cliente').map((user) => (
+                  <UsuarioCard key={user.id} user={user} />
                 ))}
+                {
+                  LoadingUsers && (
+                    Array(3).map(index => (
+                      <SkeletonDemo key={index} />
+                    ))
+                  )
+                }
               </div>
             </CardContent>
           </Card>
@@ -328,17 +313,17 @@ export default function ConfigurationPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Versión del Sistema</p>
-                  <p className="text-sm text-muted-foreground">1.2.5</p>
+                  <p className="text-sm text-muted-foreground">{process.env.NEXT_PUBLIC_VERSION_SOFT}</p>
                 </div>
 
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Última Actualización</p>
-                  <p className="text-sm text-muted-foreground">15 de octubre, 2023</p>
+                  <p className="text-sm text-muted-foreground">{process.env.NEXT_PUBLIC_LAST_UPDATE}</p>
                 </div>
 
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Licencia</p>
-                  <p className="text-sm text-muted-foreground">CIPM Enterprise</p>
+                  <p className="text-sm text-muted-foreground">CIPM</p>
                 </div>
 
                 <div className="space-y-1">

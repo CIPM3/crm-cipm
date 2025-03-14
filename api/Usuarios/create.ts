@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { useAuthStore } from "@/store/useAuthStore"; // Importa la store
 import { UsersType } from "@/types"; // Asegúrate de importar el tipo UsersType
 import { DB_COLLECCTIONS, ROLES } from "@/lib/constants";
 
@@ -16,7 +15,7 @@ interface RegisterUserData {
 }
 
 // Función para registrar el usuario
-const registerUser = async ({ name, email, password, role }: RegisterUserData): Promise<UsersType> => {
+const createUser = async ({ name, email, password, role }: RegisterUserData): Promise<UsersType> => {
   // Crear usuario en Firebase Auth
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
@@ -43,13 +42,10 @@ const registerUser = async ({ name, email, password, role }: RegisterUserData): 
 
 // Hook para usar la mutación de registro
 export const useRegisterUser = () => {
-  const { setUser } = useAuthStore(); // Usa la store para actualizar el estado del usuario
-
   return useMutation<UsersType, Error, RegisterUserData>({
-    mutationFn: registerUser, // Pasar la función de mutación aquí
+    mutationFn: createUser, // Pasar la función de mutación aquí
     onSuccess: (user) => {
       console.log("Usuario registrado con éxito:", user);
-      setUser(user); // Actualiza la store con la información del usuario
     },
     onError: (error) => {
       console.error("Error al registrar usuario:", error);

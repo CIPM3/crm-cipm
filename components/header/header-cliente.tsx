@@ -1,17 +1,22 @@
 "use client"
 
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Menu, User, X } from 'lucide-react'
-import { cn, NavClient } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useLogout } from '@/hooks/user/useLogout'
+import { redirect } from 'next/navigation'
+import { NAVS } from '@/lib/constants'
+import { auth } from '@/lib/firebase'
 
 const HeaderCliente = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false)
     const UserData = useAuthStore((state) => state.user)
     const logout = useLogout()
+
+
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
             <div className="container flex h-16 items-center justify-between">
@@ -21,11 +26,17 @@ const HeaderCliente = () => {
                 </Link>
                 <nav className="hidden md:flex items-center gap-6">
                     {
-                        NavClient.map(nav => (
+                        NAVS.map(nav => (
                             <Link key={nav.title} href={nav.href} className="text-sm font-medium">
                                 {nav.title}
                             </Link>
                         ))
+                    }
+                    {
+                        UserData?.role !== 'cliente' &&
+                        <Link href={'/admin'} className="text-sm font-medium">
+                            Panel Administrativo
+                        </Link>
                     }
                 </nav>
                 <div className="hidden md:flex items-center gap-2">
@@ -61,7 +72,7 @@ const HeaderCliente = () => {
                         </div>
                         <div className="grid gap-2 p-4 overflow-y-auto max-h-[calc(100vh-4rem)]">
                             <nav className="flex-1 px-2 space-y-1">
-                                {NavClient.map((item) => (
+                                {NAVS.map((item) => (
                                     <Link
                                         key={item.href}
                                         href={item.href}

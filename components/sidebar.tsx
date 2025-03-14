@@ -1,55 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, BookOpen, BarChart, Settings, LogOut, FileText, Video } from "lucide-react"
+import { redirect, usePathname } from "next/navigation"
+import { LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useLogout } from "@/hooks/user/useLogout"
+import { ADMIN_NAVS } from "@/lib/constants"
+import { useEffect } from "react"
+import { auth } from "@/lib/firebase"
 
-export const navItems = [
-  {
-    title: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Estudiantes",
-    href: "/admin/estudiantes",
-    icon: Users,
-  },
-  {
-    title: "Cursos",
-    href: "/admin/cursos",
-    icon: BookOpen,
-  },
-  {
-    title: "Contenido",
-    href: "/admin/contenido",
-    icon: FileText,
-  },
-  {
-    title: "Videos",
-    href: "/admin/videos",
-    icon: Video,
-  },
-  {
-    title: "Reportes",
-    href: "/admin/reportes",
-    icon: BarChart,
-  },
-  {
-    title: "Configuración",
-    href: "/admin/configuracion",
-    icon: Settings,
-  },
-]
 
 export function Sidebar() {
   const pathname = usePathname()
 
   const UserData = useAuthStore((state)=>state.user)
   const logout = useLogout()
+
+  const IS_DEV = process.env.NEXT_PUBLIC_IS_DEV
+
+  useEffect(() => {
+    if (auth.currentUser === null && !IS_DEV) {
+      redirect('/login')
+    }
+  }, [auth.currentUser])
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-white border-r shadow-sm">
@@ -60,7 +34,7 @@ export function Sidebar() {
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
           <nav className="flex-1 px-2 space-y-1">
-            {navItems.map((item) => (
+            {ADMIN_NAVS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

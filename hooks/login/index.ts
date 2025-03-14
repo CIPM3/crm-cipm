@@ -35,7 +35,6 @@ export const useLoginUser = () => {
   return useMutation({
     mutationFn: loginUser,
     onSuccess: (user) => {
-      console.log("Usuario autenticado con éxito:", user);
       setUser(user); // Actualiza la store con la información del usuario
     },
     onError: (error) => {
