@@ -15,11 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { DIA_VALS, HORARIO_VALS, NIVELES_NAVS, SUB_NIVELES_NAVS } from "@/lib/constants";
-import { getQueryClient } from "../provider/get-query-client";
-import { Get } from "@/api/Usuarios/get";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { DatePickerDemo } from "../datePicker";
 import { Loader2 } from "lucide-react";
+import { useGetInstructores } from "@/hooks/usuarios/useGetInstructores";
 
 export function AgendadoForm({ initialValues, onSubmit, onCancel,IsLoading }: AgendadoFormProps) {
   const formik = useFormik<AgendadoFormValues>({
@@ -40,10 +38,7 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel,IsLoading }: Ag
     },
   });
 
-  const queryClient = getQueryClient()
-
-  void queryClient.prefetchQuery(Get)
-  const { data: Instructores,isPending:Loading } = useSuspenseQuery(Get);
+  const {Instructores} = useGetInstructores()
 
   return (
     <form onSubmit={formik.handleSubmit} className="space-y-6 max-h-[80dvh] overflow-y-auto">

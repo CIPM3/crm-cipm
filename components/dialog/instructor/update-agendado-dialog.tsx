@@ -12,12 +12,12 @@ interface Props {
 }
 
 const UpdateAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props) => {
-    const updateUserMutation = useUpdateStudent();
+    const {update,loading} = useUpdateStudent();
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await updateUserMutation.mutateAsync({ id: values.id, estudiante: values });
+            await update( values.id, values);
             onSuccess();
             setIsOpen(false)
         } catch (error) {
@@ -41,7 +41,7 @@ const UpdateAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props)
                     initialValues={estudiante}
                     onCancel={handleCancel}
                     onSubmit={handleSubmit}
-                    IsLoading={updateUserMutation.isPending}
+                    IsLoading={loading}
                 />
             </DialogContent>
         </Dialog>

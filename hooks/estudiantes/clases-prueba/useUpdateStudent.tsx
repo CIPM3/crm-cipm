@@ -1,19 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { updateStudent } from "@/api/Estudiantes/clase-prueba/update";
 import { ClasePrubeaType } from "@/types";
 
+// Hook para usar la mutación de actualización
 export const useUpdateStudent = () => {
-  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  return useMutation<void, Error, { id: string; estudiante: Partial<ClasePrubeaType> }>({
-    mutationFn: async ({ id, estudiante }: { id: string; estudiante: Partial<ClasePrubeaType> }) => await updateStudent(id, estudiante),
-    onSuccess: () => {
-      // Invalida y refetch la query de estudiantes para actualizar la UI
-      queryClient.invalidateQueries({ queryKey: ["getAllStudents"] });
+  const update = async (id: string, estudiante: Partial<ClasePrubeaType>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await updateStudent(id, estudiante);
       console.log("Estudiante actualizado correctamente");
-    },
-    onError: (error: Error) => {
-      console.error("Error al actualizar estudiante:", error.message);
-    },
-  });
+    } catch (err) {
+      setError(err as Error);
+      console.error("Error al actualizar estudiante:", err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { update, loading, error };
 };

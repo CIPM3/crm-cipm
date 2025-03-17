@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const { mutate: loginUser, isPending: isLoggingIn } = useLoginUser();
+  const { login, loading } = useLoginUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,20 +35,11 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
 
-      // Iniciar sesión usando el hook de mutación
-      loginUser(
-        { email, password },
-        {
-          onSuccess: () => {
-            // Redirección después del inicio de sesión exitoso
-            router.push("/");
-          },
-          onError: (error) => {
-            setError("Error al iniciar sesión. Verifica tus credenciales.");
-            console.error(error);
-          },
-        }
-      );
+      // Iniciar sesión usando el hook de inicio de sesión
+      await login({ email, password });
+
+      // Redirección después del inicio de sesión exitoso
+      router.push("/");
     } catch (err) {
       setError("Error al iniciar sesión. Verifica tus credenciales.");
       console.error(err);
@@ -117,8 +108,14 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading || isLoggingIn}>
-                {isLoading || isLoggingIn ? (<span className="flex items-center gap-2"><Loader2 className="animate-spin w-6 h-6 text-white" /> Iniciando Sesion...</span>) : "Iniciar Sesion"}
+              <Button type="submit" className="w-full" disabled={isLoading || loading}>
+                {isLoading || loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin w-6 h-6 text-white" /> Iniciando Sesión...
+                  </span>
+                ) : (
+                  "Iniciar Sesión"
+                )}
               </Button>
             </form>
 
@@ -139,7 +136,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 w-full">
-              <AuthButtonGoogle/>
+              <AuthButtonGoogle />
             </div>
           </CardFooter>
         </Card>

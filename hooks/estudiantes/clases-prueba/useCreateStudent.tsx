@@ -1,16 +1,27 @@
+import { useState } from "react";
 import { createStudent } from "@/api/Estudiantes/clase-prueba/create";
 import { ClasePrubeaType } from "@/types";
-import { useMutation } from "@tanstack/react-query";
 
 // Hook para usar la mutación de registro
 export const useCreateStudent = () => {
-    return useMutation<ClasePrubeaType, Error, ClasePrubeaType>({
-        mutationFn: createStudent, // Pasar la función de mutación aquí
-        onSuccess: (user) => {
-            console.log("Usuario registrado con éxito:", user);
-        },
-        onError: (error) => {
-            console.error("Error al registrar usuario:", error);
-        },
-    });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const create = async (studentData: ClasePrubeaType) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const student = await createStudent(studentData);
+      console.log("Estudiante registrado con éxito:", student);
+      return student;
+    } catch (err) {
+      setError(err as Error);
+      console.error("Error al registrar estudiante:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { create, loading, error };
 };

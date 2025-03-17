@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const { mutate: registerUser, isPending: isRegistering } = useRegisterUser();
+  const { register, loading } = useRegisterUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,20 +44,11 @@ export default function RegisterPage() {
     try {
       setIsLoading(true);
 
-      // Registrar el usuario usando el hook de mutación
-      registerUser(
-        { name, email, password,role:"cliente" },
-        {
-          onSuccess: () => {
-            // Redirección después del registro exitoso
-            router.push("/");
-          },
-          onError: (error) => {
-            setError("Error al registrar usuario. Inténtalo de nuevo.");
-            console.error(error);
-          },
-        }
-      );
+      // Registrar el usuario usando el hook de registro
+      await register({ name, email, password, role: "cliente" });
+
+      // Redirección después del registro exitoso
+      router.push("/");
     } catch (err) {
       setError("Error al registrar usuario. Inténtalo de nuevo.");
       console.error(err);
@@ -173,9 +164,14 @@ export default function RegisterPage() {
                 </Label>
               </div>
 
-
-              <Button type="submit" className="w-full" disabled={isLoading || isRegistering}>
-                {isLoading || isRegistering ? (<span className="flex items-center gap-2"><Loader2 className="animate-spin w-6 h-6 text-white" /> Registrando...</span>) : "Registrarse"}
+              <Button type="submit" className="w-full" disabled={isLoading || loading}>
+                {isLoading || loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin w-6 h-6 text-white" /> Registrando...
+                  </span>
+                ) : (
+                  "Registrarse"
+                )}
               </Button>
             </form>
 
@@ -189,7 +185,7 @@ export default function RegisterPage() {
           <CardFooter className="flex flex-col">
             {/* Botón de Google */}
             <div className="grid grid-cols-1 gap-4 w-full">
-              <AuthButtonGoogle/>
+              <AuthButtonGoogle />
             </div>
           </CardFooter>
         </Card>

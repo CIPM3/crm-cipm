@@ -12,12 +12,12 @@ interface Props {
 }
 
 const DeleteAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props) => {
-    const deleteUserMutation = useDeleteStudent();
+    const {remove,loading} = useDeleteStudent();
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await deleteUserMutation.mutateAsync(values.id);
+            await remove(values.id);
             onSuccess();
             setIsOpen(false)
         } catch (error) {
@@ -42,7 +42,7 @@ const DeleteAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props)
                 <div className='flex items-center justify-end gap-3'>
                     <button onClick={handleCancel} className='px-4 py-2 border-input border rounded-lg text-gray-500 hover:bg-gray-500 hover:text-white transition-colors'>Cancelar</button>
                     <button className='px-4 py-2 border-input border rounded-lg text-gray-500 hover:bg-red-500 hover:text-white transition-colors' onClick={()=> handleSubmit(estudiante)}>
-                        {deleteUserMutation.isPending ? 'Eliminando...' : (<>Eliminar a: {estudiante.nombreAlumno}</>)}
+                        {loading ? 'Eliminando...' : (<>Eliminar a: {estudiante.nombreAlumno}</>)}
                         
                     </button>
                 </div>

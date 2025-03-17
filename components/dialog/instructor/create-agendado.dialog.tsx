@@ -1,8 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import React, { Dispatch, SetStateAction } from 'react'
-import { getQueryClient } from '@/components/provider/get-query-client';
-import { getAllStudents } from '@/api/Estudiantes/clase-prueba/get';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { AgendadoForm } from '@/components/form/agendado-instructor-form';
 import { useCreateStudent } from '@/hooks/estudiantes/clases-prueba/useCreateStudent';
 
@@ -13,23 +10,14 @@ interface Props {
 }
 
 const CreateAgendadoDialog = ({ open, setIsOpen,onSuccess }: Props) => {
-    const createStudentMutation = useCreateStudent()
-    const queryClient = getQueryClient()
-
-    void queryClient.prefetchQuery({
-        queryKey: ['getAllStudents'],
-        queryFn: getAllStudents
-    })
-    const { refetch } = useSuspenseQuery({
-        queryKey: ['getAllStudents'],
-        queryFn: getAllStudents
-    });
+    const {create,loading} = useCreateStudent()
+    
 
     const handleSubmit = async (values:any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await createStudentMutation.mutateAsync(values);
-            refetch()
+            await create(values);
+            
             onSuccess();
             setIsOpen(false)
         } catch (error) {
@@ -52,7 +40,7 @@ const CreateAgendadoDialog = ({ open, setIsOpen,onSuccess }: Props) => {
                 <AgendadoForm
                     onCancel={handleCancel}
                     onSubmit={handleSubmit}
-                    IsLoading={createStudentMutation.isPending}
+                    IsLoading={loading}
                 />
             </DialogContent>
         </Dialog>

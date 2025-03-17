@@ -2,9 +2,8 @@ import { UserForm } from '@/components/form/user-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import React, { Dispatch, SetStateAction } from 'react'
 import { useRegisterUser } from "@/hooks/registro";
-import { getQueryClient } from '@/components/provider/get-query-client';
-import { Get } from '@/api/Usuarios/get';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
+import { useCreateUsuario } from '@/hooks/usuarios/useCreateUsuario';
 
 interface Props {
     open: boolean;
@@ -12,11 +11,8 @@ interface Props {
 }
 
 const CreateUserDialog = ({ open, setIsOpen }: Props) => {
-    const createUserMutation = useRegisterUser();
-    const queryClient = getQueryClient()
-
-    void queryClient.prefetchQuery(Get)
-    const { refetch } = useSuspenseQuery(Get);
+    const {register} = useCreateUsuario();
+    const { triggerRefetch } = useRefetchUsuariosStore();
 
     const handleSubmit = async (values:any) => {
         try {
@@ -25,8 +21,8 @@ const CreateUserDialog = ({ open, setIsOpen }: Props) => {
                 avatar: ''
             }
             // Llamar a la mutación para crear el usuario
-            await createUserMutation.mutateAsync(newUser);
-            refetch()
+            await register(newUser);
+            triggerRefetch();
             setIsOpen(false)
             console.log("Usuario creado con éxito");
         } catch (error) {

@@ -1,11 +1,9 @@
 import { UserForm } from '@/components/form/user-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import React, { Dispatch, SetStateAction } from 'react'
-import { getQueryClient } from '@/components/provider/get-query-client';
-import { Get } from '@/api/Usuarios/get';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { UsersType } from '@/types';
-import { useUpdateUser } from '@/api/Usuarios/update';
+import { useUpdateUsuarios } from '@/hooks/usuarios/useUpdateUsuarios';
+import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
 
 interface Props {
     open: boolean;
@@ -14,11 +12,8 @@ interface Props {
 }
 
 const EditUserDialog = ({ open, setIsOpen,user }: Props) => {
-    const updateUserMutation = useUpdateUser();
-    const queryClient = getQueryClient()
-
-    void queryClient.prefetchQuery(Get)
-    const { refetch } = useSuspenseQuery(Get);
+    const {update} = useUpdateUsuarios()
+    const {triggerRefetch} = useRefetchUsuariosStore()
 
     const handleSubmit = async (values: UsersType) => {
         try {
@@ -27,8 +22,8 @@ const EditUserDialog = ({ open, setIsOpen,user }: Props) => {
                 avatar: ''
             }
             // Llamar a la mutación para crear el usuario
-            await updateUserMutation.mutateAsync(newUser);
-            refetch()
+            await update(newUser);
+            triggerRefetch()
             setIsOpen(false)
             console.log("Usuario Actualizado con éxito");
         } catch (error) {

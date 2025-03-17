@@ -1,5 +1,4 @@
-// hooks/useLoginUser.ts
-import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase"; // Importa las instancias de auth y db de Firebase
@@ -31,14 +30,22 @@ const loginUser = async ({ email, password }: LoginUserData): Promise<UsersType>
 
 export const useLoginUser = () => {
   const { setUser } = useAuthStore(); // Usa la store para actualizar el estado del usuario
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  return useMutation({
-    mutationFn: loginUser,
-    onSuccess: (user) => {
+  const login = async (data: LoginUserData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const user = await loginUser(data);
       setUser(user); // Actualiza la store con la información del usuario
-    },
-    onError: (error) => {
-      console.error("Error al iniciar sesión:", error);
-    },
-  });
+    } catch (err) {
+      setError(err as Error);
+      console.error("Error al iniciar sesión:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { login, loading, error };
 };

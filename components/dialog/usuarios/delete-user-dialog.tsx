@@ -2,10 +2,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import React, { Dispatch, SetStateAction } from 'react'
 import { UsersType } from '@/types';
 import { Button } from '@/components/ui/button';
-import { useDeleteUser } from '@/api/Usuarios/delete';
-import { getQueryClient } from '@/components/provider/get-query-client';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { Get } from '@/api/Prueba/get';
+import { useDeleteUsuario } from '@/hooks/usuarios/useDeleteUsuario';
+import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
 
 interface Props {
   open: boolean;
@@ -14,18 +12,15 @@ interface Props {
 }
 
 const DeleteUserDialog = ({ open, setIsOpen, user }: Props) => {
-  const deleteUserMutation = useDeleteUser();
-  const queryClient = getQueryClient()
-
-  void queryClient.prefetchQuery(Get)
-  const { refetch } = useSuspenseQuery(Get);
+  const {remove} = useDeleteUsuario()
+  const {triggerRefetch} = useRefetchUsuariosStore()
 
   const handleSubmit = async (values: UsersType) => {
     try {
       
       // Llamar a la mutación para crear el usuario
-      await deleteUserMutation.mutateAsync(values.id);
-      refetch()
+      await remove(values.id);
+      triggerRefetch()
       setIsOpen(false)
       console.log("Usuario Eliminado con éxito");
     } catch (error) {

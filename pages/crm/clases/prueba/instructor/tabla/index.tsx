@@ -1,14 +1,14 @@
 'use client'
 import { getAllStudents } from '@/api/Estudiantes/clase-prueba/get';
-import { Get } from '@/api/Usuarios/get';
 import CreateAgendadoDialog from '@/components/dialog/instructor/create-agendado.dialog';
 import DeleteAgendadoDialog from '@/components/dialog/instructor/delete.agendado-dialog';
 import UpdateAgendadoDialog from '@/components/dialog/instructor/update-agendado-dialog';
-import { getQueryClient } from '@/components/provider/get-query-client';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useGetEstudiantes } from '@/hooks/estudiantes/clases-prueba/useGetStudents';
+import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores';
+import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
 import { AgendadoFormValues } from '@/types';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Edit, Plus, Trash } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -31,36 +31,36 @@ const Index = ({ params }: { params: { id: string } }) => {
     });
 
     // Obtener instructores
-    const queryClient = getQueryClient()
-    void queryClient.prefetchQuery(Get)
-    const { data: Instructores } = useSuspenseQuery(Get);
+    const { Instructores } = useGetInstructores()
 
     // Obtener estudiantes
-    const { data: Estudiantes, refetch } = useQuery({
-        queryKey: ['getAllStudents'],
-        queryFn: getAllStudents,
-    });
+    const { Users: Estudiantes, loading, error, refetch } = useGetEstudiantes()
+
+    const { shouldRefetch, resetRefetch,triggerRefetch } = useRefetchUsuariosStore();
+
+    useEffect(() => {
+        if (shouldRefetch) {
+            refetch();
+            resetRefetch();
+        }
+    }, [shouldRefetch, refetch, resetRefetch]);
 
     // Filtrar estudiantes por el ID del instructor
     const estudiantes = Estudiantes?.filter((estudiante) => estudiante.maestro === params.id) || [];
     const Instructor = Instructores?.find((instructor) => instructor.id === params.id);
 
-    useEffect(() => {
-        console.log(Instructores)
-    }, [params.id]);
-
     const handleCreateSuccess = () => {
-        refetch(); // Refetch de la query de estudiantes
+        triggerRefetch(); // Refetch de la query de estudiantes
         setOPEN_CREATE(false);
     };
 
     const handleUpdateSuccess = () => {
-        refetch(); // Refetch de la query de estudiantes
+        triggerRefetch(); // Refetch de la query de estudiantes
         setOPEN_EDIT(false);
     };
 
     const handleDeleteSuccess = () => {
-        refetch(); // Refetch de la query de estudiantes
+        triggerRefetch(); // Refetch de la query de estudiantes
         setOPEN_DELETE(false);
     }
 

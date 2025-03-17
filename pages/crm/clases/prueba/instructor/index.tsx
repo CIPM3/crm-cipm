@@ -1,29 +1,23 @@
 "use client"
 
-import { Get } from '@/api/Usuarios/get'
-import { getQueryClient } from '@/components/provider/get-query-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores'
 import { useAuthStore } from '@/store/useAuthStore'
 import { UsersType } from '@/types'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const Index = () => {
- 
-    const queryClient = getQueryClient()
-
-    void queryClient.prefetchQuery(Get)
-    const { data:Instructores } = useSuspenseQuery(Get);
-    const [InstructoresRoles, setInstructoresRoles] = useState<UsersType[]>([])
-
-    const User = useAuthStore((state) => state.user)
+    const { Instructores, loading, error } = useGetInstructores();
+    const [InstructoresRoles, setInstructoresRoles] = useState<UsersType[]>([]);
+    const User = useAuthStore((state) => state.user);
 
     useEffect(() => {
+        if (loading) return;
+
         // Roles permitidos para la lógica principal
         const allowedRoles = ["admin", "formacion de grupo", "instructor"];
-        const instructores = Instructores.filter(profesor => profesor.role === "instructor");
 
         // Validar si el usuario está autenticado
         if (!User) {
@@ -33,7 +27,7 @@ const Index = () => {
 
         // Permitir acceso a un usuario específico (independientemente de su rol)
         if (User.id === 'fZBbWtrIihQvkITliDfLHHhK6rA3') {
-            setInstructoresRoles(instructores); // Permitir acceso completo
+            setInstructoresRoles(Instructores); // Permitir acceso completo
             return;
         }
 
@@ -45,11 +39,19 @@ const Index = () => {
 
         // Lógica para roles permitidos
         if (User.role === "instructor") {
-            setInstructoresRoles(instructores.filter(profesor => profesor.id === User.id));
+            setInstructoresRoles(Instructores.filter(profesor => profesor.id === User.id));
         } else {
-            setInstructoresRoles(instructores);
+            setInstructoresRoles(Instructores);
         }
-    }, [User])
+    }, [User, Instructores, loading]);
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     return (
         <div className="space-y-6">

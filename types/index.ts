@@ -102,3 +102,24 @@ export interface ClasePrubeaType {
     nivel: string;
     subNivel: string;
 }
+
+export interface RegisterUserData {
+    name: string;
+    email: string;
+    password: string;
+    role: typeof ROLES[number]; // Agregar el campo "role"
+}
+
+export interface UpdateUserData {
+    id: string; // ID del usuario a actualizar
+    name?: string;
+    email?: string;
+    role?: typeof ROLES[number];
+    avatar?: string;
+}
+
+export interface RefetchState {
+    shouldRefetch: boolean;
+    triggerRefetch: () => void;
+    resetRefetch: () => void;
+  }
