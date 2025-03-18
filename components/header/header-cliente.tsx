@@ -32,11 +32,18 @@ const HeaderCliente = () => {
                             </Link>
                         ))
                     }
+
                     {
-                        UserData?.role !== 'cliente' &&
-                        <Link href={'/admin'} className="text-sm font-medium">
-                            Panel Administrativo
-                        </Link>
+                        UserData && (
+                            <>
+                                {
+                                    UserData?.role !== 'cliente' &&
+                                    <Link href={'/admin'} className="text-sm font-medium">
+                                        Panel Administrativo
+                                    </Link>
+                                }
+                            </>
+                        )
                     }
                 </nav>
                 <div className="hidden md:flex items-center gap-2">
@@ -84,6 +91,20 @@ const HeaderCliente = () => {
                                         {item.title}
                                     </Link>
                                 ))}
+                                {
+                                    UserData && (
+                                        <>
+                                            {
+                                                UserData?.role !== 'cliente' &&
+                                                <Link href={'/admin'} className={cn(
+                                                    "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                                                )}>
+                                                    Panel Administrativo
+                                                </Link>
+                                            }
+                                        </>
+                                    )
+                                }
                             </nav>
                         </div>
 

@@ -1,5 +1,6 @@
 'use client'
 import { getAllStudents } from '@/api/Estudiantes/clase-prueba/get';
+import { Calendar } from '@/components/calendario/calendario-instructor';
 import CreateAgendadoDialog from '@/components/dialog/instructor/create-agendado.dialog';
 import DeleteAgendadoDialog from '@/components/dialog/instructor/delete.agendado-dialog';
 import UpdateAgendadoDialog from '@/components/dialog/instructor/update-agendado-dialog';
@@ -8,15 +9,16 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import { useGetEstudiantes } from '@/hooks/estudiantes/clases-prueba/useGetStudents';
 import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores';
 import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
-import { AgendadoFormValues } from '@/types';
+import { AgendadoFormValues, CalendarEvent, EventStatus } from '@/types';
 import { format } from 'date-fns';
 import { Edit, Plus, Trash } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const Index = ({ params }: { params: { id: string } }) => {
     const [OPEN_CREATE, setOPEN_CREATE] = useState(false);
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false);
     const [OPEN_DELETE, setOPEN_DELETE] = useState(false)
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
     const [Selected, setSelected] = useState<AgendadoFormValues>({
         nombreAlumno: "",
@@ -36,7 +38,7 @@ const Index = ({ params }: { params: { id: string } }) => {
     // Obtener estudiantes
     const { Users: Estudiantes, loading, error, refetch } = useGetEstudiantes()
 
-    const { shouldRefetch, resetRefetch,triggerRefetch } = useRefetchUsuariosStore();
+    const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
         if (shouldRefetch) {
@@ -78,6 +80,7 @@ const Index = ({ params }: { params: { id: string } }) => {
                 <h1 className="text-2xl font-bold tracking-tight">Calendario</h1>
             </div>
 
+            <Calendar estudiantes={estudiantes} />
 
             <div className="flex justify-between gap-2">
                 <h1 className="text-2xl font-bold tracking-tight">Tabla de agendados</h1>

@@ -36,13 +36,14 @@ export default function LoginPage() {
       setIsLoading(true);
 
       // Iniciar sesión usando el hook de inicio de sesión
-      await login({ email, password });
-
+      const data = await login({ email, password });
       // Redirección después del inicio de sesión exitoso
-      router.push("/");
+      if(data !== null){
+        router.push("/");
+      }
     } catch (err) {
       setError("Error al iniciar sesión. Verifica tus credenciales.");
-      console.error(err);
+      console.error("Error al iniciar sesión:", err);
     } finally {
       setIsLoading(false);
     }

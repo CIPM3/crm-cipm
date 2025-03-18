@@ -122,4 +122,19 @@ export interface RefetchState {
     shouldRefetch: boolean;
     triggerRefetch: () => void;
     resetRefetch: () => void;
+}
+
+// Tipos para los eventos
+export type EventStatus = "scheduled" | "missed" | "late" | "completed"
+
+export interface CalendarEvent {
+    id: string;
+    title: string;
+    date: Date;
+    status: EventStatus;
+    type: string;
+    studentName: string;
+    level: string;
+    time: string;
+    additionalInfo?: string;
   }
