@@ -5,6 +5,7 @@
       "name": "my-v0-project",
       "dependencies": {
         "@hookform/resolvers": "latest",
+        "@netlify/plugin-nextjs": "^5.10.1",
         "@radix-ui/react-accordion": "^1.2.3",
         "@radix-ui/react-alert-dialog": "latest",
         "@radix-ui/react-aspect-ratio": "^1.1.2",
@@ -190,6 +191,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@netlify/plugin-nextjs": ["@netlify/plugin-nextjs@5.10.1", "", {}, "sha512-HrE/+y5gIiYVyVQrhE566wfyXlvcbiuUaMe7yCG8X5/GBIGgidg2f7+1XrlOPsADsB5mup1N8N0N4OL5if+V8g=="],
 
     "@next/env": ["@next/env@14.2.16", "", {}, "sha512-fLrX5TfJzHCbnZ9YUSnGW63tMV3L4nSfhgOQ0iCcX21Pt+VSTDuaLsSuL8J/2XAiVA5AnzvXDpf6pMs60QxOag=="],
 
