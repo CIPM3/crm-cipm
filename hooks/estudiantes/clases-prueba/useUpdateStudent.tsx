@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateStudent } from "@/api/Estudiantes/clase-prueba/update";
+import { updateStudent } from "@/api/Estudiantes/Instructores/update";
 import { ClasePrubeaType } from "@/types";
 
 // Hook para usar la mutación de actualización

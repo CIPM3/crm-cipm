@@ -9,15 +9,18 @@ import { useLogout } from "@/hooks/user/useLogout"
 import { ADMIN_NAVS } from "@/lib/constants"
 import { useEffect } from "react"
 import { auth } from "@/lib/firebase"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
 export function Sidebar() {
   const pathname = usePathname()
 
-  const UserData = useAuthStore((state)=>state.user)
+  const currentUser = useAuthStore((state) => state.user);
+
+  const UserData = useAuthStore((state) => state.user)
   const logout = useLogout()
 
-  const IS_DEV = process.env.NEXT_PUBLIC_IS_DEV
+  const IS_DEV = process.env.NODE_ENV === 'development'
 
   useEffect(() => {
     if (auth.currentUser === null && !IS_DEV) {
@@ -58,10 +61,13 @@ export function Sidebar() {
           <button className="flex-shrink-0 w-full group block">
             <div className="flex items-center">
               <div className="ml-3 ">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{UserData?.name}</p>
-                <div onClick={logout} className="flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                  <LogOut className="mr-1 h-4 w-4" />
-                  Cerrar sesión
+                <div className="flex w-full items-center justify-between gap-2">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={currentUser?.avatar!!} alt={currentUser?.name} />
+                    <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{UserData?.name}</p>
+                  <LogOut onClick={logout} className="mr-1 h-4 w-4" />
                 </div>
               </div>
             </div>

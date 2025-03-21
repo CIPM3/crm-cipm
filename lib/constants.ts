@@ -3,7 +3,9 @@ import { BarChart, BookOpen, CalendarDays, FileText, LayoutDashboard, Settings, 
 export const DB_COLLECCTIONS = {
     PRUEBA: 'Prueba',
     USUARIOS: 'Usuarios',
-    CLASE_PRUEBA: 'ClasePrueba',
+    INSTRUCTOR: 'InstructorClasePrueba',
+    AGENDADOR: 'AgendadorClasePrueba',
+    FORMACION_GRUPO: 'FORMACIONClasePrueba',
 }
 
 export const ROLES = ["admin", "instructor", "formacion de grupo", "agendador", "base", "cliente"] as const;

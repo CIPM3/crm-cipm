@@ -83,11 +83,27 @@ export type AgendadoFormValues = {
     subNivel?: string;
 };
 
+export type AgendadorFormValues = {
+    nombreAlumno: string,
+    diaContacto: string,
+    mesContacto: string,
+    quienAgendo: string,
+    modalidad: string,
+    anoSemana: string
+}
+
 export interface AgendadoFormProps {
     initialValues?: AgendadoFormValues;
     onSubmit: (values: AgendadoFormValues) => void;
     onCancel: () => void;
     IsLoading?: boolean;
+}
+
+export interface AgendadorFormProps {
+    initialValues?: AgendadorFormValues;
+    onSubmit: (values: AgendadorFormValues) => Promise<void>;
+    onCancel: () => void;
+    IsLoading: boolean;
 }
 
 export interface ClasePrubeaType {
@@ -101,6 +117,16 @@ export interface ClasePrubeaType {
     maestro: string | undefined;
     nivel: string;
     subNivel: string;
+}
+
+export interface ClasePrubeaAgendadorType {
+    id?: string;
+    nombreAlumno: string,
+    diaContacto: string,
+    mesContacto: string,
+    quienAgendo: string,
+    modalidad: string,
+    anoSemana: string
 }
 
 export interface RegisterUserData {
@@ -124,6 +150,11 @@ export interface RefetchState {
     resetRefetch: () => void;
 }
 
+export interface LoginUserData {
+    email: string;
+    password: string;
+}
+
 // Tipos para los eventos
 export type EventStatus = "scheduled" | "missed" | "late" | "completed"
 
@@ -137,4 +168,4 @@ export interface CalendarEvent {
     level: string;
     time: string;
     additionalInfo?: string;
-  }
+}

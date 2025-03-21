@@ -47,3 +47,13 @@ export const agendadoSchema = Yup.object().shape({
   nivel: Yup.string().required('El nivel es requerido.'),
   subNivel: Yup.string().optional(),
 });
+
+export const agendadorSchema = Yup.object().shape({
+  nombreAlumno: Yup.string().required("El nombre del alumno es obligatorio"),
+  diaContacto: Yup.string().required("El día de contacto es obligatorio"),
+  mesContacto: Yup.string().required("El mes de contacto es obligatorio"),
+  quienAgendo: Yup.string().required("El nombre de quien agendó es obligatorio"),
+  modalidad: Yup.string().optional(),
+  horarioPresencial: Yup.string().optional(),
+  anoSemana: Yup.string().required("El año y la semana son obligatorios"),
+});

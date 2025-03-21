@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStudent } from "@/api/Estudiantes/clase-prueba/create";
+import { createStudent } from "@/api/Estudiantes/Instructores/create";
 import { ClasePrubeaType } from "@/types";
 
 // Hook para usar la mutación de registro

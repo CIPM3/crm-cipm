@@ -1,24 +1,32 @@
 'use client'
-import { getAllStudents } from '@/api/Estudiantes/clase-prueba/get';
+
 import { Calendar } from '@/components/calendario/calendario-instructor';
 import CreateAgendadoDialog from '@/components/dialog/instructor/create-agendado.dialog';
 import DeleteAgendadoDialog from '@/components/dialog/instructor/delete.agendado-dialog';
 import UpdateAgendadoDialog from '@/components/dialog/instructor/update-agendado-dialog';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import TableInstructor from '@/components/table/table-instructor';
 import { useGetEstudiantes } from '@/hooks/estudiantes/clases-prueba/useGetStudents';
 import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores';
 import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
-import { AgendadoFormValues, CalendarEvent, EventStatus } from '@/types';
-import { format } from 'date-fns';
-import { Edit, Plus, Trash } from 'lucide-react';
-import React, { useEffect, useState, useRef } from 'react';
+import { Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+
+export interface AgendadoFormValues {
+    nombreAlumno: string;
+    numero: string;
+    dia: string;
+    horario: string;
+    observaciones: string;
+    fecha: Date;
+    maestro: string;
+    nivel: string;
+    subNivel: string;
+}
 
 const Index = ({ params }: { params: { id: string } }) => {
     const [OPEN_CREATE, setOPEN_CREATE] = useState(false);
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false);
     const [OPEN_DELETE, setOPEN_DELETE] = useState(false)
-    const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
     const [Selected, setSelected] = useState<AgendadoFormValues>({
         nombreAlumno: "",
@@ -82,7 +90,9 @@ const Index = ({ params }: { params: { id: string } }) => {
 
             <Calendar estudiantes={estudiantes} />
 
-            <div className="flex justify-between gap-2">
+
+
+            <div className=" justify-between gap-2 hidden">
                 <h1 className="text-2xl font-bold tracking-tight">Tabla de agendados</h1>
                 <button
                     onClick={() => setOPEN_CREATE(true)}
@@ -92,76 +102,16 @@ const Index = ({ params }: { params: { id: string } }) => {
                 </button>
             </div>
 
-            <Table>
-                <TableCaption>Estudiantes asignados a: {Instructor?.name}</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Nombre Alumno</TableHead>
-                        <TableHead>Numero</TableHead>
-                        <TableHead>Dia</TableHead>
-                        <TableHead>Horario</TableHead>
-                        <TableHead>Observaciones</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Maestro</TableHead>
-                        <TableHead>Nivel</TableHead>
-                        <TableHead>Sub Nivel (solo Intermedio)</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {estudiantes.map((estudiante, index) => (
-                        <TableRow key={index}>
-                            <TableCell className="w-fit px-3">{estudiante.nombreAlumno}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.numero}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.dia}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.horario}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.observaciones}</TableCell>
-                            <TableCell>
-                                {estudiante.fecha
-                                    ? format(new Date(estudiante.fecha.seconds * 1000), "MM/dd/yyyy")
-                                    : "Fecha no válida"}
-                            </TableCell>
-                            <TableCell className="w-fit px-3">{Instructor?.name}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.nivel}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.subNivel}</TableCell>
-                            <TableCell className="flex items-center space-x-2">
-                                <Button
-                                    onClick={() => {
-                                        setOPEN_EDIT(true);
-                                        setSelected({
-                                            ...estudiante,
-                                            maestro: estudiante.maestro || "",
-                                            fecha: new Date(estudiante.fecha.seconds * 1000),
-                                        });
-                                    }}
-                                    className="bg-transparent border-input border group hover:bg-secondary"
-                                >
-                                    <Edit className="text-gray-500 size-4 group-hover:text-white" />
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        setOPEN_DELETE(true);
-                                        setSelected({
-                                            ...estudiante,
-                                            maestro: estudiante.maestro || "",
-                                            fecha: new Date(estudiante.fecha.seconds * 1000),
-                                        });
-                                    }}
-                                    className="bg-transparent border-input border group hover:bg-red-500">
-                                    <Trash className="text-gray-500 size-4 group-hover:text-white" />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter className="hidden">
-                    <TableRow>
-                        <TableCell colSpan={8}>Total</TableCell>
-                        <TableCell className="text-right">$2,400.00</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+
+            <TableInstructor
+                Instructor={Instructor}
+                estudiantes={estudiantes}
+                setOPEN_DELETE={setOPEN_DELETE}
+                setOPEN_EDIT={setOPEN_EDIT}
+                setSelected={setSelected}
+            />
         </div>
-    );
+    );``
 };
 
 export default Index;

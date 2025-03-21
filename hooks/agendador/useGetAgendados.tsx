@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { getAllStudents } from "@/api/Estudiantes/Instructores/get";
-import { ClasePrubeaType } from "@/types";
+import { getAllStudents } from "@/api/Estudiantes/Agendador/get";
+import { ClasePrubeaAgendadorType } from "@/types";
 
-export const useGetEstudiantes = () => {
-  const [Users, setStudents] = useState<ClasePrubeaType[]>([]);
+export const useGetAgendados = () => {
+  const [Usuarios, setUsuarios] = useState<ClasePrubeaAgendadorType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -12,7 +12,7 @@ export const useGetEstudiantes = () => {
     setError(null);
     try {
       const response = await getAllStudents();
-      setStudents(response);
+      setUsuarios(response);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -24,5 +24,5 @@ export const useGetEstudiantes = () => {
     fetchUsuarios();
   }, [fetchUsuarios]);
 
-  return { Users, loading, error,refetch: fetchUsuarios };
+  return { Usuarios, loading, error, refetch: fetchUsuarios };
 };
