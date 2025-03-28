@@ -7,6 +7,7 @@ interface CalendarModalProps {
 }
 
 export const CalendarModal: React.FC<CalendarModalProps> = ({ selectedEvent, setSelectedEvent }) => {
+  //console.log(selectedEvent)
   return (
     selectedEvent && (
       <InfoClaseDialog

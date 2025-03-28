@@ -57,3 +57,16 @@ export const agendadorSchema = Yup.object().shape({
   horarioPresencial: Yup.string().optional(),
   anoSemana: Yup.string().required("El año y la semana son obligatorios"),
 });
+
+export const passwordSchema = Yup.object().shape({
+  currentPassword: Yup.string()
+    .required('La contraseña actual es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+  newPassword: Yup.string()
+    .required('La nueva contraseña es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .notOneOf([Yup.ref('currentPassword')], 'La nueva contraseña debe ser diferente a la actual'),
+  confirmPassword: Yup.string()
+    .required('Por favor confirma tu nueva contraseña')
+    .oneOf([Yup.ref('newPassword')], 'Las contraseñas no coinciden'),
+});

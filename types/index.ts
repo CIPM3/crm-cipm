@@ -84,12 +84,17 @@ export type AgendadoFormValues = {
 };
 
 export type AgendadorFormValues = {
-    nombreAlumno: string,
-    diaContacto: string,
-    mesContacto: string,
-    quienAgendo: string,
-    modalidad: string,
-    anoSemana: string
+    nombreAlumno: string;
+    anoSemana: string;
+    diaContacto: string;
+    quienAgendo: string;
+    modalidad: string;
+    mesContacto: string;
+    mayorEdad: string; // Nuevo campo
+    nivel: string; // Nuevo campo
+    horaClasePrueba: string; // Nuevo campo (formato "HH:MM")
+    diaClasePrueba: string; // Nuevo campo (formato "HH:MM")
+    maestro?:string
 }
 
 export interface AgendadoFormProps {
@@ -113,10 +118,10 @@ export interface ClasePrubeaType {
     dia: string;
     horario: string;
     observaciones: string;
-    fecha: Timestamp;
+    fecha?: Timestamp;
     maestro: string | undefined;
-    nivel: string;
-    subNivel: string;
+    nivel?: string;
+    subNivel?: string;
 }
 
 export interface ClasePrubeaAgendadorType {
@@ -126,7 +131,11 @@ export interface ClasePrubeaAgendadorType {
     mesContacto: string,
     quienAgendo: string,
     modalidad: string,
-    anoSemana: string
+    anoSemana: string,
+    nivel: string,
+    mayorEdad: string,
+    horaClasePrueba: string; // Nuevo campo (formato "HH:MM")
+    diaClasePrueba: string;
 }
 
 export interface RegisterUserData {
@@ -168,4 +177,20 @@ export interface CalendarEvent {
     level: string;
     time: string;
     additionalInfo?: string;
+    anoSemana:string
 }
+
+export type Instructor = {
+    id: string;
+    name: string;
+};
+
+export type TimeSlotAssignment = {
+    instructors: Instructor[];
+};
+
+export type ScheduleData = {
+    [day: string]: {
+        [hour: string]: TimeSlotAssignment;
+    };
+};

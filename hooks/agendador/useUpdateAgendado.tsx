@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateUser } from "@/api/Usuarios/update";
+import { updateStudent } from "@/api/Estudiantes/Agendador/update";
 import { UpdateUserData } from "@/types"; // Asegúrate de importar el tipo UsersType
 
 // Hook para usar la mutación de actualización
@@ -11,7 +11,7 @@ export const useUpdateUsuarios = () => {
     setLoading(true);
     setError(null);
     try {
-      const user = await updateUser(data);
+      const user = await updateStudent(data.id,data);
       return user;
     } catch (err) {
       setError(err as Error);

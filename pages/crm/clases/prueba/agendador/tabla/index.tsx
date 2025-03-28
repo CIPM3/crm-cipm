@@ -1,6 +1,8 @@
 'use client'
 
 import CreateAgendadoDialog from '@/components/dialog/agendador/create-agendado.dialog'
+import DeleteAgendadoDialog from '@/components/dialog/agendador/delete.agendado.dialog'
+import UpdateAgendadoDialog from '@/components/dialog/agendador/update-agendado-dialog'
 import TableAgendador from '@/components/table/table-agendador'
 import { useGetAgendadores } from '@/hooks/agendador/useGetAgendadores'
 import { useGetAgendados } from '@/hooks/agendador/useGetAgendados'
@@ -10,26 +12,25 @@ import { Plus } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
 const Index = ({ params }: { params: { id: string } }) => {
-
     const [OPEN_CREATE, setOPEN_CREATE] = useState(false)
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false)
     const [OPEN_DELETE, setOPEN_DELETE] = useState(false)
 
     const [Selected, setSelected] = useState<AgendadorFormValues>({
-        nombreAlumno:"",
-        anoSemana:"",
-        diaContacto:"",
-        quienAgendo:"",
-        modalidad:"",
-        mesContacto:""
+        nombreAlumno: "",
+        anoSemana: "",
+        diaContacto: "",
+        quienAgendo: "",
+        modalidad: "",
+        mesContacto: "",
+        mayorEdad: "", // Valor por defecto
+        nivel: "", // Valor por defecto
+        horaClasePrueba: "", // Valor por defecto
+        diaClasePrueba:""
     });
-
-    const { Agendadores } = useGetAgendadores()
-
-    // Obtener estudiantes
-    const { Usuarios: Estudiantes, loading, error, refetch } = useGetAgendados()
     
-
+    const { Agendadores } = useGetAgendadores()
+    const { Usuarios: Estudiantes, loading, error, refetch } = useGetAgendados()
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
@@ -39,7 +40,6 @@ const Index = ({ params }: { params: { id: string } }) => {
         }
     }, [shouldRefetch, refetch, resetRefetch]);
 
-    // Filtrar estudiantes por el ID del instructor
     const agendados = Estudiantes?.filter((estudiante) => estudiante.quienAgendo === params.id) || [];
     const Agendador = Agendadores?.find((instructor) => instructor.id === params.id);
 
@@ -47,7 +47,6 @@ const Index = ({ params }: { params: { id: string } }) => {
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - {Agendador?.name}</h1>
-                <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>
             </div>
 
             <CreateAgendadoDialog
@@ -59,13 +58,34 @@ const Index = ({ params }: { params: { id: string } }) => {
                 }}
             />
 
+            <UpdateAgendadoDialog
+                estudiante={Selected}
+                onSuccess={() => {
+                    triggerRefetch();
+                    setOPEN_EDIT(false)
+                }}
+                setIsOpen={setOPEN_EDIT}
+                open={OPEN_EDIT}
+            />
+
+            <DeleteAgendadoDialog
+                estudiante={Selected}
+                onSuccess={() => {
+                    triggerRefetch();
+                    setOPEN_DELETE(false)
+                }}
+                setIsOpen={setOPEN_DELETE}
+                open={OPEN_DELETE}
+            />
+
             <div className="flex justify-between gap-2">
                 <h1 className="text-2xl font-bold tracking-tight">Tabla de agendados</h1>
                 <button
                     onClick={() => setOPEN_CREATE(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
                 >
-                    <Plus />
+                    <Plus size={16} />
+                    Agregar Clase Prueba
                 </button>
             </div>
 

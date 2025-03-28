@@ -33,7 +33,7 @@ export const CalendarEvent: React.FC<CalendarEventProps> = ({ event, onClick }) 
     >
       <div className="font-medium">{event.studentName}</div>
       <div className="text-xs">
-        {formatTime(event.date)}
+        {event.time}
       </div>
     </div>
   )

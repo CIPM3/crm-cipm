@@ -6,6 +6,7 @@ export const DB_COLLECCTIONS = {
     INSTRUCTOR: 'InstructorClasePrueba',
     AGENDADOR: 'AgendadorClasePrueba',
     FORMACION_GRUPO: 'FORMACIONClasePrueba',
+    HORARIO:"HorarioInstructores"
 }
 
 export const ROLES = ["admin", "instructor", "formacion de grupo", "agendador", "base", "cliente"] as const;
@@ -87,46 +88,46 @@ export const DIA_VALS = [
 
 export const HORARIO_VALS = [
     {
-        value:"8:00",label:"8:00 am",
+        value:"8:00 AM",label:"8:00 am",
     },
     {
-        value:"9:00",label:"9:00 am",
+        value:"9:00 AM",label:"9:00 am",
     },
     {
-        value:"10:00",label:"10:00 am",
+        value:"10:00 AM",label:"10:00 am",
     },
     {
-        value:"11:00",label:"11:00 am",
+        value:"11:00 AM",label:"11:00 am",
     },
     {
-        value:"12:00",label:"12:00 pm",
+        value:"12:00 PM",label:"12:00 pm",
     },
     {
-        value:"13:00",label:"1:00 pm",
+        value:"13:00 PM",label:"1:00 pm",
     },
     {
-        value:"14:00",label:"2:00 pm",
+        value:"14:00 PM",label:"2:00 pm",
     },
     {
-        value:"15:00",label:"3:00 pm",
+        value:"15:00 PM",label:"3:00 pm",
     },
     {
-        value:"16:00",label:"4:00 pm",
+        value:"16:00 PM",label:"4:00 pm",
     },
     {
-        value:"17:00",label:"5:00 pm",
+        value:"17:00 PM",label:"5:00 pm",
     },
     {
-        value:"18:00",label:"6:00 pm",
+        value:"18:00 PM",label:"6:00 pm",
     },
     {
-        value:"19:00",label:"7:00 pm",
+        value:"19:00 PM",label:"7:00 pm",
     },
     {
-        value:"20:00",label:"8:00 pm",
+        value:"20:00 PM",label:"8:00 pm",
     },
     {
-        value:"21:00",label:"9:00 pm",
+        value:"21:00 PM",label:"9:00 pm",
     },
     {
         value:"PENDIENTE",label:"Pendiente",

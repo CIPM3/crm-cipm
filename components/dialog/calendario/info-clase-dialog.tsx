@@ -8,9 +8,7 @@ interface Props {
 }
 
 const InfoClaseDialog = ({ open, setOpen, data }: Props) => {
-    const formatTime = (date: Date): string => {
-        return date?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    }
+    //console.log(data)
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[600px]">
@@ -20,7 +18,8 @@ const InfoClaseDialog = ({ open, setOpen, data }: Props) => {
                 <div className="bg-white p-4 rounded-lg max-w-md w-full">
                     <h2 className="text-xl font-bold mb-4">{data?.title!!}</h2>
                     <p><strong>Estudiante:</strong> {data?.studentName!!}</p>
-                    <p><strong>Hora:</strong> {formatTime(data?.date)}</p>
+                    <p><strong>Hora:</strong> {data.time}</p>
+                    <p><strong>Etiqueta:</strong> {data.anoSemana}</p>
                     <p><strong>Información adicional:</strong> {data?.level!!}</p>
                 </div>
             </DialogContent>

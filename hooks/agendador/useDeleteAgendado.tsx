@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteUser } from "@/api/Usuarios/delete";
+import { deleteStudent } from "@/api/Estudiantes/Agendador/delete";
 
 // Hook para usar la mutación de eliminación
 export const useDeleteUsuario = () => {
@@ -10,7 +10,7 @@ export const useDeleteUsuario = () => {
     setLoading(true);
     setError(null);
     try {
-      await deleteUser(userId);
+      await deleteStudent(userId);
       console.log("Usuario eliminado con éxito");
     } catch (err) {
       setError(err as Error);

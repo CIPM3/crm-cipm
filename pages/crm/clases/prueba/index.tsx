@@ -57,7 +57,7 @@ const page = () => {
                             <Boxes className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <Link href={""}>
+                            <Link href={"/admin/clases/prueba/formacion"}>
                                 <button className='w-full border-input border my-3 rounded-md text-[12px] p-2'>Formacion de grupo - Clases prueba</button>
                             </Link>
                         </CardContent>

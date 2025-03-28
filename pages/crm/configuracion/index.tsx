@@ -13,7 +13,6 @@ export default function ConfigurationPage() {
   const [activeTab, setActiveTab] = useState("perfil")
 
   const UserData = useAuthStore((state) => state.user)
-
   const currentUser = UserData
 
   return (
@@ -28,29 +27,26 @@ export default function ConfigurationPage() {
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
           <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
           <TabsTrigger value="apariencia">Apariencia</TabsTrigger>
-          {
-            currentUser?.role === "admin" || "develop" ? (
-              <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
-            ) : (<></>)
-          }
+          {(currentUser?.role === "admin" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
+            <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
+          )}
           <TabsTrigger value="sistema">Sistema</TabsTrigger>
-
         </TabsList>
+        
         <TabsContent value="perfil" className="space-y-6">
           <PerfilTab />
         </TabsContent>
         <TabsContent value="cuenta" className="space-y-6">
           <CuentaTab />
         </TabsContent>
-
         <TabsContent value="apariencia" className="space-y-6">
           <AparienciaTab />
         </TabsContent>
-
-        <TabsContent value="usuarios" className="space-y-6">
-          <UsuariosTab />
-        </TabsContent>
-
+        {(currentUser?.role === "admin" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
+          <TabsContent value="usuarios" className="space-y-6">
+            <UsuariosTab />
+          </TabsContent>
+        )}
         <TabsContent value="sistema" className="space-y-6">
           <SistemaTab />
         </TabsContent>
@@ -58,4 +54,3 @@ export default function ConfigurationPage() {
     </div>
   )
 }
-

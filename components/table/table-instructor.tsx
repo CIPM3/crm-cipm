@@ -13,10 +13,51 @@ interface Props {
     setOPEN_DELETE: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TableInstructor = ({Agendador,estudiantes,setOPEN_DELETE,setOPEN_EDIT,setSelected}:Props) => {
+const TableInstructor = ({ Agendador, estudiantes, setOPEN_DELETE, setOPEN_EDIT, setSelected }: Props) => {
+    // Función mejorada para formatear la fecha de Firebase
+    const formatFirebaseDate = (timestamp: any): string => {
+        if (!timestamp) return 'Fecha no válida';
+        
+        // Si es un objeto de Firebase Timestamp
+        if (timestamp.seconds && timestamp.nanoseconds !== undefined) {
+            try {
+                const date = new Date(timestamp.seconds * 1000);
+                return format(date, "MM/dd/yyyy");
+            } catch (error) {
+                console.error("Error al formatear fecha Firebase:", error);
+                return 'Fecha inválida';
+            }
+        }
+        
+        // Si ya es una cadena de texto
+        if (typeof timestamp === 'string') {
+            try {
+                const date = new Date(timestamp);
+                return isNaN(date.getTime()) ? timestamp : format(date, "MM/dd/yyyy");
+            } catch {
+                return timestamp;
+            }
+        }
+        
+        // Si es un objeto Date
+        if (timestamp instanceof Date) {
+            return format(timestamp, "MM/dd/yyyy");
+        }
+        
+        return 'Formato no soportado';
+    };
+
+    // Función para renderizar valores de forma segura
+    const safeRender = (value: any): string | number | React.ReactNode => {
+        if (value === null || value === undefined) return '-';
+        if (typeof value === 'string' || typeof value === 'number') return value;
+        if (value.seconds && value.nanoseconds !== undefined) return formatFirebaseDate(value);
+        return JSON.stringify(value); // como último recurso
+    };
+
     return (
         <Table>
-            <TableCaption>Estudiantes asignados a: {Agendador?.name}</TableCaption>
+            <TableCaption>Estudiantes asignados a: {safeRender(Agendador?.name)}</TableCaption>
             <TableHeader>
                 <TableRow>
                     <TableHead>Nombre Alumno</TableHead>
@@ -28,24 +69,23 @@ const TableInstructor = ({Agendador,estudiantes,setOPEN_DELETE,setOPEN_EDIT,setS
                     <TableHead>Maestro</TableHead>
                     <TableHead>Nivel</TableHead>
                     <TableHead>Sub Nivel (solo Intermedio)</TableHead>
+                    <TableHead>Acciones</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {estudiantes.map((estudiante, index) => (
                     <TableRow key={index}>
-                        <TableCell className="w-fit px-3">{estudiante.nombreAlumno}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.numero}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.dia}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.horario}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.observaciones}</TableCell>
-                        <TableCell>
-                            {estudiante.fecha
-                                ? format(new Date(estudiante.fecha.seconds * 1000), "MM/dd/yyyy")
-                                : "Fecha no válida"}
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.nombreAlumno)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.numero)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.dia)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.horario)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.observaciones)}</TableCell>
+                        <TableCell className="w-fit px-3">
+                            {formatFirebaseDate(estudiante.fecha)}
                         </TableCell>
-                        <TableCell className="w-fit px-3">{Agendador?.name}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.nivel}</TableCell>
-                        <TableCell className="w-fit px-3">{estudiante.subNivel}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(Agendador?.name)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.nivel)}</TableCell>
+                        <TableCell className="w-fit px-3">{safeRender(estudiante.subNivel)}</TableCell>
                         <TableCell className="flex items-center space-x-2">
                             <Button
                                 onClick={() => {
@@ -78,8 +118,7 @@ const TableInstructor = ({Agendador,estudiantes,setOPEN_DELETE,setOPEN_EDIT,setS
             </TableBody>
             <TableFooter className="hidden">
                 <TableRow>
-                    <TableCell colSpan={8}>Total</TableCell>
-                    <TableCell className="text-right">$2,400.00</TableCell>
+                    <TableCell colSpan={10}>Total: {estudiantes.length} estudiantes</TableCell>
                 </TableRow>
             </TableFooter>
         </Table>

@@ -5,6 +5,7 @@ import CreateAgendadoDialog from '@/components/dialog/instructor/create-agendado
 import DeleteAgendadoDialog from '@/components/dialog/instructor/delete.agendado-dialog';
 import UpdateAgendadoDialog from '@/components/dialog/instructor/update-agendado-dialog';
 import TableInstructor from '@/components/table/table-instructor';
+import { useGetAgendados } from '@/hooks/agendador/useGetAgendados';
 import { useGetEstudiantes } from '@/hooks/estudiantes/clases-prueba/useGetStudents';
 import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores';
 import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
@@ -26,7 +27,7 @@ export interface AgendadoFormValues {
 const Index = ({ params }: { params: { id: string } }) => {
     const [OPEN_CREATE, setOPEN_CREATE] = useState(false);
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false);
-    const [OPEN_DELETE, setOPEN_DELETE] = useState(false)
+    const [OPEN_DELETE, setOPEN_DELETE] = useState(false);
 
     const [Selected, setSelected] = useState<AgendadoFormValues>({
         nombreAlumno: "",
@@ -40,78 +41,92 @@ const Index = ({ params }: { params: { id: string } }) => {
         subNivel: "",
     });
 
-    // Obtener instructores
-    const { Instructores } = useGetInstructores()
-
-    // Obtener estudiantes
-    const { Users: Estudiantes, loading, error, refetch } = useGetEstudiantes()
-
+    // Obtener datos
+    const { Instructores } = useGetInstructores();
+    const { Users: Estudiantes, refetch: refetchEstudiantes } = useGetEstudiantes();
+    const { Usuarios: Agendados, refetch: refetchAgendados } = useGetAgendados();
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
         if (shouldRefetch) {
-            refetch();
+            refetchEstudiantes();
+            refetchAgendados();
             resetRefetch();
         }
-    }, [shouldRefetch, refetch, resetRefetch]);
+    }, [shouldRefetch, refetchEstudiantes, refetchAgendados, resetRefetch]);
 
-    // Filtrar estudiantes por el ID del instructor
-    const estudiantes = Estudiantes?.filter((estudiante) => estudiante.maestro === params.id) || [];
-    const Instructor = Instructores?.find((instructor) => instructor.id === params.id);
+    // Filtrar datos por el ID del instructor
+    const estudiantesFiltrados = Estudiantes?.filter(estudiante => estudiante.maestro === params.id) || [];
+    const agendadosFiltrados = Agendados?.filter(agendado => agendado.maestro === params.id) || [];
+
+    const Instructor = Instructores?.find(instructor => instructor.id === params.id);
 
     const handleCreateSuccess = () => {
-        triggerRefetch(); // Refetch de la query de estudiantes
+        triggerRefetch();
         setOPEN_CREATE(false);
     };
 
     const handleUpdateSuccess = () => {
-        triggerRefetch(); // Refetch de la query de estudiantes
+        triggerRefetch();
         setOPEN_EDIT(false);
     };
 
     const handleDeleteSuccess = () => {
-        triggerRefetch(); // Refetch de la query de estudiantes
+        triggerRefetch();
         setOPEN_DELETE(false);
-    }
+    };
 
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - {Instructor?.name}</h1>
-                <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>
+                <p className="text-muted-foreground">Información para la gestión de las clases de prueba</p>
             </div>
 
-            <CreateAgendadoDialog open={OPEN_CREATE} setIsOpen={setOPEN_CREATE} onSuccess={handleCreateSuccess} />
-            <UpdateAgendadoDialog estudiante={Selected} open={OPEN_EDIT} setIsOpen={setOPEN_EDIT} onSuccess={handleUpdateSuccess} />
-            <DeleteAgendadoDialog estudiante={Selected} open={OPEN_DELETE} setIsOpen={setOPEN_DELETE} onSuccess={handleDeleteSuccess} />
+            <CreateAgendadoDialog 
+                open={OPEN_CREATE} 
+                setIsOpen={setOPEN_CREATE} 
+                onSuccess={handleCreateSuccess} 
+            />
+            
+            <UpdateAgendadoDialog 
+                estudiante={Selected} 
+                open={OPEN_EDIT} 
+                setIsOpen={setOPEN_EDIT} 
+                onSuccess={handleUpdateSuccess} 
+            />
+            
+            <DeleteAgendadoDialog 
+                estudiante={Selected} 
+                open={OPEN_DELETE} 
+                setIsOpen={setOPEN_DELETE} 
+                onSuccess={handleDeleteSuccess} 
+            />
+
             <div>
-                <h1 className="text-2xl font-bold tracking-tight">Calendario</h1>
+                <h1 className="text-2xl font-bold tracking-tight">Calendario de Agendados</h1>
+                <Calendar estudiantes={agendadosFiltrados} />
             </div>
 
-            <Calendar estudiantes={estudiantes} />
-
-
-
-            <div className=" justify-between gap-2 hidden">
-                <h1 className="text-2xl font-bold tracking-tight">Tabla de agendados</h1>
+            <div className="flex justify-between gap-2 items-center">
+                <h1 className="text-2xl font-bold tracking-tight">Tabla de Estudiantes</h1>
                 <button
                     onClick={() => setOPEN_CREATE(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-blue-500 hidden text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
                 >
-                    <Plus />
+                    <Plus className="h-5 w-5" />
                 </button>
             </div>
 
-
             <TableInstructor
-                Instructor={Instructor}
-                estudiantes={estudiantes}
+                Agendador={Instructor}
+                estudiantes={estudiantesFiltrados}
                 setOPEN_DELETE={setOPEN_DELETE}
                 setOPEN_EDIT={setOPEN_EDIT}
                 setSelected={setSelected}
             />
         </div>
-    );``
+    );
 };
 
 export default Index;
