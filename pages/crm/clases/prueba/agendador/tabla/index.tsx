@@ -95,6 +95,8 @@ const Index = ({ params }: { params: { id: string } }) => {
                 Agendador={Agendador}
                 estudiantes={agendados}
                 setSelected={setSelected}
+                isError={error ? true : false}
+                isLoading={loading}
             />
         </div>
     )

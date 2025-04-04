@@ -86,6 +86,12 @@ export const DIA_VALS = [
     { value: "INDIVIDUAL", label: "Individual" },
 ]
 
+export const STATUS_VALS = [
+    {value:'CERRO',label:"CERRO"},
+    {value:'NO CERRO',label:"NO CERRO"},
+    {value:'ESPERA',label:"ESPERA"},
+]
+
 export const HORARIO_VALS = [
     {
         value:"8:00 AM",label:"8:00 am",

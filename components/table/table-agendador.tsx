@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Edit, Trash } from 'lucide-react';
 import { ClasePrubeaAgendadorType, UsersType } from '@/types';
 import { format } from 'date-fns';
+import { Skeleton } from '../ui/skeleton';
 
 interface Props {
     Agendador: UsersType | undefined;
@@ -11,9 +12,11 @@ interface Props {
     setOPEN_EDIT: React.Dispatch<React.SetStateAction<boolean>>;
     setSelected: React.Dispatch<React.SetStateAction<ClasePrubeaAgendadorType | null>>;
     setOPEN_DELETE: React.Dispatch<React.SetStateAction<boolean>>;
+    isLoading: boolean;
+    isError: boolean;
 }
 
-const TableAgendador = ({ setOPEN_DELETE, setOPEN_EDIT, Agendador, estudiantes, setSelected }: Props) => {
+const TableAgendador = ({ setOPEN_DELETE, setOPEN_EDIT, Agendador, estudiantes, setSelected, isError, isLoading }: Props) => {
 
     return (
         <Table>
@@ -32,49 +35,70 @@ const TableAgendador = ({ setOPEN_DELETE, setOPEN_EDIT, Agendador, estudiantes, 
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {
-                    estudiantes.map((estudiante) => (
-                        <TableRow key={estudiante.id}>
-                            <TableCell className="w-fit px-3">{estudiante.nombreAlumno}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.anoSemana}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.diaContacto}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante.mesContacto}</TableCell>
-                            <TableCell className="w-fit px-3">{Agendador?.name}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante?.diaClasePrueba
-                                ? format(new Date(estudiante.diaClasePrueba.seconds * 1000), 'd / MMMM')
-                                : 'No definido'}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante?.horaClasePrueba}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante?.mayorEdad}</TableCell>
-                            <TableCell className="w-fit px-3">{estudiante?.modalidad}</TableCell>
 
-                            {/* OPC BUTTONS */}
-                            <TableCell className="flex items-center space-x-2">
-                                <Button
-                                    onClick={() => {
-                                        setOPEN_EDIT(true);
-                                        setSelected({
-                                            ...estudiante
-                                        });
-                                    }}
-                                    className="bg-transparent border-input border group hover:bg-secondary"
-                                >
-                                    <Edit className="text-gray-500 size-4 group-hover:text-white" />
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        setOPEN_DELETE(true);
-                                        setSelected({
-                                            ...estudiante
-                                        });
-                                    }}
-                                    className="bg-transparent border-input border group hover:bg-red-500">
-                                    <Trash className="text-gray-500 size-4 group-hover:text-white" />
-                                </Button>
-                            </TableCell>
+                {isLoading ? (
+                    [...Array(3)].map((_, i) => (
+                        <TableRow key={i}>
+                            <TableCell colSpan={10}><Skeleton className="w-full h-10" /></TableCell>
                         </TableRow>
                     ))
+                ) : (
+                    <>
+                        {
+                            estudiantes.map((estudiante) => (
+                                <TableRow key={estudiante.id}>
+                                    <TableCell className="w-fit px-3">{estudiante.nombreAlumno}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante.anoSemana}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante.diaContacto}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante.mesContacto}</TableCell>
+                                    <TableCell className="w-fit px-3">{Agendador?.name}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante?.diaClasePrueba
+                                        ? format(new Date(estudiante.diaClasePrueba.seconds * 1000), 'd / MMMM')
+                                        : 'No definido'}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante?.horaClasePrueba}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante?.mayorEdad}</TableCell>
+                                    <TableCell className="w-fit px-3">{estudiante?.modalidad}</TableCell>
+
+                                    {/* OPC BUTTONS */}
+                                    <TableCell className="flex items-center space-x-2">
+                                        <Button
+                                            onClick={() => {
+                                                setOPEN_EDIT(true);
+                                                setSelected({
+                                                    ...estudiante
+                                                });
+                                            }}
+                                            className="bg-transparent border-input border group hover:bg-secondary"
+                                        >
+                                            <Edit className="text-gray-500 size-4 group-hover:text-white" />
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setOPEN_DELETE(true);
+                                                setSelected({
+                                                    ...estudiante
+                                                });
+                                            }}
+                                            className="bg-transparent border-input border group hover:bg-red-500">
+                                            <Trash className="text-gray-500 size-4 group-hover:text-white" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        }
+                    </>
+                )
                 }
 
+                {
+                    isError && (
+                        <TableRow>
+                            <TableCell colSpan={8} className="text-center">
+                                Error obteniendo la data
+                            </TableCell>
+                        </TableRow>
+                    )
+                }
 
             </TableBody>
             <TableFooter className="hidden">

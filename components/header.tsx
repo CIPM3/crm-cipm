@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Bell, LogOut, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { redirect, usePathname } from "next/navigation"
+import { redirect, usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { ADMIN_NAVS } from "@/lib/constants"
@@ -11,22 +11,35 @@ import { auth } from "@/lib/firebase"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useLogout } from "@/hooks/user/useLogout"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { onAuthStateChanged } from "firebase/auth"
+
+const IS_DEV = process.env.NODE_ENV === 'development'
+
 
 export function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const pathname = usePathname()
   const currentUser = useAuthStore((state) => state.user);
-
+  const [authChecked, setAuthChecked] = useState(false);
   const UserData = useAuthStore((state) => state.user)
   const logout = useLogout()
 
-  const IS_DEV = process.env.NODE_ENV === 'development'
+  const router = useRouter();
 
-  useEffect(() => {
-    if (auth.currentUser === null && !IS_DEV) {
-      redirect('/login')
-    }
-  }, [auth.currentUser])
+
+ useEffect(() => {
+     // Suscribirse a cambios en el estado de autenticación
+     const unsubscribe = onAuthStateChanged(auth, (user) => {
+       if (!user && !IS_DEV) {
+        router.push('/login');
+       }
+       setAuthChecked(true);
+     });
+ 
+     // Limpiar suscripción al desmontar
+     return () => unsubscribe();
+   }, [router]);
+ 
 
 
   return (

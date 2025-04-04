@@ -1,32 +1,42 @@
 "use client"
 
 import Link from "next/link"
-import { redirect, usePathname } from "next/navigation"
+import { redirect, usePathname, useRouter } from "next/navigation"
 import { LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useLogout } from "@/hooks/user/useLogout"
 import { ADMIN_NAVS } from "@/lib/constants"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { auth } from "@/lib/firebase"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { onAuthStateChanged } from "firebase/auth"
 
+
+const IS_DEV = process.env.NODE_ENV === 'development'
 
 export function Sidebar() {
   const pathname = usePathname()
-
+  const [authChecked, setAuthChecked] = useState(false);
   const currentUser = useAuthStore((state) => state.user);
+  const router = useRouter();
 
   const UserData = useAuthStore((state) => state.user)
   const logout = useLogout()
 
-  const IS_DEV = process.env.NODE_ENV === 'development'
 
   useEffect(() => {
-    if (auth.currentUser === null && !IS_DEV) {
-      redirect('/login')
-    }
-  }, [auth.currentUser])
+    // Suscribirse a cambios en el estado de autenticación
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user && !IS_DEV) {
+        router.push('/login');
+      }
+      setAuthChecked(true);
+    });
+
+    // Limpiar suscripción al desmontar
+    return () => unsubscribe();
+  }, [router]);
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-white border-r shadow-sm">
@@ -43,13 +53,13 @@ export function Sidebar() {
                 href={item.href}
                 className={cn(
                   "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
-                  pathname === item.href ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100",
+                  pathname?.includes(item.href) ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100",
                 )}
               >
                 <item.icon
                   className={cn(
                     "mr-3 flex-shrink-0 h-5 w-5",
-                    pathname === item.href ? "text-primary-foreground" : "text-gray-500",
+                    pathname?.includes(item.href) ? "text-primary-foreground" : "text-gray-500",
                   )}
                 />
                 {item.title}

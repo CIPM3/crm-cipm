@@ -9,6 +9,7 @@ import { useGetAgendados } from '@/hooks/agendador/useGetAgendados';
 import { useGetEstudiantes } from '@/hooks/estudiantes/clases-prueba/useGetStudents';
 import { useGetInstructores } from '@/hooks/usuarios/useGetInstructores';
 import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore';
+import { getWeek, getYear } from 'date-fns';
 import { Plus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -22,12 +23,14 @@ export interface AgendadoFormValues {
     maestro: string;
     nivel: string;
     subNivel: string;
+    anoSemana:string;
 }
 
 const Index = ({ params }: { params: { id: string } }) => {
     const [OPEN_CREATE, setOPEN_CREATE] = useState(false);
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false);
     const [OPEN_DELETE, setOPEN_DELETE] = useState(false);
+    const ActualWeek = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
 
     const [Selected, setSelected] = useState<AgendadoFormValues>({
         nombreAlumno: "",
@@ -39,11 +42,12 @@ const Index = ({ params }: { params: { id: string } }) => {
         maestro: "",
         nivel: "",
         subNivel: "",
+        anoSemana:""
     });
 
     // Obtener datos
     const { Instructores } = useGetInstructores();
-    const { Users: Estudiantes, refetch: refetchEstudiantes } = useGetEstudiantes();
+    const { Users: Estudiantes, refetch: refetchEstudiantes,loading,error } = useGetEstudiantes();
     const { Usuarios: Agendados, refetch: refetchAgendados } = useGetAgendados();
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
@@ -56,8 +60,9 @@ const Index = ({ params }: { params: { id: string } }) => {
     }, [shouldRefetch, refetchEstudiantes, refetchAgendados, resetRefetch]);
 
     // Filtrar datos por el ID del instructor
-    const estudiantesFiltrados = Estudiantes?.filter(estudiante => estudiante.maestro === params.id) || [];
-    const agendadosFiltrados = Agendados?.filter(agendado => agendado.maestro === params.id) || [];
+    const estudiantesFiltrados = Estudiantes?.filter(estudiante => estudiante.maestro === params.id && estudiante.anoSemana === ActualWeek) || [];
+    const agendadosFiltrados = Agendados?.filter(agendado => agendado.maestro === params.id && agendado.anoSemana === ActualWeek) || [];
+
 
     const Instructor = Instructores?.find(instructor => instructor.id === params.id);
 
@@ -124,6 +129,8 @@ const Index = ({ params }: { params: { id: string } }) => {
                 setOPEN_DELETE={setOPEN_DELETE}
                 setOPEN_EDIT={setOPEN_EDIT}
                 setSelected={setSelected}
+                isError={error ? true : false}
+                isloading={loading}
             />
         </div>
     );

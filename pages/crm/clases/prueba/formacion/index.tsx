@@ -72,6 +72,17 @@ const index = () => {
                         </Link>
                     </CardContent>
                 </Card>
+
+                <Card className="border-l-4 border-l-primary">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Clase Prueba</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href={'formacion/clase-prueba'}>
+                            <button className='w-full border-input border my-3 rounded-md text-[12px] p-2'>Ver horario aqui</button>
+                        </Link>
+                    </CardContent>
+                </Card>
             </div>
 
         </div>

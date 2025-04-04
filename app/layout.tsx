@@ -27,8 +27,3 @@ export default function RootLayout({
     </html>
   )
 }
-
-
-
-import './globals.css'
-import Providers from "@/components/provider/Provider"

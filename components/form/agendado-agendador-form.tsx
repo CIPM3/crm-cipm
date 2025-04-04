@@ -93,6 +93,7 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
         horario:values.horaClasePrueba,
         observaciones: "",
         maestro:selectedGroupId,
+        anoSemana: values.anoSemana
       }
 
       await createStudent(InstructorData)
@@ -107,7 +108,7 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
       diaContacto: "",
       mesContacto: "",
       quienAgendo: "",
-      modalidad: "",
+      modalidad: "Online",
       anoSemana: `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`,
       nivel: "",
       horaClasePrueba: "",
@@ -128,27 +129,27 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
       setSelectedGroupId(null);
       return;
     }
-
+  
     try {
       const date = firebaseTimestampToDate(formik.values.diaClasePrueba);
       if (!date) {
         setScheduleError("Fecha inválida");
         return;
       }
-
+  
       const weekday = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
       const selectedHour = formik.values.horaClasePrueba;
       const formattedHour = convertHourFormat(selectedHour);
       const daySchedule = schedule[weekday] || {};
       const hourData = daySchedule[formattedHour];
-
+  
       if (!hourData || hourData.length === 0) {
         setScheduleError("Horario no disponible");
         setAvailableGroups([]);
         setSelectedGroupId(null);
         return;
       }
-
+  
       // Calcular disponibilidad para cada grupo
       const groupsAvailability = hourData.map(groupId => {
         const alumnosInscritos = Usuarios?.filter(user => {
@@ -157,21 +158,21 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
           return (
             userDate?.getTime() === date.getTime() &&
             userHour === formattedHour &&
-            user.hourId === groupId
+            user.maestro === groupId // Cambiamos user.hourId por user.maestro
           );
         }).length || 0;
-
+  
         return {
           id: groupId,
           availableSlots: 6 - alumnosInscritos,
-          usageCount: groupUsage[groupId] || 0
+          alumnosInscritos: alumnosInscritos
         };
       });
-
+  
       const availableGroupsFiltered = groupsAvailability
         .filter(group => group.availableSlots > 0)
-        .sort((a, b) => a.usageCount - b.usageCount);
-
+        .sort((a, b) => b.alumnosInscritos - a.alumnosInscritos);
+  
       if (availableGroupsFiltered.length === 0) {
         setScheduleError("Todos los grupos para este horario están llenos (máximo 6 alumnos por grupo)");
         setAvailableGroups([]);
@@ -180,20 +181,11 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
         setScheduleError("");
         setAvailableGroups(availableGroupsFiltered);
         
-        // Selección equitativa y aleatoria
-        const minUsage = availableGroupsFiltered[0].usageCount;
-        const leastUsedGroups = availableGroupsFiltered.filter(g => g.usageCount === minUsage);
-        const randomGroup = leastUsedGroups[Math.floor(Math.random() * leastUsedGroups.length)];
-        
-        setSelectedGroupId(randomGroup.id);
-        const updatedUsage = {
-          ...groupUsage,
-          [randomGroup.id]: (groupUsage[randomGroup.id] || 0) + 1
-        };
-        setGroupUsage(updatedUsage);
-        localStorage.setItem('groupUsage', JSON.stringify(updatedUsage));
+        // Seleccionamos el grupo con más alumnos (el primero después del sort)
+        const mostFilledGroup = availableGroupsFiltered[0];
+        setSelectedGroupId(mostFilledGroup.id);
       }
-
+  
     } catch (error) {
       console.error("Error al validar disponibilidad:", error);
       setScheduleError("Error al verificar disponibilidad");

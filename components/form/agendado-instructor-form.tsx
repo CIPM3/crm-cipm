@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { DIA_VALS, HORARIO_VALS, NIVELES_NAVS, SUB_NIVELES_NAVS } from "@/lib/constants";
+import { DIA_VALS, HORARIO_VALS, NIVELES_NAVS, STATUS_VALS, SUB_NIVELES_NAVS } from "@/lib/constants";
 import { DatePickerDemo } from "../datePicker";
 import { Loader2 } from "lucide-react";
 import { useGetInstructores } from "@/hooks/usuarios/useGetInstructores";

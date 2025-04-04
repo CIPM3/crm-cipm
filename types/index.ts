@@ -94,7 +94,7 @@ export type AgendadorFormValues = {
     nivel: string; // Nuevo campo
     horaClasePrueba: string; // Nuevo campo (formato "HH:MM")
     diaClasePrueba: string; // Nuevo campo (formato "HH:MM")
-    maestro?:string
+    maestro?: string
 }
 
 export interface AgendadoFormProps {
@@ -122,6 +122,7 @@ export interface ClasePrubeaType {
     maestro: string | undefined;
     nivel?: string;
     subNivel?: string;
+    anoSemana?: string;
 }
 
 export interface ClasePrubeaAgendadorType {
@@ -177,7 +178,7 @@ export interface CalendarEvent {
     level: string;
     time: string;
     additionalInfo?: string;
-    anoSemana:string
+    anoSemana: string
 }
 
 export type Instructor = {
@@ -194,3 +195,18 @@ export type ScheduleData = {
         [hour: string]: TimeSlotAssignment;
     };
 };
+
+export interface FormacionDataType {
+    id?:string;
+    status: string;
+    week: string;
+    nombre: string;
+    telefono: string;
+    modalidad: string;
+    horario: string;
+    observaciones?: string;
+    fecha: Timestamp;
+    maestro: string;
+    nivel: string;
+    tipo: string
+}

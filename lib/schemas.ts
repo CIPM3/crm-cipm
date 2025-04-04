@@ -1,6 +1,7 @@
 // lib/schemas.ts
 import * as Yup from "yup";
 import { ROLES } from "@/lib/constants";
+import { Timestamp } from "firebase/firestore";
 
 // Esquema de validación para la creación de usuarios
 export const userFormSchema = Yup.object().shape({
@@ -56,6 +57,37 @@ export const agendadorSchema = Yup.object().shape({
   modalidad: Yup.string().optional(),
   horarioPresencial: Yup.string().optional(),
   anoSemana: Yup.string().required("El año y la semana son obligatorios"),
+});
+
+
+Yup.addMethod(Yup.mixed, 'isTimestamp', function(message) {
+  return this.test('is-timestamp', message, function(value) {
+    return (
+      value instanceof Timestamp || 
+      (value && typeof value === 'object' && 'seconds' in value && 'nanoseconds' in value)
+    );
+  });
+});
+
+export const agendadorSchemaFormacion = Yup.object().shape({
+  status: Yup.string().required('Status es requerido'),
+  week: Yup.string()
+    .required('Semana es requerida')
+    .matches(/^\d{4}$/, 'Formato de semana inválido (ej: 2415)'),
+  nombre: Yup.string().required('Nombre es requerido'),
+  telefono: Yup.string().required('Teléfono es requerido'),
+  modalidad: Yup.string().required('Modalidad es requerida'),
+  horario: Yup.string().required('Horario es requerido'),
+  observaciones: Yup.string().optional(),
+  fecha: Yup.mixed()
+    .test('is-timestamp', 'Debe ser un Timestamp de Firebase', (value) => {
+      return value instanceof Timestamp || 
+             (value && typeof value === 'object' && 'seconds' in value && 'nanoseconds' in value);
+    })
+    .required('Fecha es requerida'),
+  maestro: Yup.string().required('Maestro es requerido'),
+  nivel: Yup.string().required('Nivel es requerido'),
+  tipo: Yup.string().required('Tipo es requerido')
 });
 
 export const passwordSchema = Yup.object().shape({
