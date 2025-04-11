@@ -20,7 +20,7 @@ const TableAgendador = ({ setOPEN_DELETE, setOPEN_EDIT, Agendador, estudiantes, 
 
     return (
         <Table>
-            <TableCaption>Estudiantes agendados por: Luis Rios</TableCaption>
+            <TableCaption>Estudiantes agendados por: {Agendador?.name}</TableCaption>
             <TableHeader>
                 <TableRow>
                     <TableHead>Nombres</TableHead>

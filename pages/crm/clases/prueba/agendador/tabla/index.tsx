@@ -8,6 +8,7 @@ import { useGetAgendadores } from '@/hooks/agendador/useGetAgendadores'
 import { useGetAgendados } from '@/hooks/agendador/useGetAgendados'
 import { useRefetchUsuariosStore } from '@/store/useRefetchUsuariosStore'
 import { AgendadorFormValues } from '@/types'
+import { getWeek, getYear } from 'date-fns'
 import { Plus } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
@@ -26,9 +27,9 @@ const Index = ({ params }: { params: { id: string } }) => {
         mayorEdad: "", // Valor por defecto
         nivel: "", // Valor por defecto
         horaClasePrueba: "", // Valor por defecto
-        diaClasePrueba:""
+        diaClasePrueba: ""
     });
-    
+
     const { Agendadores } = useGetAgendadores()
     const { Usuarios: Estudiantes, loading, error, refetch } = useGetAgendados()
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
@@ -39,8 +40,8 @@ const Index = ({ params }: { params: { id: string } }) => {
             resetRefetch();
         }
     }, [shouldRefetch, refetch, resetRefetch]);
-
-    const agendados = Estudiantes?.filter((estudiante) => estudiante.quienAgendo === params.id) || [];
+    const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
+    const agendados = Estudiantes?.filter((estudiante) => estudiante.quienAgendo === params.id && estudiante.anoSemana === AnoSemana) || [];
     const Agendador = Agendadores?.find((instructor) => instructor.id === params.id);
 
     return (

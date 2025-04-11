@@ -77,15 +77,6 @@ export const NAVS = [
     // },
 ]
 
-export const DIA_VALS = [
-    { value: "CURSO EN VIDEO", label: "Curso en video" },
-    { value: "L-V", label: "Lunes a Viernes" },
-    { value: "PENDIENTE", label: "Pendiente" },
-    { value: "SABADO", label: "Sabado" },
-    { value: "DOMINGO", label: "Domingo" },
-    { value: "INDIVIDUAL", label: "Individual" },
-]
-
 export const STATUS_VALS = [
     {value:'CERRO',label:"CERRO"},
     {value:'NO CERRO',label:"NO CERRO"},
@@ -138,6 +129,15 @@ export const HORARIO_VALS = [
     {
         value:"PENDIENTE",label:"Pendiente",
     },
+]
+
+export const DIA_VALS = [
+    { value: "CURSO EN VIDEO", label: "Curso en video" },
+    { value: "L-V", label: "Lunes a Viernes" },
+    { value: "PENDIENTE", label: "Pendiente" },
+    { value: "SABADO", label: "Sabado" },
+    { value: "DOMINGO", label: "Domingo" },
+    { value: "INDIVIDUAL", label: "Individual" },
 ]
 
 export const NIVELES_NAVS = [

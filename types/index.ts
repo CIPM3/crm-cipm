@@ -197,7 +197,7 @@ export type ScheduleData = {
 };
 
 export interface FormacionDataType {
-    id?:string;
+    id?: string;
     status: string;
     week: string;
     nombre: string;
