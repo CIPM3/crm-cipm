@@ -77,18 +77,15 @@ export function ExtendedRechartCard({
   type,
   dataKey,
   nameKey,
-  colors = ["#8884d8"],
+  colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088fe"],
   barOrientation = "vertical",
   innerRadius = 40,
   outerRadius = 80,
 }: ExtendedChartCardProps) {
-  // Si la gráfica es de barras y la orientación es horizontal:
-  //   usamos layout="vertical" y la key de Y es nameKey
-  //   la key de X es dataKey
-  // Si es barras verticales:
-  //   layout por defecto y X es nameKey
-  //   la key de Y es dataKey
   const isHorizontal = type === "bar" && barOrientation === "horizontal"
+
+  // Mezclar colores aleatoriamente
+  const shuffledColors = [...colors].sort(() => Math.random() - 0.5)
 
   return (
     <Card>
@@ -101,8 +98,7 @@ export function ExtendedRechartCard({
           {type === "bar" ? (
             <BarChart
               data={data}
-              layout={isHorizontal ? "vertical" : "horizontal"} // "horizontal" es el default,
-              // pero si layout="vertical", interpretará ejes al revés
+              layout={isHorizontal ? "vertical" : "horizontal"}
             >
               <CartesianGrid strokeDasharray="3 3" />
               {isHorizontal ? (
@@ -117,7 +113,14 @@ export function ExtendedRechartCard({
                 </>
               )}
               <Tooltip />
-              <Bar dataKey={dataKey} fill={colors[0]} />
+              <Bar dataKey={dataKey}>
+                {data.map((_, index) => (
+                  <Cell
+                    key={`bar-${index}`}
+                    fill={shuffledColors[index % shuffledColors.length]}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           ) : (
             <PieChart>
@@ -129,10 +132,10 @@ export function ExtendedRechartCard({
                 outerRadius={outerRadius}
                 label
               >
-                {data.map((entry, index) => (
+                {data.map((_, index) => (
                   <Cell
                     key={`pie-${index}`}
-                    fill={colors[index % colors.length]}
+                    fill={shuffledColors[index % shuffledColors.length]}
                   />
                 ))}
               </Pie>

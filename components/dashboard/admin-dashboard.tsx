@@ -1,201 +1,187 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { students, courses, enrollments, tasks } from "@/lib/utils"
-import { Users, BookOpen, CheckSquare, TrendingUp } from "lucide-react"
+import { StatCard } from "@/components/card/stat-card"
+import { ExtendedRechartCard } from "@/components/chart/instructor/rechartCard"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useGetAgendados } from "@/hooks/agendador/useGetAgendados"
+import { useGetInstructores } from "@/hooks/usuarios/useGetInstructores"
+import { useGetFormacionStudents } from "@/hooks/formacion/useGetStudentsFormacion"
+import { useMemo } from "react"
+import { generarEstadisticas, generarEstadisticasCierres } from "@/lib/estadisticas.logic"
+import { getWeek, getYear } from "date-fns"
+import { useGetAgendadores } from "@/hooks/agendador/useGetAgendadores"
+
+const COLORS = ['#82ca9d', '#0080ff', '#4b5563', '#000000', '#ffc403']
 
 export function AdminDashboard() {
-  // Calculate summary metrics
-  const totalStudents = students.length
-  const totalCourses = courses.length
-  const activeCourses = courses.filter((course) => course.status === "Activo").length
-  const totalEnrollments = enrollments.length
-  const pendingTasks = tasks.filter((task) => task.status !== "Completado").length
+  const { Usuarios: Agendados, loading: loadingAgendados } = useGetAgendados()
+  const { Instructores, loading: loadingInstructores } = useGetInstructores()
+  const { FormacionData, loading: loadingFormacion } = useGetFormacionStudents()
+  const { Agendadores, loading: loadingAgendadores } = useGetAgendadores()
 
-  // Data for course status chart
-  const courseStatusData = [
-    { name: "Activos", value: activeCourses },
-    { name: "Inactivos", value: totalCourses - activeCourses },
-  ]
+  const isLoading = loadingAgendados || loadingInstructores || loadingFormacion || loadingAgendadores
 
-  // Data for enrollment status chart
-  const enrollmentStatus = enrollments.reduce(
-    (acc, enrollment) => {
-      acc[enrollment.status] = (acc[enrollment.status] || 0) + 1
+  // Mapeo de usuarios
+  const usuariosMap = Instructores.reduce((acc, user) => {
+    acc[user.id] = user.name
+    return acc
+  }, {} as Record<string, string>)
+
+  // Generar estadísticas combinadas
+  const estadisticasAgendador = useMemo(() => {
+    const porAgendador = Agendadores.reduce((acc, user) => {
+      const totalAgendados = Agendados.filter((agendado) => agendado.quienAgendo === user.id).length
+      acc.push({ nombre: user.name, total: totalAgendados })
       return acc
-    },
-    {} as Record<string, number>,
-  )
+    }, [] as { nombre: string; total: number }[])
+    return {
+      porAgendador,
+    } as const
+  }, [Agendadores, Agendados])
 
-  const enrollmentStatusData = Object.entries(enrollmentStatus).map(([name, value]) => ({
-    name,
-    value,
-  }))
+  const estadisticasCierre = useMemo(() => generarEstadisticasCierres(FormacionData, usuariosMap), [FormacionData])
+  const estadisticasAgendados = useMemo(() => generarEstadisticas(Agendados, usuariosMap), [Agendados])
+  const estadisticasFormacion = useMemo(() => generarEstadisticas(FormacionData, usuariosMap), [FormacionData])
 
-  // Data for monthly enrollments chart
-  const monthlyEnrollmentsData = [
-    { name: "Ene", value: 12 },
-    { name: "Feb", value: 15 },
-    { name: "Mar", value: 18 },
-    { name: "Abr", value: 14 },
-    { name: "May", value: 10 },
-    { name: "Jun", value: 8 },
-    { name: "Jul", value: 5 },
-    { name: "Ago", value: 9 },
-    { name: "Sep", value: 16 },
-    { name: "Oct", value: 22 },
-  ]
-
-  // Colors for pie chart
-  const COLORS = ["#0088FE", "#FFBB28", "#00C49F", "#FF8042", "#8884D8"]
+  // Datos generales
+  const totalAgendados = Agendados.length
+  const totalFormacion = FormacionData.length
+  const totalInstructores = Instructores.length
+  const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
 
   return (
     <div className="space-y-6">
+      {/* Tarjetas de estadísticas generales */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-l-4 border-l-primary">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Estudiantes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalStudents}</div>
-            <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-secondary">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cursos Activos</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeCourses}</div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round((activeCourses / totalCourses) * 100)}% del total de cursos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-primary">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Inscripciones</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEnrollments}</div>
-            <p className="text-xs text-muted-foreground">+5 desde el mes pasado</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-secondary">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tareas Pendientes</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round((pendingTasks / tasks.length) * 100)}% del total de tareas
-            </p>
-          </CardContent>
-        </Card>
+        {isLoading ? (
+          <>
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </>
+        ) : (
+          <>
+            <StatCard
+              borderColorClass="border-l-blue-500"
+              icon={<span className="h-4 w-4 text-blue-500">📅</span>}
+              title="Total Agendados"
+              value={totalAgendados}
+              description="Eventos agendados en el sistema"
+            />
+            <StatCard
+              borderColorClass="border-l-green-500"
+              icon={<span className="h-4 w-4 text-green-500">👨‍🏫</span>}
+              title="Total Formación"
+              value={totalFormacion}
+              description="Estudiantes en formación"
+            />
+            <StatCard
+              borderColorClass="border-l-purple-500"
+              icon={<span className="h-4 w-4 text-purple-500">👥</span>}
+              title="Total Instructores"
+              value={totalInstructores}
+              description="Instructores registrados"
+            />
+            <StatCard
+              borderColorClass="border-l-amber-500"
+              icon={<span className="h-4 w-4 text-amber-500">📆</span>}
+              title="Semana Actual"
+              value={AnoSemana}
+              description="Periodo actual"
+            />
+          </>
+        )}
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Inscripciones Mensuales</CardTitle>
-            <CardDescription>Tendencia de inscripciones en los últimos 10 meses</CardDescription>
-          </CardHeader>
-          <CardContent className="h-80 min-h-[320px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyEnrollmentsData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => [value, "Inscripciones"]} />
-                <Bar dataKey="value" fill="#0066FF" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Estado de Cursos</CardTitle>
-            <CardDescription>Distribución de cursos por estado</CardDescription>
-          </CardHeader>
-          <CardContent className="h-80 min-h-[320px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={courseStatusData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  <Cell fill="#0066FF" />
-                  <Cell fill="#FFBB28" />
-                </Pie>
-                <Tooltip formatter={(value) => [value, "Cursos"]} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Actividades Recientes</CardTitle>
-            <CardDescription>Últimas actualizaciones de la plataforma</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 rounded-md border p-4">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">Nuevo estudiante registrado</p>
-                  <p className="text-sm text-muted-foreground">Roberto Martínez se ha registrado en la plataforma</p>
-                  <p className="text-xs text-muted-foreground">Hace 2 días</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 rounded-md border p-4">
-                <div className="rounded-full bg-secondary/10 p-2">
-                  <BookOpen className="h-4 w-4 text-secondary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">Curso actualizado</p>
-                  <p className="text-sm text-muted-foreground">
-                    Se ha actualizado el contenido del curso "Certificación PMP - Preparación"
-                  </p>
-                  <p className="text-xs text-muted-foreground">Hace 3 días</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 rounded-md border p-4">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <CheckSquare className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">Tarea completada</p>
-                  <p className="text-sm text-muted-foreground">Revisión de calificaciones del curso de Liderazgo</p>
-                  <p className="text-xs text-muted-foreground">Hace 5 días</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Gráficas combinadas */}
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 mt-8">
+        {isLoading ? (
+          <>
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </>
+        ) : (
+          <>
+            <ExtendedRechartCard
+              title="Agendados por Semana"
+              description="Cantidad de eventos agendados por semana"
+              data={estadisticasAgendados.porSemana}
+              type="bar"
+              dataKey="total"
+              nameKey="week"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución de Cierre"
+              description="Estados de los cierres"
+              data={estadisticasCierre.porStatus}
+              type="pie"
+              dataKey="total"
+              nameKey="status"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Horario"
+              description="Frecuencia de horarios agendados"
+              data={estadisticasAgendados.porHorario}
+              type="pie"
+              dataKey="total"
+              nameKey="horario"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Instructor"
+              description="Eventos asignados por maestro"
+              data={estadisticasFormacion.porMaestro}
+              type="bar"
+              dataKey="total"
+              nameKey="maestro"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Nivel"
+              description="Niveles registrados en formación"
+              data={estadisticasFormacion.porNivel}
+              type="pie"
+              dataKey="total"
+              nameKey="nivel"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Modalidad"
+              description="Modalidades de formación (Online, Presencial, etc.)"
+              data={estadisticasFormacion.porTipo}
+              type="pie"
+              dataKey="total"
+              nameKey="tipo"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Agendador"
+              description="Eventos asignados por el agendador"
+              data={estadisticasAgendador.porAgendador}
+              type="bar"
+              dataKey="total"
+              nameKey="nombre"
+              colors={COLORS}
+            />
+            <ExtendedRechartCard
+              title="Distribución por Edad"
+              description="Frecuencia de edades de los estudiantes"
+              data={estadisticasAgendados.porEdad}
+              type="bar"
+              dataKey="total"
+              nameKey="tipo"
+              colors={COLORS}
+            />
+          </>
+        )}
       </div>
     </div>
   )
 }
-

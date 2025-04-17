@@ -13,7 +13,10 @@ import { getWeek, getYear } from "date-fns"
 import { useAuthStore } from "@/store/useAuthStore"
 import BarSemanaChart from "@/components/chart/agendados/semana-chart"
 import { StatCard } from "@/components/card/stat-card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ExtendedRechartCard } from "../chart/instructor/rechartCard"
 
+const COLORS = ['#82ca9d', '#0080ff', '#4b5563', '#000000', '#ffc403']
 
 const generarEstadisticas = (agendados: any[], usuariosMap: Record<string, string>) => {
   const porSemana: Record<string, number> = {};
@@ -50,15 +53,14 @@ const generarEstadisticas = (agendados: any[], usuariosMap: Record<string, strin
 };
 
 export function AgendadorDashboard() {
-
-  const { Usuarios: Agendados, loading, error } = useGetAgendados()
-  const { Agendadores, loading: loadingAg, error: errorAg } = useGetAgendadores()
-  const User = useAuthStore((state) => state.user)
+  const { Usuarios: Agendados, loading, error } = useGetAgendados();
+  const { Agendadores, loading: loadingAg, error: errorAg } = useGetAgendadores();
+  const User = useAuthStore((state) => state.user);
 
   const agendadosFiltered = Agendados.filter((agendado) => {
-    if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados
-    else return agendado.quienAgendo === User?.id
-  })
+    if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
+    else return agendado.quienAgendo === User?.id;
+  });
 
   const usuariosMap = Agendadores.reduce((acc, user) => {
     acc[user.id] = user.name;
@@ -67,48 +69,91 @@ export function AgendadorDashboard() {
 
   const estadisticas = useMemo(() => generarEstadisticas(agendadosFiltered, usuariosMap), [agendadosFiltered]);
 
-  // Datos simulados para el agendador
-  const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
-  const pendingSchedules = Agendados.length
-  const completedSchedules = Agendados.filter((agendado) => agendado.anoSemana === AnoSemana).length
+  const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`;
+  const pendingSchedules = Agendados.length;
+  const completedSchedules = Agendados.filter((agendado) => agendado.anoSemana === AnoSemana).length;
 
   return (
     <div className="space-y-6">
+      {/* Estadísticas principales */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
-
-        <StatCard
-          borderColorClass="border-l-blue-500"
-          icon={<Clock className="h-4 w-4 text-blue-500" />}
-          title="Agendados"
-          value={pendingSchedules}
-          description="Eventos por programar"
-        />
-
-        <StatCard
-          borderColorClass="border-l-green-500"
-          icon={<CheckCircle className="h-4 w-4 text-green-500" />}
-          title="Agendados esta semana"
-          value={completedSchedules}
-          description={`Semana: ${AnoSemana}`}
-        />
-
+        {loading ? (
+          <>
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </>
+        ) : (
+          <>
+            <StatCard
+              borderColorClass="border-l-blue-500"
+              icon={<Clock className="h-4 w-4 text-blue-500" />}
+              title="Agendados"
+              value={pendingSchedules}
+              description="Eventos por programar"
+            />
+            <StatCard
+              borderColorClass="border-l-green-500"
+              icon={<CheckCircle className="h-4 w-4 text-green-500" />}
+              title="Agendados esta semana"
+              value={completedSchedules}
+              description={`Semana: ${AnoSemana}`}
+            />
+          </>
+        )}
       </div>
 
+      {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
-
-        {/* Alumnos por semana */}
-        <BarSemanaChart estadisticas={estadisticas.porSemana} />
-
-        {/* Por horario */}
-        <PieHorarioChart horario={estadisticas.porHorario} />
-
-        {/* Por Tipo */}
-        <PieTipoChart tipo={estadisticas.porTipo} />
-
-        {/* Por Edad */}
-        <PieEdadChart edad={estadisticas.porEdad} />
+        {loading ? (
+          <>
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </>
+        ) : (
+          <>
+            <div className="col-span-1 md:col-span-2 xl:col-span-3">
+              <ExtendedRechartCard
+                title="Agendados por Semana"
+                description="Cantidad de eventos agendados por semana"
+                data={estadisticas.porSemana}
+                type="bar"
+                dataKey="total"
+                nameKey="week"
+                colors={COLORS}
+              />
+            </div>
+            <ExtendedRechartCard
+                title="Distribucion por Horario"
+                description="Horarios de clases mas comunes"
+                data={estadisticas.porHorario}
+                type="pie"
+                dataKey="total"
+                nameKey="horario"
+                colors={COLORS}
+              />
+              <ExtendedRechartCard
+                title="Distribucion por Horario"
+                description="Horarios de clases mas comunes"
+                data={estadisticas.porTipo}
+                type="pie"
+                dataKey="total"
+                nameKey="tipo"
+                colors={COLORS}
+              />
+              <ExtendedRechartCard
+                title="Distribucion por Horario"
+                description="Horarios de clases mas comunes"
+                data={estadisticas.porEdad}
+                type="pie"
+                dataKey="total"
+                nameKey="tipo"
+                colors={COLORS}
+              />
+          </>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
