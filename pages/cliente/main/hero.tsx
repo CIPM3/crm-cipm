@@ -13,7 +13,7 @@ const Hero = () => {
             <BoxReveal
               boxColor='transparent'
             >
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              <h1 className="text-3xl text-center md:text-start font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Una forma diferente
                 de aprender ingles
               </h1>
@@ -22,7 +22,7 @@ const Hero = () => {
               boxColor='transparent'
               duration={0.9}
             >
-              <p className="text-muted-foreground md:text-xl">
+              <p className="text-muted-foreground text-center md:text-start md:text-xl">
                 Aprende con los mejores profesionales del sector y obtén certificaciones reconocidas
                 internacionalmente. Impulsa tu carrera con nuestros cursos especializados.
               </p>
@@ -30,17 +30,17 @@ const Hero = () => {
             <BoxReveal
               boxColor='#0080ff'
             >
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" asChild>
-                  <Link href="/register">
-                    Comenzar Ahora
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="#cursos">Ver Cursos</Link>
-                </Button>
-              </div>
+              <div className="flex flex-col justify-center sm:flex-row gap-4">
+                  <Button size="lg" asChild>
+                    <Link href="/register">
+                      Comenzar Ahora
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="#cursos">Ver Cursos</Link>
+                  </Button>
+                </div>
             </BoxReveal>
 
           </div>
