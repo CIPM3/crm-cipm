@@ -48,8 +48,10 @@ export default function ContentDetailPage({ params }: { params: { id: string; co
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" asChild>
           <Link href={`/cursos/${params.id}`}>
-            <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Volver al curso</span>
+            <span>
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Volver al curso</span>
+            </span>
           </Link>
         </Button>
         <div>

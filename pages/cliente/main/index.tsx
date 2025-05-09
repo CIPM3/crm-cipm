@@ -17,10 +17,10 @@ export default function HomePage() {
       <main className="flex-1">
         <Hero/>
 
-        {/* <Caracteristicas/>
-
+        <Caracteristicas/>
+        
         <CursosDestacados/>
-
+        {/*
         <VideosDestacados/>
 
         <Testimonios/>

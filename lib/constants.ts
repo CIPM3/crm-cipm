@@ -25,13 +25,13 @@ export const ADMIN_NAVS = [
     //   {
     //     title: "Estudiantes",
     //     href: "/admin/estudiantes",
-    //     icon: Users,
+    //     icon: Users,s
     //   },
-    //   {
-    //     title: "Cursos",
-    //     href: "/admin/cursos",
-    //     icon: BookOpen,
-    //   },
+      {
+        title: "Cursos",
+        href: "/admin/cursos",
+        icon: BookOpen,
+      },
     //   {
     //     title: "Contenido",
     //     href: "/admin/contenido",

@@ -86,7 +86,7 @@ export default function NewCoursePage() {
                     type="number"
                     min="0"
                     step="0.01"
-                    placeholder="2500"
+                    placeholder="2,500"
                     className="pl-10"
                     required
                   />
@@ -159,4 +159,3 @@ export default function NewCoursePage() {
     </div>
   )
 }
-

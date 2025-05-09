@@ -1,4 +1,7 @@
+
 import type React from "react"
+import { useEffect } from "react"
+import { useRouter } from "next/router"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 
@@ -22,4 +25,3 @@ export default function AdminLayout({
     </div>
   )
 }
-

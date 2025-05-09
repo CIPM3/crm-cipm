@@ -50,7 +50,14 @@ const CursoCard = ({ curso, type }: Props) => {
           ? (
             <CardFooter className="flex justify-between">
               <div className="text-lg font-bold">${curso.price.toLocaleString()}</div>
-              <Button>Ver Detalles</Button>
+              <Button>
+                <Link
+                  //href={`/cursos/${curso.id}`}
+                  href={'/'}
+                >
+                  Ver Detalles
+                </Link>
+              </Button>
             </CardFooter>)
           : (
             <div className="flex justify-between gap-2 px-4 mb-2">
