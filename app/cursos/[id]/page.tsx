@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -8,13 +9,20 @@ import { ArrowLeft, BookOpen, CheckCircle, Clock, FileText, Play, Star, Video } 
 import { Badge } from "@/components/ui/badge"
 import HeaderCliente from "@/components/header/header-cliente"
 import Footer from "@/pages/cliente/main/footer"
+import { useFetchCourses, useGetCourseById } from "@/hooks/cursos"
+import CursoCard from "@/components/card/curso-card"
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
-  const course = getCourseById(params.id)
+  //const course = getCourseById(params.id)
 
-  if (!course || course.status !== "Activo") {
-    notFound()
-  }
+  const {course,loading,error} = useGetCourseById(params.id)
+  const {courses,loading:LoadingCourses,error:errorCourses} = useFetchCourses()
+
+  if (loading) return <div>Cargando...</div>
+  if (error) return <div>Error al cargar el curso</div>
+  if (!course) return <div>Curso no encontrado</div>
+
+  const Thumbnail = course.thumbnail || "/placeholder.svg?height=200&width=400&text=Curso"
 
   const modules = getModulesByCourseId(course.id).filter((module) => module.status === "Activo")
 
@@ -30,8 +38,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     },
     { videos: 0, documents: 0, quizzes: 0 },
   )
-
-  const courses = getCourses()
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -113,10 +119,10 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
             </div>
 
             <div>
-              <Card>
+              <Card className="overflow-hidden shadow-lg">
                 <div className="aspect-video w-full overflow-hidden">
                   <img
-                    src={`/placeholder.svg?height=200&width=400&text=${encodeURIComponent(course.title)}`}
+                    src={Thumbnail}
                     alt={course.title}
                     className="h-full w-full object-cover"
                   />
@@ -374,27 +380,10 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
                 .slice(0, 3)
                 .map((relatedCourse) => (
                   <Link href={`/cursos/${relatedCourse.id}`} key={relatedCourse.id}>
-                    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video w-full overflow-hidden bg-muted">
-                        <img
-                          src={`/placeholder.svg?height=150&width=300&text=${encodeURIComponent(relatedCourse.title)}`}
-                          alt={relatedCourse.title}
-                          className="h-full w-full object-cover transition-transform hover:scale-105"
-                        />
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="line-clamp-2">{relatedCourse.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-primary text-primary" />
-                            <span className="text-sm font-medium">{relatedCourse.rating}</span>
-                          </div>
-                          <div className="text-lg font-bold">${relatedCourse.price.toLocaleString()}</div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <CursoCard
+                      curso={relatedCourse}
+                      type="cliente"
+                    />
                   </Link>
                 ))}
             </div>

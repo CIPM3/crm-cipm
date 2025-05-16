@@ -19,7 +19,7 @@ export function CursoTabs({
 }) {
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
-      <TabsList className="flex flex-wrap">
+      <TabsList className="flex overflow-x-auto">
         <TabsTrigger value="overview">Resumen</TabsTrigger>
         <TabsTrigger value="modules">Módulos</TabsTrigger>
         <TabsTrigger value="content">Contenido</TabsTrigger>

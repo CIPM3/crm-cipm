@@ -13,7 +13,7 @@ const Hero = () => {
             <BoxReveal
               boxColor='transparent'
             >
-              <h1 className="text-3xl text-center md:text-start font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              <h1 className="text-3xl text-center md:text-start font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
                 Una forma diferente
                 de aprender ingles
               </h1>

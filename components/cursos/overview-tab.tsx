@@ -14,6 +14,8 @@ export function OverviewTab({
   enrollments: any[]
   handleTabChange: (value: string) => void
 }) {
+  const Thumbnail = course?.thumbnail!! || "/placeholder.svg?height=200&width=400&text=Curso"
+
   return (
     <Card>
       <CardHeader>
@@ -23,7 +25,7 @@ export function OverviewTab({
         <div className="space-y-4">
           <div className="aspect-video bg-muted rounded-lg overflow-hidden">
             <img
-              src={`/placeholder.svg?height=400&width=800&text=${encodeURIComponent(course.title)}`}
+              src={Thumbnail}
               alt={course.title}
               className="w-full h-full object-cover"
             />

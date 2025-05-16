@@ -3,21 +3,32 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCourseById } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 import { CursoForm, type CursoFormValues } from "@/components/form/curso-form"
+import { useGetCourseById, useUpdateCourse } from "@/hooks/cursos"
 
 export default function EditCursoPage({ params }: { params: { id: string } }) {
   const router = useRouter()
 
   // Obtener el curso por ID
-  const course = getCourseById(params.id)
+  const { course, loading, error } = useGetCourseById(params.id)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const {update:UpdateCurso} = useUpdateCourse()
+
+  // Renderizar contenido basado en el estado
+  if (loading) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso: {error.message}</div>
+  }
 
   if (!course) {
-    notFound()
+    return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
   }
 
   // Preparar los valores iniciales para el formulario
@@ -30,17 +41,12 @@ export default function EditCursoPage({ params }: { params: { id: string } }) {
     type: course.type as "Online" | "Presencial" | "Híbrido",
   }
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (values: CursoFormValues) => {
     setIsSubmitting(true)
 
     try {
-      // Aquí iría la lógica para actualizar el curso en la base de datos
-      console.log("Actualizando curso:", values)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await UpdateCurso(params.id, values)
 
       // Redirigir a la página de detalle del curso
       router.push(`/admin/cursos/${params.id}`)

@@ -14,7 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Trash2 } from "lucide-react"
+import { Loader2, Trash2 } from "lucide-react"
+import { useDeleteCourse } from "@/hooks/cursos"
 
 interface DeleteCursoDialogProps {
   cursoId: string
@@ -34,16 +35,13 @@ export function DeleteCursoDialog({
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const { remove } = useDeleteCourse()
 
   const handleDelete = async () => {
     setIsDeleting(true)
 
     try {
-      // Aquí iría la lógica para eliminar el curso de la base de datos
-      console.log("Eliminando curso:", cursoId)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await remove(cursoId)
 
       // Redirigir a la página de cursos
       router.push("/admin/cursos")
@@ -82,7 +80,11 @@ export function DeleteCursoDialog({
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? "Eliminando..." : "Eliminar"}
+            {isDeleting ? (
+              <span className="flex items-center">
+                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                 Eliminando...
+              </span>) : "Eliminar"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

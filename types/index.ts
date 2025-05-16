@@ -210,3 +210,58 @@ export interface FormacionDataType {
     nivel: string;
     tipo: string
 }
+
+// types/Course.ts
+export interface Course {
+  id: string
+  title: string
+  description: string
+  price: number
+  duration: string
+  status: 'Activo' | 'Inactivo'
+  enrollments: number
+  rating: number
+  modules: string[]
+}
+
+// types/Module.ts
+export interface Module {
+  id: string
+  courseId: string
+  title: string
+  order: number
+  status: 'Activo' | 'Inactivo'
+  content: ContentItem[]
+}
+
+export type ContentItem =
+  | {
+      id: string
+      type: 'video'
+      title: string
+      duration: string
+      url: string
+    }
+  | {
+      id: string
+      type: 'document'
+      title: string
+      url: string
+    }
+  | {
+      id: string
+      type: 'quiz'
+      title: string
+      questions: number
+    }
+
+// types/Enrollment.ts
+export interface Enrollment {
+  id: string
+  studentId: string
+  courseId: string
+  enrollmentDate: string // formato ISO string
+  status: 'En progreso' | 'Completado'
+  progress: number
+  lastAccess: string // formato ISO string
+}

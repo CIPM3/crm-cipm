@@ -1,37 +1,30 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { notFound } from "next/navigation"
-import { getCourseById, getModulesByCourseId, getEnrollmentsByCourseId } from "@/lib/utils"
+import { getModulesByCourseId, getEnrollmentsByCourseId } from "@/lib/utils"
 import { CursoHeader } from "@/components/cursos/curso-header"
 import { CursoInfo } from "@/components/cursos/curso-info"
 import { CursoTabs } from "@/components/cursos/curso-tabs"
+import { useGetCourseById } from "@/hooks/cursos"
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tabParam = searchParams?.get("tab")
 
-  const course = getCourseById(params.id)
+  const { course, loading, error } = useGetCourseById(params.id)
 
-  if (!course) {
-    notFound()
-  }
-
-  const modules = getModulesByCourseId(course.id)
-  const enrollments = getEnrollmentsByCourseId(course.id)
-
+  // Hooks de estado
   const [activeTab, setActiveTab] = useState("overview")
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    title: course.title,
-    description: course.description,
-    price: course.price.toString(),
-    duration: course.duration,
-    status: course.status,
+    title: "",
+    description: "",
+    price: "",
+    duration: "",
+    status: "",
   })
 
   // Establecer la pestaña activa basada en el parámetro de URL
@@ -41,18 +34,21 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     }
   }, [tabParam])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleStatusChange = (checked: boolean) => {
-    setFormData((prev) => ({ ...prev, status: checked ? "Activo" : "Inactivo" }))
-  }
+  // Actualizar formData cuando el curso esté disponible
+  useEffect(() => {
+    if (course) {
+      setFormData({
+        title: course.title || "",
+        description: course.description || "",
+        price: course.price?.toString() || "",
+        duration: course.duration || "",
+        status: course.status || "",
+      })
+    }
+  }, [course])
 
   const handleSave = () => {
     // Aquí iría la lógica para guardar los cambios
-    // En una implementación real, esto actualizaría la base de datos
     setIsEditing(false)
   }
 
@@ -62,9 +58,25 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     router.push(`/admin/cursos/${params.id}?tab=${value}`)
   }
 
+  // Renderizar contenido basado en el estado
+  if (loading) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso: {error.message}</div>
+  }
+
+  if (!course) {
+    return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
+  }
+
+  // Obtener módulos y estudiantes solo si el curso existe
+  const modules = getModulesByCourseId(course.id)
+  const enrollments = getEnrollmentsByCourseId(course.id)
+
   return (
     <div className="space-y-6">
-    
       <CursoHeader
         course={course}
         isEditing={isEditing}

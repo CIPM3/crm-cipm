@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -11,21 +9,47 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Save, BookOpen, DollarSign, Clock } from "lucide-react"
+import { ArrowLeft, Save, BookOpen, DollarSign, Clock, Loader2 } from "lucide-react"
+import { useCreateCourse } from "@/hooks/cursos"
 
 export default function NewCoursePage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { create, loading, error } = useCreateCourse()
   const router = useRouter()
+  const [formError, setFormError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    setFormError(null)
 
-    // Simulación de envío de datos
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const formData = new FormData(e.currentTarget)
+    const course = {
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      price: parseFloat(formData.get("price") as string),
+      duration: formData.get("duration") as string,
+      status: formData.get("status") as string,
+      type: formData.get("type") as string,
+      thumbnail: formData.get("thumbnail") as string,
+      featured: formData.get("featured") === "on",
+    }
 
-    // Redireccionar a la lista de cursos
-    router.push("/admin/cursos")
+    // Validaciones
+    if (!course.title || !course.description || !course.price || !course.duration) {
+      setFormError("Todos los campos obligatorios deben ser completados.")
+      return
+    }
+
+    if (isNaN(course.price) || course.price <= 0) {
+      setFormError("El precio debe ser un número mayor a 0.")
+      return
+    }
+
+    try {
+      await create(course)
+      router.push("/admin/cursos")
+    } catch (err) {
+      setFormError("Ocurrió un error al guardar el curso. Inténtalo nuevamente.")
+    }
   }
 
   return (
@@ -49,6 +73,9 @@ export default function NewCoursePage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {formError && <p className="text-red-500 text-sm">{formError}</p>}
+            {error && <p className="text-red-500 text-sm">{error.message}</p>}
+
             <div className="space-y-2">
               <Label htmlFor="title">Título del Curso</Label>
               <div className="relative">
@@ -148,9 +175,15 @@ export default function NewCoursePage() {
               <Button type="button" variant="outline" asChild>
                 <Link href="/admin/cursos">Cancelar</Link>
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={loading}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSubmitting ? "Guardando..." : "Guardar Curso"}
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin size-5 mr-2" /> Guardando...
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </Button>
             </div>
           </form>

@@ -13,11 +13,14 @@ interface Props {
 }
 
 const CursoCard = ({ curso, type }: Props) => {
+
+  const Thumbnail = curso?.thumbnail!! || "/placeholder.svg?height=200&width=400&text=Curso"
+
   return (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video w-full overflow-hidden bg-muted">
         <img
-          src={`/placeholder.svg?height=200&width=400&text=${encodeURIComponent(curso.title)}`}
+          src={Thumbnail}
           alt={curso.title}
           className="h-full w-full object-cover transition-transform hover:scale-105"
         />
@@ -25,7 +28,7 @@ const CursoCard = ({ curso, type }: Props) => {
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="line-clamp-2">{curso.title}</CardTitle>
-          <Badge>{curso.type || "Online"}</Badge>
+          <Badge className={`${curso.status === "Activo" ? "bg-blue-500" : "bg-yellow-500"}`}>{curso.status || "Online"}</Badge>
         </div>
       </CardHeader>
       <CardContent>

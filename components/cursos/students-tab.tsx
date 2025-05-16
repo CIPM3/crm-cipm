@@ -7,9 +7,9 @@ import Link from "next/link"
 export function StudentsTab({ enrollments }: { enrollments: any[] }) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 items-center justify-between">
         <h3 className="text-lg font-medium">Estudiantes Inscritos</h3>
-        <Button size="sm">
+        <Button size="sm" className="max-w-fit  ml-auto">
           <Plus className="mr-2 h-4 w-4" />
           Inscribir Estudiante
         </Button>

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DialogFooter } from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
 
 // Esquema de validación para el formulario
 const cursoFormSchema = z.object({
@@ -191,7 +192,12 @@ export function CursoForm({ initialValues, onSubmit, onCancel }: CursoFormProps)
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : initialValues ? "Actualizar Curso" : "Crear Curso"}
+            {isSubmitting ? (
+              <span className="flex items-center">
+                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                Guardando...
+              </span>
+            ) : initialValues ? "Actualizar Curso" : "Crear Curso"}
           </Button>
         </DialogFooter>
       </form>
