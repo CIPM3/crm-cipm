@@ -8,6 +8,7 @@ import { CursoHeader } from "@/components/cursos/curso-header"
 import { CursoInfo } from "@/components/cursos/curso-info"
 import { CursoTabs } from "@/components/cursos/curso-tabs"
 import { useGetCourseById } from "@/hooks/cursos"
+import { useGetModulesByCourseId } from "@/hooks/modulos"
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   const tabParam = searchParams?.get("tab")
 
   const { course, loading, error } = useGetCourseById(params.id)
+  const { modules } = useGetModulesByCourseId(params.id)
 
   // Hooks de estado
   const [activeTab, setActiveTab] = useState("overview")
@@ -70,9 +72,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   if (!course) {
     return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
   }
-
   // Obtener módulos y estudiantes solo si el curso existe
-  const modules = getModulesByCourseId(course.id)
   const enrollments = getEnrollmentsByCourseId(course.id)
 
   return (

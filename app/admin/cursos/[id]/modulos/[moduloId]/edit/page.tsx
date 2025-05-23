@@ -1,21 +1,32 @@
 "use client"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCourseById, getModulesByCourseId } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 import { ModuloForm, type ModuloFormValues } from "@/components/form/modulo-form"
+import { useGetCourseById } from "@/hooks/cursos"
+import { useGetModulesByCourseId, useUpdateModule } from "@/hooks/modulos"
 
 export default function EditModuloPage({ params }: { params: { id: string; moduloId: string } }) {
   const router = useRouter()
-  const course = getCourseById(params.id)
-  const modules = getModulesByCourseId(params.id)
+
+  const { course, loading, error } = useGetCourseById(params.id)
+  const { modules, loading:loadingMM,error:errorMM } = useGetModulesByCourseId(params.id)
   const module = modules.find((m) => m.id === params.moduloId)
 
+  const {update} = useUpdateModule()
+
+  if (loading || loadingMM) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error || errorMM) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso</div>
+  }
+
   if (!course || !module) {
-    notFound()
+    return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
   }
 
   // Preparar los valores iniciales para el formulario
@@ -29,10 +40,12 @@ export default function EditModuloPage({ params }: { params: { id: string; modul
   const handleSubmit = async (values: ModuloFormValues) => {
     try {
       // Aquí iría la lógica para actualizar el módulo en la base de datos
-      console.log("Actualizando módulo:", values)
+      let data = {
+        ...values,
+        moduleId: params.moduloId,
+      }
 
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await update(module.id,data)
 
       // Redirigir a la página del curso
       router.push(`/admin/cursos/${params.id}?tab=modules`)

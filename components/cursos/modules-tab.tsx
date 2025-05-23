@@ -6,14 +6,15 @@ import Link from "next/link"
 import { DeleteModuloDialog } from "@/components/dialog/delete-modulo-dialog"
 
 export function ModulesTab({ modules, params, router }: { modules: any[]; params: { id: string }; router: any }) {
+  const modulesSorted = modules.sort((a, b) => a.order - b.order)
+  const modulesActive = modulesSorted.filter((module) => module.status === "Activo")
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Módulos del Curso</h3>
         <Button size="sm" asChild>
           <Link 
-            //href={`/admin/cursos/${params.id}/modulos/nuevo`}
-            href={`/admin/cursos/${params.id}`}
+            href={`/admin/cursos/${params.id}/modulos/nuevo`}
             >
             <span className="flex items-center">
               <Plus className="mr-2 h-4 w-4" />
@@ -24,7 +25,7 @@ export function ModulesTab({ modules, params, router }: { modules: any[]; params
       </div>
 
       <div className="space-y-4">
-        {modules.map((module) => (
+        {modulesActive.map((module) => (
           <Card key={module.id}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -42,8 +43,7 @@ export function ModulesTab({ modules, params, router }: { modules: any[]; params
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" asChild>
                     <Link 
-                      //href={`/admin/cursos/${params.id}/modulos/${module.id}/edit`}
-                      href={`/admin/cursos/${params.id}`}
+                      href={`/admin/cursos/${params.id}/modulos/${module.id}/edit`}
                       >
                       <span className="flex items-center">
                         <Edit className="mr-2 h-4 w-4" />

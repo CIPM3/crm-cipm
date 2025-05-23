@@ -1,28 +1,46 @@
 "use client"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCourseById } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 import { ModuloForm, type ModuloFormValues } from "@/components/form/modulo-form"
+import { useGetCourseById } from "@/hooks/cursos"
+import { useCreateModule } from "@/hooks/modulos"
 
 export default function NewModuloPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const course = getCourseById(params.id)
+
+  const {course,loading,error} = useGetCourseById(params.id)
+  const {create, loading:loadingCC,error:errorCC} = useCreateModule()
+
+  // Renderizar contenido basado en el estado
+  if (loading) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso: {error.message}</div>
+  }
 
   if (!course) {
-    notFound()
+    return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
   }
 
   const handleSubmit = async (values: ModuloFormValues) => {
     try {
-      // Aquí iría la lógica para guardar el nuevo módulo en la base de datos
-      console.log("Creando nuevo módulo:", values)
+      // Aquí puedes realizar la lógica para crear el módulo
+      let moduleData = {
+        title: values.title,
+        description: values.description,
+        courseId: params.id,
+        status: values.status,
+        order: values.order,
+        content: []
+      }
 
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await create(moduleData)
 
       // Redirigir a la página del curso
       router.push(`/admin/cursos/${params.id}?tab=modules`)

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogFooter } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { getCourseById, modules as ModulesData } from "@/lib/utils"
+import { Loader2 } from "lucide-react"
 
 // Esquema de validación para el formulario
 const contentFormSchema = z.object({
@@ -62,7 +63,7 @@ export function ContentForm({ initialValues, onSubmit, onCancel, modules, course
   // Filtrar módulos por curso si se proporciona un courseId
   useEffect(() => {
     if (courseId) {
-      setFilteredModules(modules.filter((module) => module.courseId === courseId))
+      setFilteredModules(modules)
     } else {
       setFilteredModules(modules)
     }
@@ -157,7 +158,7 @@ export function ContentForm({ initialValues, onSubmit, onCancel, modules, course
                 </FormControl>
                 <SelectContent>
                   {
-                    ModulesData.filter(modulo => modulo.courseId === courseId).map((module) => (
+                    filteredModules.filter(modulo => modulo.courseId === courseId).map((module) => (
                       <SelectItem key={module.id} value={module.id}>
                         {module.title}
                       </SelectItem>
@@ -259,7 +260,12 @@ export function ContentForm({ initialValues, onSubmit, onCancel, modules, course
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : initialValues ? "Actualizar Contenido" : "Crear Contenido"}
+            {isSubmitting ? 
+            <>
+              <Loader2 className="animate-spin text-white mr-2"/>
+              Guardando
+            </> 
+            : initialValues ? "Actualizar Contenido" : "Crear Contenido"}
           </Button>
         </DialogFooter>
       </form>

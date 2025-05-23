@@ -4,9 +4,11 @@ import CursoCard from '@/components/card/curso-card'
 import CursoCardSkeleton from '@/components/card/curso-skeleton-card'
 import { Button } from '@/components/ui/button'
 import { useFetchCourses } from '@/hooks/cursos'
+import { useAuthStore } from '@/store/useAuthStore'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import { motion } from 'framer-motion'
 
 const CursosDestacados = () => {
 
@@ -46,9 +48,18 @@ const CursosDestacados = () => {
                 <p>No hay cursos destacados disponibles.</p>
             )}
 
-            <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2 lg:grid-cols-3">
-                {!loading && !error && featuredCourses.map((course) => (
-                    <CursoCard curso={course} type='cliente' />
+        
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-5 gap-6">
+                {!loading && !error && featuredCourses.map((course, index) => (
+                    <motion.div
+                        key={course.id}
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
+                        className="h-full"
+                    >
+                        <CursoCard curso={course} type='cliente' />
+                    </motion.div>
                 ))}
             </div>
 
@@ -58,6 +69,10 @@ const CursosDestacados = () => {
 
 
 const Content = ({ children }) => {
+
+    const User = useAuthStore((state) => state.user)
+    const Href = User ? "/cursos" : "/register"
+
     return (
         <section id="cursos" className="w-full py-12 md:py-24">
             <div className="container px-4 md:px-6">
@@ -73,7 +88,7 @@ const Content = ({ children }) => {
                 {children}
                 <div className="flex justify-center mt-12">
                     <Button variant="outline" size="lg" asChild>
-                        <Link href="/register">
+                        <Link href={Href}>
                             Ver todos los cursos
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>

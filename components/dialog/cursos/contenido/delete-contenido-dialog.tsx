@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
+import { useDeleteContent } from "@/hooks/contenidos"
 
 interface DeleteContentDialogProps {
   contentId: string
@@ -41,15 +42,14 @@ export function DeleteContentDialog({
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const {remove} = useDeleteContent()
+
   const handleDelete = async () => {
     setIsDeleting(true)
 
     try {
       // Aquí iría la lógica para eliminar el contenido de la base de datos
-      console.log("Eliminando contenido:", contentId, "del módulo:", moduleId)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await remove(contentId)
 
       // Llamar al callback si existe
       if (onDelete) {

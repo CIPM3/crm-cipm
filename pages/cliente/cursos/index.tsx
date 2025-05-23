@@ -1,15 +1,54 @@
+"use client"
+import { useState } from "react"
 import Link from "next/link"
-import { courses } from "@/lib/utils"
-import { BookOpen, Star } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import HeaderCliente from "@/components/header/header-cliente"
 import Footer from "@/pages/cliente/main/footer"
 import CursoCard from "@/components/card/curso-card"
-import FiltersSearch from "@/components/filters/filters-search"
+import InfoAdicional from "./info-adicional"
+import { Search } from "lucide-react"
+import { useFetchCourses } from "@/hooks/cursos"
+import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
+import { motion } from "framer-motion"
 
 export default function CoursesPage() {
+  // Estados para filtros y búsqueda
+  const [search, setSearch] = useState("")
+  const [precio, setPrecio] = useState("all")
+  const [semanas, setSemanas] = useState("all")
+
+  const filtersPrecio = [
+    { name: "Todos", value: "all" },
+    { name: "menor a 500", value: "500" },
+    { name: "menor a 1000", value: "1000" },
+    { name: "menor a 1500", value: "1500" },
+    { name: "menor a 2000", value: "2000" },
+  ]
+
+  const filtersSemanas = [
+    { name: "Todos", value: "all" },
+    { name: "menor a 2 semanas", value: "2" },
+    { name: "menor a 4 semanas", value: "4" },
+    { name: "menor a 6 semanas", value: "6" },
+    { name: "menor a 8 semanas", value: "8" },
+  ]
+
   // Filtrar solo cursos activos para mostrar a los clientes
-  const availableCourses = courses.filter((course) => course.status === "Activo")
+  let { courses, error, loading } = useFetchCourses()
+  let availableCourses = courses.filter((course) => course.status === "Activo")
+
+  // Aplicar filtros
+  availableCourses = availableCourses.filter((course) => {
+    // Filtro por búsqueda de título
+    if (search && !course.title.toLowerCase().includes(search.toLowerCase())) return false
+    // Filtro por precio
+    if (precio !== "all" && Number(course.price) >= Number(precio)) return false
+    // Filtro por semanas (asumiendo que course.duration es tipo "4 semanas")
+    if (semanas !== "all") {
+      const numSemanas = parseInt(course.duration)
+      if (isNaN(numSemanas) || numSemanas >= Number(semanas)) return false
+    }
+    return true
+  })
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,72 +65,91 @@ export default function CoursesPage() {
           </div>
 
           {/* Filtros y búsqueda */}
-          <FiltersSearch
-            filters={[
-              {
-                name: "Todas las categorias",
-                value: "all"
-              },
-              {
-                name:'Avanzado',
-                value:'advance'
-              },
-              {
-                name:'Basico',
-                value:'basic'
-              },
-              {
-                name:'Principiante',
-                value:'begginer'
-              },
-            ]}
-            placeholder="Buscar cursos..."
-          />
+          <div className="relative mb-10 grid grid-cols-12 gap-3 flex-1">
+            <div className="col-span-8">
+              <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                type="search"
+                placeholder={"Buscar cursos..."}
+                className="w-full rounded-md border border-input bg-background pl-10 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </div>
+
+            <select
+              className="rounded-md border w-full border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring col-span-2"
+              value={precio}
+              onChange={e => setPrecio(e.target.value)}
+            >
+              {filtersPrecio.map((filter, index) => (
+                <option key={index} value={filter.value}>{filter.name}</option>
+              ))}
+            </select>
+
+            <select
+              className="rounded-md border w-full border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring col-span-2"
+              value={semanas}
+              onChange={e => setSemanas(e.target.value)}
+            >
+              {filtersSemanas.map((filter, index) => (
+                <option key={index} value={filter.value}>{filter.name}</option>
+              ))}
+            </select>
+          </div>
 
           {/* Lista de cursos */}
+          {loading && (
+            <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }, (_, index) => (
+                <CursoCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
+
+          {
+            error && (
+              <div className='w-full h-full flex flex-col gap-5 items-center justify-center'>
+                <div className="relative transition-transform mt-10 duration-500 ease-in-out group-hover:scale-105">
+                  <img
+                    src="/404.svg?height=400&width=600"
+                    alt="Estudiantes aprendiendo"
+                    className="mx-auto aspect-video overflow-hidden rounded-xl object-contain"
+                    width={600}
+                    height={400}
+                  />
+                  <div className="absolute inset-0 rounded-xl ring-inset ring-primary/10"></div>
+                </div>
+
+                <h3 className='text-gray-500'>Ocurrio un error al cargar los cursos.</h3>
+              </div>
+            )
+          }
+
+          {!loading && !error && availableCourses.length === 0 && (
+            <p>No hay cursos disponibles.</p>
+          )
+          }
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {availableCourses.map((course, index) => (
-              <Link href={`/cursos/${course.id}`} key={course.id} className="h-full">
-                <CursoCard key={index} curso={course} type="cliente" />
-              </Link>
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
+                className="h-full"
+              >
+                <Link href={`/cursos/${course.id}`} className="h-full">
+                  <CursoCard curso={course} type="cliente" />
+                </Link>
+              </motion.div>
             ))}
           </div>
 
           {/* Sección de información adicional */}
-          <div className="mt-16 bg-muted/50 rounded-lg p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">¿Por qué elegir nuestros cursos?</h2>
-              <p className="text-muted-foreground">Formación de calidad que marca la diferencia</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <BookOpen className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Contenido de Calidad</h3>
-                <p className="text-muted-foreground">
-                  Material didáctico actualizado y desarrollado por expertos en la materia.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Star className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Instructores Certificados</h3>
-                <p className="text-muted-foreground">
-                  Aprende con profesionales en activo con amplia experiencia en el sector.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Badge className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Certificaciones Reconocidas</h3>
-                <p className="text-muted-foreground">
-                  Obtén certificaciones con validez internacional que potenciarán tu currículum.
-                </p>
-              </div>
-            </div>
+          <div className="bg-muted/50 py-12 md:py-24 mt-12">
+            <InfoAdicional />
           </div>
         </div>
       </main>
@@ -101,4 +159,3 @@ export default function CoursesPage() {
     </div>
   )
 }
-

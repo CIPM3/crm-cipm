@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
+import { useDeleteModule } from "@/hooks/modulos"
 
 interface DeleteModuloDialogProps {
   moduloId: string
@@ -37,23 +38,23 @@ export function DeleteModuloDialog({
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const {remove} = useDeleteModule()
+
   const handleDelete = async () => {
     setIsDeleting(true)
 
-    try {
-      // Aquí iría la lógica para eliminar el módulo de la base de datos
-      console.log("Eliminando módulo:", moduloId)
-
+    try {   
       // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await remove(moduloId)
 
       // Redirigir a la página del curso
-      router.push(`/admin/cursos/${cursoId}`)
+      router.push(`/admin/cursos/${cursoId}?tab=overview`)
       router.refresh()
     } catch (error) {
       console.error("Error al eliminar el módulo:", error)
       setIsOpen(false)
     } finally {
+      setIsOpen(false)
       setIsDeleting(false)
     }
   }

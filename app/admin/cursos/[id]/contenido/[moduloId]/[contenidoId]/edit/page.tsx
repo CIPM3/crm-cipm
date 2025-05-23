@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { ContentForm, type ContentFormValues } from "@/components/form/content-form"
-import { modules as ModulosCurso } from "@/lib/utils"
+import { useGetContentById, useUpdateContent } from "@/hooks/contenidos"
+import { useGetModulesByCourseId } from "@/hooks/modulos"
 
 export default function EditContentPage({ params }: { params: { id: string; moduloId: string; contenidoId: string } }) {
   const router = useRouter()
@@ -15,66 +16,12 @@ export default function EditContentPage({ params }: { params: { id: string; modu
   const moduloId = params.moduloId
   const contentId = params.contenidoId
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [content, setContent] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchContent = () => {
-      // Buscar el módulo específico basado en courseId y moduloId
-      const module = ModulosCurso.find(
-        (modulo) => modulo.courseId === courseId && modulo.id === moduloId
-      )
+  const { modules } = useGetModulesByCourseId(courseId) // Hook para obtener el módulo por ID
+  const { content, loading, error } = useGetContentById(contentId)
+  const { update } = useUpdateContent() 
 
-      if (!module) {
-        console.error(`No se encontró el módulo con id: ${moduloId} para el curso: ${courseId}`)
-        setContent(null)
-        setIsLoading(false)
-        return
-      }
-
-      // Buscar el contenido dentro del módulo
-      const contentItem = module.content.find((item) => item.id === contentId)
-
-      if (!contentItem) {
-        console.error(`No se encontró el contenido con id: ${contentId} en el módulo: ${moduloId}`)
-        setContent(null)
-        setIsLoading(false)
-        return
-      }
-
-      // Establecer el contenido encontrado
-      setContent({
-        ...contentItem,
-        moduleId: module.id,
-        moduleTitle: module.title // Agregamos el título del módulo para mostrarlo
-      })
-      setIsLoading(false)
-    }
-
-    fetchContent()
-  }, [courseId, moduloId, contentId])
-
-  const handleSubmit = async (values: ContentFormValues) => {
-    setIsSubmitting(true)
-
-    try {
-      // Aquí iría la lógica para actualizar el contenido en la base de datos
-      console.log("Actualizando contenido:", contentId, values)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Redirigir a la página del curso con la pestaña de contenido activa
-      router.push(`/admin/cursos/${courseId}?tab=content`)
-      router.refresh()
-    } catch (error) {
-      console.error("Error al actualizar el contenido:", error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
@@ -85,7 +32,7 @@ export default function EditContentPage({ params }: { params: { id: string; modu
     )
   }
 
-  if (!content) {
+  if (error || !content) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <h2 className="text-xl font-semibold mb-2">Contenido no encontrado</h2>
@@ -113,6 +60,29 @@ export default function EditContentPage({ params }: { params: { id: string; modu
     questions: content.questions ? String(content.questions) : "",
   }
 
+  const handleSubmit = async (values: ContentFormValues) => {
+    setIsSubmitting(true)
+    try {
+      // Aquí iría la lógica para actualizar el contenido en la base de datos
+      let data = {
+        title: values.title,
+        type: values.type,
+        moduleId: values.moduleId,
+        url: values.url,
+        duration: values.duration,
+        description: values.description,
+      }
+      await update(contentId,data)
+
+      router.push(`/admin/cursos/${courseId}?tab=content`)
+      router.refresh()
+    } catch (error) {
+      console.error("Error al actualizar el contenido:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -137,7 +107,7 @@ export default function EditContentPage({ params }: { params: { id: string; modu
         <CardContent>
           <ContentForm
             initialValues={initialValues}
-            modules={[{ id: moduloId, title: content.moduleTitle }]} // Usamos el título del módulo que guardamos
+            modules={modules}
             courseId={courseId}
             onSubmit={handleSubmit}
             onCancel={() => router.push(`/admin/cursos/${courseId}?tab=content`)}

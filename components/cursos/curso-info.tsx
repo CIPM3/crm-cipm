@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 
 export function CursoInfo({ course, modules, enrollments }: { course: any; modules: any[]; enrollments: any[] }) {
+
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <Card className="md:col-span-2">

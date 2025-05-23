@@ -213,55 +213,65 @@ export interface FormacionDataType {
 
 // types/Course.ts
 export interface Course {
-  id: string
-  title: string
-  description: string
-  price: number
-  duration: string
-  status: 'Activo' | 'Inactivo'
-  enrollments: number
-  rating: number
-  modules: string[]
+    id: string
+    title: string
+    description: string
+    price: number
+    duration: string
+    status: 'Activo' | 'Inactivo'
+    enrollments: number
+    rating: number
+    modules: string[]
 }
 
 // types/Module.ts
 export interface Module {
-  id: string
-  courseId: string
-  title: string
-  order: number
-  status: 'Activo' | 'Inactivo'
-  content: ContentItem[]
+    id: string
+    courseId: string
+    title: string
+    order: number
+    status: 'Activo' | 'Inactivo'
+    content: ContentItem[]
 }
 
 export type ContentItem =
-  | {
-      id: string
-      type: 'video'
-      title: string
-      duration: string
-      url: string
+    | {
+        id: string
+        type: 'video'
+        title: string
+        duration: string
+        url: string
     }
-  | {
-      id: string
-      type: 'document'
-      title: string
-      url: string
+    | {
+        id: string
+        type: 'document'
+        title: string
+        url: string
     }
-  | {
-      id: string
-      type: 'quiz'
-      title: string
-      questions: number
+    | {
+        id: string
+        type: 'quiz'
+        title: string
+        questions: number
     }
 
+export type Content = {
+    id: string
+    title: string
+    description: string
+    type: "video" | "document" | "quiz",
+    url?: string
+    duration: string
+    questions: number
+    moduleId: string
+}
 // types/Enrollment.ts
 export interface Enrollment {
-  id: string
-  studentId: string
-  courseId: string
-  enrollmentDate: string // formato ISO string
-  status: 'En progreso' | 'Completado'
-  progress: number
-  lastAccess: string // formato ISO string
+    id: string
+    studentId: string
+    courseId: string
+    enrollmentDate: string // formato ISO string
+    status: 'En progreso' | 'Completado'
+    progress: number
+    lastAccess: string // formato ISO string
 }
