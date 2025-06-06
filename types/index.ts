@@ -69,6 +69,8 @@ export interface UsersType {
     role: typeof ROLES[number];
     avatar: string;
     createdAt?: string;
+    phone?: string;
+    status?: string; // Agregado para el estado del usuario
 }
 
 export type AgendadoFormValues = {
@@ -271,7 +273,7 @@ export interface Enrollment {
     studentId: string
     courseId: string
     enrollmentDate: string // formato ISO string
-    status: 'En progreso' | 'Completado'
+    status: string
     progress: number
     lastAccess: string // formato ISO string
 }

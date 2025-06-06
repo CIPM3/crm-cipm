@@ -1,64 +1,31 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { modules, getCourseById } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
-import { VideoForm, type VideoFormValues } from "@/components/video-form"
+import { ContenidoForm } from "@/components/form/contenido-form"
+import { ContentFormValues } from "@/components/form/content-form"
+import { useGetContentById } from "@/hooks/contenidos"
+import { useGetModulesByCourseId } from "@/hooks/modulos"
+import { useState } from "react"
 
 export default function EditVideoPage({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const { content: videoData, error, loading } = useGetContentById(params.id)
+  // courseId puede ser undefined en el primer render, está bien pasarlo así al hook
+  const courseId = videoData?.courseId
 
-  // Encontrar el video en los módulos
-  let videoData: any = null
-  let moduleData: any = null
-  let courseData: any = null
-
-  // Buscar el video en todos los módulos
-  for (const module of modules) {
-    const video = module.content.find((content) => content.type === "video" && content.id === params.id)
-    if (video) {
-      videoData = video
-      moduleData = module
-      courseData = getCourseById(module.courseId)
-      break
-    }
-  }
-
-  if (!videoData || !moduleData || !courseData) {
-    notFound()
-  }
-
-  // Preparar los valores iniciales para el formulario
-  const initialValues: VideoFormValues = {
-    title: videoData.title,
-    description: videoData.description || "Este video explica conceptos fundamentales relacionados con el módulo.",
-    url: videoData.url || "",
-    thumbnail: videoData.thumbnail || "",
-    duration: videoData.duration || "",
-    category: videoData.category || "Fundamentos",
-    tags: videoData.tags || "",
-    status: videoData.status || "Publicado",
-    featured: videoData.featured || false,
-  }
+  const { modules, loading: loadingModules, error: errorModules } = useGetModulesByCourseId(courseId)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (values: VideoFormValues) => {
+  const handleSubmit = async (values: ContentFormValues) => {
     setIsSubmitting(true)
-
     try {
       // Aquí iría la lógica para actualizar el video en la base de datos
-      console.log("Actualizando video:", values)
-
-      // Simular una petición a la API
       await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Redirigir a la página de detalle del video
       router.push(`/admin/videos/${params.id}`)
       router.refresh()
     } catch (error) {
@@ -70,6 +37,28 @@ export default function EditVideoPage({ params }: { params: { id: string } }) {
 
   const handleCancel = () => {
     router.push(`/admin/videos/${params.id}`)
+  }
+
+  if (loading || loadingModules) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error || errorModules) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso o módulos.</div>
+  }
+
+  if (!videoData || !modules) {
+    return <div className="text-center py-10 text-gray-500">El curso o los módulos no existen o no están disponibles.</div>
+  }
+
+  const initialValues: ContentFormValues = {
+    title: videoData.title,
+    description: videoData.description || "Este video explica conceptos fundamentales relacionados con el módulo.",
+    url: videoData.url || "",
+    duration: videoData.duration || "",
+    moduleId: videoData.moduleId || "",
+    type: videoData.type || "video",
+    questions: videoData.questions ? String(videoData.questions) : "",
   }
 
   return (
@@ -92,10 +81,14 @@ export default function EditVideoPage({ params }: { params: { id: string } }) {
           <CardTitle>Información del Video</CardTitle>
         </CardHeader>
         <CardContent>
-          <VideoForm initialValues={initialValues} onSubmit={handleSubmit} onCancel={handleCancel} />
+          <ContenidoForm
+            initialValues={initialValues}
+            modules={modules}
+            onCancel={handleCancel}
+            onSubmit={handleSubmit}
+          />
         </CardContent>
       </Card>
     </div>
   )
 }
-

@@ -41,7 +41,7 @@ export function CursoInfo({ course, modules, enrollments }: { course: any; modul
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <p className="text-sm font-medium">Inscripciones</p>
                 </div>
-                <p className="text-xl font-bold">{course.enrollments}</p>
+                <p className="text-xl font-bold">{enrollments.length}</p>
               </div>
 
               <div className="space-y-1">

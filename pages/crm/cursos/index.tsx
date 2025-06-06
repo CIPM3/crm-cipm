@@ -10,7 +10,7 @@ export default function AdminCoursesPage() {
   const { courses, loading, error } = useFetchCourses()
 
   if (loading) return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[86dvh]">
       <Header isLoading={loading} isError={!!error} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -24,7 +24,7 @@ export default function AdminCoursesPage() {
     </div>
   )
   if (error) return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[86dvh]">
       <Header isLoading={loading} isError={!!error} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -34,7 +34,7 @@ export default function AdminCoursesPage() {
   )
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[86dvh]">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold tracking-tight">Gestión de Cursos</h1>
         <Button asChild>

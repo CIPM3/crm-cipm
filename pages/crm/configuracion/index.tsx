@@ -16,7 +16,7 @@ export default function ConfigurationPage() {
   const currentUser = UserData
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-[86dvh]">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground">Administra tus preferencias y configuración del sistema</p>

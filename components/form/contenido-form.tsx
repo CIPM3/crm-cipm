@@ -160,7 +160,7 @@ export function ContenidoForm({ initialValues, onSubmit, onCancel, modules }: Co
           render={({ field }) => (
             <FormItem>
               <FormLabel>Módulo</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona un módulo" />

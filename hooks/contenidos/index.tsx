@@ -73,7 +73,7 @@ export const useGetContentById = (id: string) => {
   return { content, loading, error }
 }
 
-export const useGetContentsByModuleId = (moduleId: string) => {
+export const useGetContentsByModuleId = (courseId: string) => {
   const [content, setContents] = useState<Content[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -84,7 +84,7 @@ export const useGetContentsByModuleId = (moduleId: string) => {
       setError(null)
       try {
         const result = await getAllContent()
-        const filteredContents = result.filter((module) => module.moduleId === moduleId)
+        const filteredContents = result.filter((content) => content.courseId === courseId)
         setContents(filteredContents)
       } catch (err) {
         setError(err as Error)
@@ -94,7 +94,7 @@ export const useGetContentsByModuleId = (moduleId: string) => {
     }
 
     fetchData()
-  }, [moduleId])
+  }, [courseId])
 
   return { content, loading, error }
 }

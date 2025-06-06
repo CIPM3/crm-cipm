@@ -1,16 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Edit, Trash2, Video, FileText, CheckSquare, Clock } from "lucide-react"
+import { Plus, Edit, Video, FileText, CheckSquare, Clock } from "lucide-react"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DeleteContentDialog } from "@/components/dialog/cursos/contenido/delete-contenido-dialog"
-import { useState, useEffect } from "react"
-import { useGetContentsByModuleId } from "@/hooks/contenidos"
+import { useState } from "react"
+import { useDeleteContent, useGetContentsByModuleId } from "@/hooks/contenidos"
 import { Module } from "@/types"
 
 export function ContentTab({ modules, courseId }: { modules: Module[]; courseId: string }) {
-  const modulo = modules.find((modulo) => modulo.courseId === courseId) // Obtener el módulo correspondiente al curso
-  const { content, loading, error } = useGetContentsByModuleId(modulo?.id!!) // Hook para obtener los contenidos del curso
+  const { content, loading, error } = useGetContentsByModuleId(courseId) // Hook para obtener los contenidos del curso
+  const {remove} = useDeleteContent()
   const groupedModules = modules.map((mod) => ({
     id: mod.id,
     title: mod.title,
@@ -18,7 +18,6 @@ export function ContentTab({ modules, courseId }: { modules: Module[]; courseId:
     content: content.filter((c) => c.moduleId === mod.id)
   }))
 
-  console.log(groupedModules)
 
   if (loading) {
     return (
@@ -61,7 +60,7 @@ export function ContentTab({ modules, courseId }: { modules: Module[]; courseId:
     >
       <div className="space-y-4">
         {
-          groupedModules.map((module, index) => (
+          groupedModules.slice(0,3).map((module, index) => (
             <div key={module.id} className="space-y-2">
               <h4 className="font-medium">{module.title}</h4>
 
@@ -108,8 +107,8 @@ export function ContentTab({ modules, courseId }: { modules: Module[]; courseId:
                             <Button variant="outline" asChild>
                               <Link
                                 //TERMINAR ESTO
-                                //href={`/admin/videos/${content.id}`}
-                                href={`/admin/cursos/${courseId}`}
+                                href={`/admin/videos/${content.id}`}
+                                //href={`/admin/cursos/${courseId}`}
                               >Ver</Link>
                             </Button>}
                           {content.type === "document" && (
@@ -145,7 +144,7 @@ export function ContentTab({ modules, courseId }: { modules: Module[]; courseId:
                             moduleId={module.id}
                             courseId={courseId}
                             onDelete={() => {
-                              alert("Contenido eliminado")
+                              remove(content.id)
                             }}
                           />
                         </div>

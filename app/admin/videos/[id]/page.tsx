@@ -4,10 +4,9 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { modules, getCourseById } from "@/lib/utils"
+import { modules } from "@/lib/utils"
 import { ArrowLeft, Edit, Clock, BookOpen, FileText, Save } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -15,35 +14,40 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DeleteVideoDialog } from "@/components/dialog/delete-video-dialog"
+import { useGetContentById } from "@/hooks/contenidos"
+import { useGetCourseById } from "@/hooks/cursos"
+import { useGetModuleById } from "@/hooks/modulos"
 
 export default function VideoDetailPage({ params }: { params: { id: string } }) {
   // Encontrar el video en los módulos
-  let videoData: any = null
-  let moduleData: any = null
-  let courseData: any = null
+  //let videoData: any = null
 
-  // Buscar el video en todos los módulos
-  for (const module of modules) {
-    const video = module.content.find((content) => content.type === "video" && content.id === params.id)
-    if (video) {
-      videoData = video
-      moduleData = module
-      courseData = getCourseById(module.courseId)
-      break
-    }
-  }
-
-  if (!videoData || !moduleData || !courseData) {
-    notFound()
-  }
+  const {content:videoData,error,loading} = useGetContentById(params.id)
+  const {course:courseData} = useGetCourseById(videoData?.courseId!!)
+  const {module:moduleData} = useGetModuleById(videoData?.moduleId!!)
 
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    title: videoData.title,
-    duration: videoData.duration,
-    url: videoData.url || "",
+    title: videoData?.title,
+    duration: videoData?.duration,
+    url: videoData?.url || "",
     description: "Este video explica conceptos fundamentales relacionados con el módulo.",
   })
+
+  if (loading) {
+    return <div className="text-center py-10">Cargando curso...</div>
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error al cargar el curso: {error.message}</div>
+  }
+
+  if (!videoData) {
+    return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
+  }
+
+
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -85,7 +89,7 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
           ) : (
             <>
               <Button variant="outline" asChild>
-                <Link href={`/admin/videos/${params.id}/edit`}>
+                <Link href={`/admin/cursos/${courseData?.id}/contenido/${moduleData?.id}/${params.id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
                   Editar
                 </Link>
@@ -145,13 +149,13 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
 
                   <div className="grid gap-2">
                     <Label htmlFor="module">Módulo</Label>
-                    <Select defaultValue={moduleData.id}>
+                    <Select defaultValue={moduleData?.id}>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar módulo" />
                       </SelectTrigger>
                       <SelectContent>
                         {modules
-                          .filter((m) => m.courseId === courseData.id)
+                          .filter((m) => m.courseId === courseData?.id)
                           .map((module) => (
                             <SelectItem key={module.id} value={module.id}>
                               {module.title}
@@ -168,7 +172,7 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
                       <video
                         controls
                         className="w-full h-full rounded-lg"
-                        poster={`/placeholder.svg?height=400&width=800&text=${encodeURIComponent(videoData.title)}`}
+                        //poster={`/placeholder.svg?height=400&width=800&text=${encodeURIComponent(videoData.title)}`}
                       >
                         <source src={videoData.url} type="video/mp4" />
                         Tu navegador no soporta el elemento de video.
@@ -216,12 +220,12 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
 
                       <div className="flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">Curso: {courseData.title}</span>
+                        <span className="text-sm">Curso: {courseData?.title}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">Módulo: {moduleData.title}</span>
+                        <span className="text-sm">Módulo: {moduleData?.title}</span>
                       </div>
                     </div>
 
@@ -251,7 +255,7 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
 
               <div>
                 <h3 className="text-sm font-medium mb-1">Estado</h3>
-                <Badge variant={moduleData.status === "Activo" ? "default" : "secondary"}>{moduleData.status}</Badge>
+                <Badge variant={moduleData?.status === "Activo" ? "default" : "secondary"}>{moduleData?.status}</Badge>
               </div>
 
               <div>
@@ -262,9 +266,9 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
               <div>
                 <h3 className="text-sm font-medium mb-1">Curso Asociado</h3>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{courseData.title}</Badge>
+                  <Badge variant="outline">{courseData?.title}</Badge>
                   <Button variant="ghost" size="sm" asChild className="h-8 px-2">
-                    <Link href={`/admin/cursos/${courseData.id}`}>Ver</Link>
+                    <Link href={`/admin/cursos/${courseData?.id}`}>Ver</Link>
                   </Button>
                 </div>
               </div>
@@ -272,9 +276,9 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
               <div>
                 <h3 className="text-sm font-medium mb-1">Módulo</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{moduleData.title}</span>
+                  <span className="text-sm">{moduleData?.title}</span>
                   <Button variant="ghost" size="sm" asChild className="h-8 px-2">
-                    <Link href={`/admin/cursos/${courseData.id}?module=${moduleData.id}`}>Ver</Link>
+                    <Link href={`/admin/cursos/${courseData?.id}?module=${moduleData?.id}`}>Ver</Link>
                   </Button>
                 </div>
               </div>

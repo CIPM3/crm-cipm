@@ -3,12 +3,13 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { getModulesByCourseId, getEnrollmentsByCourseId } from "@/lib/utils"
 import { CursoHeader } from "@/components/cursos/curso-header"
 import { CursoInfo } from "@/components/cursos/curso-info"
 import { CursoTabs } from "@/components/cursos/curso-tabs"
 import { useGetCourseById } from "@/hooks/cursos"
 import { useGetModulesByCourseId } from "@/hooks/modulos"
+import { useGetEnrollmentsByCourseId } from "@/hooks/enrollments"
+import { useEnrollmentsStore } from "@/store/useEnrollmentStore"
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -17,6 +18,16 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
 
   const { course, loading, error } = useGetCourseById(params.id)
   const { modules } = useGetModulesByCourseId(params.id)
+  // Obtener módulos y estudiantes solo si el curso existe
+  const { canRefetch, setCanRefetch } = useEnrollmentsStore()
+  const { enrollments, refetch } = useGetEnrollmentsByCourseId(params.id)
+
+  useEffect(() => {
+    if (canRefetch) {
+      refetch()
+      setCanRefetch(false)
+    }
+  }, [canRefetch, refetch, setCanRefetch])
 
   // Hooks de estado
   const [activeTab, setActiveTab] = useState("overview")
@@ -72,8 +83,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   if (!course) {
     return <div className="text-center py-10 text-gray-500">El curso no existe o no está disponible.</div>
   }
-  // Obtener módulos y estudiantes solo si el curso existe
-  const enrollments = getEnrollmentsByCourseId(course.id)
+
 
   return (
     <div className="space-y-6">

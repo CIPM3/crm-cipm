@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { ContentForm, type ContentFormValues } from "@/components/form/content-form"
-import { getModulesByCourseId } from "@/lib/utils"
 import { useGetModulesByCourseId } from "@/hooks/modulos"
 import { useCreateContent } from "@/hooks/contenidos"
 
@@ -22,7 +21,11 @@ export default function NewContentPage({ params }: { params: { id: string } }) {
     setIsSubmitting(true)
 
     try {
-      await create(values)
+      let Data = {
+        ...values,
+        courseId: courseId,
+      }
+      await create(Data)
 
       // Redirigir a la página del curso con la pestaña de contenido activa
       router.push(`/admin/cursos/${courseId}?tab=content`)

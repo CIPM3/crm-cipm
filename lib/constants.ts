@@ -22,11 +22,11 @@ export const ADMIN_NAVS = [
         href: "/admin/clases/prueba",
         icon: CalendarDays,
     },
-    //   {
-    //     title: "Estudiantes",
-    //     href: "/admin/estudiantes",
-    //     icon: Users,s
-    //   },
+      {
+        title: "Estudiantes",
+        href: "/admin/estudiantes",
+        icon: Users,
+      },
       {
         title: "Cursos",
         href: "/admin/cursos",

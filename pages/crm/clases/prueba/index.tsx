@@ -14,7 +14,7 @@ const page = () => {
     const canViewFormacionGrupo = currentUser?.role === 'formacion de grupo' || currentUser?.role === 'admin' || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-[86dvh]">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba</h1>
                 <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>

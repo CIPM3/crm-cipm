@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
+import { useDeleteContent } from "@/hooks/contenidos"
 
 interface DeleteVideoDialogProps {
   videoId: string
@@ -35,15 +36,14 @@ export function DeleteVideoDialog({
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const {remove} = useDeleteContent()
+
   const handleDelete = async () => {
     setIsDeleting(true)
 
     try {
       // Aquí iría la lógica para eliminar el video de la base de datos
-      console.log("Eliminando video:", videoId)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await remove(videoId)
 
       // Redirigir a la página de videos
       router.push("/admin/videos")
