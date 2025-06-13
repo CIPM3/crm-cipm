@@ -8,17 +8,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Loader2 } from "lucide-react"
 
 export default function UnenrollDialog({
   open,
   onOpenChange,
   courseTitle,
   onConfirm,
+  loading = false,
 }: {
   open: boolean
   onOpenChange: (v: boolean) => void
   courseTitle: string
-  onConfirm: () => void
+  onConfirm: () => void,
+  loading?: boolean
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -31,8 +34,10 @@ export default function UnenrollDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground">
-            Confirmar
+          <AlertDialogAction disabled={loading} onClick={onConfirm} className="bg-destructive text-destructive-foreground">
+            {
+              loading ? <div className="flex items-center gap-2"><Loader2 className="size-5 animate-spin"/><p>Dando de baja..</p></div> : "Dar de Baja"
+            }
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

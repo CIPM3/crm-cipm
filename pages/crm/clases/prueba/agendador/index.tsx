@@ -55,7 +55,7 @@ const Index = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-[86dvh]">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - Agendador</h1>
                 <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>

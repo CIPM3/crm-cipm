@@ -1,21 +1,21 @@
 "use client"
 
-import { getEnrollmentsByStudentId } from "@/lib/utils"
 import StudentHeader from "@/components/estudiante/StudentHeader"
 import StudentInfoCard from "@/components/estudiante/StudentInfoCard"
 import StudentMetricsCard from "@/components/estudiante/StudentMetricsCard"
 import StudentTabs from "@/components/estudiante/StudentTabs"
-//API
 import { Skeleton } from "@/components/ui/skeleton"
 import { useGetClienteById } from "@/hooks/estudiantes/clientes"
 import { useGetEnrollmentsByStudentId } from "@/hooks/enrollments"
+import { useEnrollmentsStore } from "@/store/useEnrollmentStore"
+import { useEffect } from "react"
 
 export default function StudentPage({ params }: { params: { id: string } }) {
+  // TODOS los hooks SIEMPRE se llaman
   const { cliente: student, loading, error } = useGetClienteById(params.id)
-  const { enrollments } = useGetEnrollmentsByStudentId(params.id)
+  const { enrollments, refetch } = useGetEnrollmentsByStudentId(params.id)
 
-  console.log(enrollments)
-
+  // Render condicional SOLO después de los hooks
   if (loading) {
     return (
       <div className="flex flex-col gap-2 items-center justify-center h-[86dvh]">
@@ -27,6 +27,7 @@ export default function StudentPage({ params }: { params: { id: string } }) {
       </div>
     )
   }
+
   if (error || !student) {
     return (
       <div className="flex items-center justify-center h-[86dvh]">

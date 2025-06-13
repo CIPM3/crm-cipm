@@ -171,8 +171,10 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
                     {videoData.url ? (
                       <video
                         controls
+                        controlsList="nodownload"
                         className="w-full h-full rounded-lg"
                         //poster={`/placeholder.svg?height=400&width=800&text=${encodeURIComponent(videoData.title)}`}
+                        onContextMenu={e => e.preventDefault()}
                       >
                         <source src={videoData.url} type="video/mp4" />
                         Tu navegador no soporta el elemento de video.

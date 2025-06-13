@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Clock, Edit, Star } from 'lucide-react'
@@ -6,18 +6,30 @@ import { Button } from '@/components/ui/button'
 import { CursoType } from '@/types'
 import Link from 'next/link'
 import { DeleteCursoDialog } from '../dialog/delete-curso-dialog'
+import gsap from 'gsap'
 
 interface Props {
   curso: CursoType,
-  type?: 'cliente' | 'crm'
+  type?: 'cliente' | 'crm',
+  delay?: number // Nueva prop opcional
 }
 
-const CursoCard = ({ curso, type }: Props) => {
-
+const CursoCard = ({ curso, type, delay = 0 }: Props) => {
+  const cardRef = useRef<HTMLDivElement>(null)
   const Thumbnail = curso?.thumbnail!! || "/placeholder.svg?height=200&width=400&text=Curso"
 
+  useEffect(() => {
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, x: -50 },
+        { opacity: 1, x: 0, duration: 0.8, delay, ease: "power2.out" }
+      )
+    }
+  }, [delay])
+
   return (
-    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
+    <Card ref={cardRef} className="h-full overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video w-full overflow-hidden bg-muted">
         <img
           src={Thumbnail}
@@ -45,19 +57,14 @@ const CursoCard = ({ curso, type }: Props) => {
           </div>
         </div>
       </CardContent>
-      <div>
-
-      </div>
+      <div></div>
       {
         type === "cliente"
           ? (
             <CardFooter className="flex justify-between">
               <div className="text-lg font-bold">${curso.price.toLocaleString()}</div>
               <Button>
-                <Link
-                  //href={`/cursos/${curso.id}`}
-                  href={'/'}
-                >
+                <Link href={'/'}>
                   Ver Detalles
                 </Link>
               </Button>

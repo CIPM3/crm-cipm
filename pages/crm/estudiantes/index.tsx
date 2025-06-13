@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus, Search } from "lucide-react"
@@ -75,7 +75,7 @@ export default function StudentsPage() {
         </select>
       </div>
       <div className="grid gap-6">
-        {filteredStudents.map((student) => (
+        {filteredStudents.map((student,idx) => (
           <EstudianteCard
             key={student.id}
             student={{
@@ -86,6 +86,7 @@ export default function StudentsPage() {
               status: student.status,
               lastLogin: student.lastLogin || "N/A",
             }}
+            delay={idx * 0.15}
           />
         ))}
       </div>

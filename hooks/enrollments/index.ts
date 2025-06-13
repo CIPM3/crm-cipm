@@ -89,18 +89,28 @@ export const useGetEnrollmentsByCourseId = (courseId: string) => {
 
 export function useGetEnrollmentsByStudentId(studentId: string) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  useEffect(() => {
+  const fetchData = async () => {
     setLoading(true)
-    getEnrollmentsByStudentId(studentId)
-      .then(setEnrollments)
-      .catch(setError)
-      .finally(() => setLoading(false))
+    setError(null)
+    try {
+      const result = await getEnrollmentsByStudentId(studentId)
+      setEnrollments(result)
+    } catch (err) {
+      setError(err as Error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (studentId) fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentId])
 
-  return { enrollments, loading, error }
+  return { enrollments, loading, error, refetch: fetchData }
 }
 
 // Crear enrollment

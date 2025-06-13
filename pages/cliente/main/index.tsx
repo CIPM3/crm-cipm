@@ -24,11 +24,11 @@ export default function HomePage() {
         <VideosDestacados/>
 
         <Testimonios/>
-
-        <CTA/> */}
+        */}
+        <CTA/> 
       </main>
 
-      {/* <Footer/> */}
+      <Footer/>
     </div>
   )
 }

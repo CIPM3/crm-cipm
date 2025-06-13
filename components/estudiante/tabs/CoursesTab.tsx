@@ -5,10 +5,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { getCourseById, courses } from "@/lib/utils"
-import EnrollStudentDialog from "@/components/dialog/estudiante/EnrollStudentDialog"
 import UnenrollDialog from "@/components/dialog/estudiante/UnenrollDialog"
-import { useGetEnrollmentsByStudentId } from "@/hooks/enrollments"
+import { useDeleteEnrollment } from "@/hooks/enrollments"
 import { useGetCourseById } from "@/hooks/cursos"
+import { useEnrollmentsStore } from "@/store/useEnrollmentStore"
+import { useRouter } from "next/navigation"
 
 export default function CoursesTab({
   student,
@@ -23,39 +24,23 @@ export default function CoursesTab({
   const [selectedEnrollment, setSelectedEnrollment] = useState<any>(null)
   const [isUnenrollDialogOpen, setIsUnenrollDialogOpen] = useState(false)
   
-  const enrolledCourseIds = enrollments.map((e) => e.courseId)
-  const availableCourses = courses.filter((c) => !enrolledCourseIds.includes(c.id))
+  const setCanRefetch = useEnrollmentsStore((state)=> state.setCanRefetch)
+  const {remove,loading} = useDeleteEnrollment()
 
-  const handleProgressChange = (id: string, diff: number) => {
-    setEnrollments((prev) =>
-      prev.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              progress: Math.min(100, Math.max(0, e.progress + diff)),
-              status: e.progress + diff >= 100 ? "Completado" : "En progreso",
-              lastAccess: new Date().toISOString().split("T")[0],
-            }
-          : e
-      )
-    )
-  }
+  const router = useRouter();
+  
 
-  const handleUnenroll = () => {
+  const handleUnenroll = async() => {
     if (!selectedEnrollment) return
-    setEnrollments((prev) => prev.filter((e) => e.id !== selectedEnrollment.id))
-    setIsUnenrollDialogOpen(false)
-    setSelectedEnrollment(null)
+    await remove(selectedEnrollment.id)
+    router.replace("/admin/estudiantes/")
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between">
         <h3 className="text-lg font-medium">Cursos Inscritos</h3>
-        <Button size="sm" onClick={() => setIsDialogOpen(true)}>
-          <BookOpen className="mr-2 h-4 w-4" />
-          Inscribir en Curso
-        </Button>
+        
       </div>
 
       <div className="grid gap-4">
@@ -82,14 +67,7 @@ export default function CoursesTab({
                   <div>
                     <div className="flex justify-between mb-1">
                       <span>Progreso: {e.progress}%</span>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleProgressChange(e.id, -10)} disabled={e.progress <= 0}>
-                          -10%
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleProgressChange(e.id, 10)} disabled={e.progress >= 100}>
-                          +10%
-                        </Button>
-                      </div>
+                      
                     </div>
                     <div className="w-full h-2.5 rounded-full bg-gray-200">
                       <div className="h-2.5 rounded-full bg-primary" style={{ width: `${e.progress}%` }} />
@@ -127,7 +105,11 @@ export default function CoursesTab({
               <p className="text-sm text-muted-foreground mb-4">
                 Este estudiante no está inscrito en ningún curso.
               </p>
-              <Button onClick={() => setIsDialogOpen(true)}>
+
+              <Button onClick={() => {
+                setIsDialogOpen(true)
+                router.push('/admin/cursos')
+                }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Inscribir en un Curso
               </Button>
@@ -136,19 +118,12 @@ export default function CoursesTab({
         )}
       </div>
 
-      <EnrollStudentDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        student={student}
-        availableCourses={availableCourses}
-        setEnrollments={setEnrollments}
-      />
-
       <UnenrollDialog
         open={isUnenrollDialogOpen}
         onOpenChange={setIsUnenrollDialogOpen}
         courseTitle={getCourseById(selectedEnrollment?.courseId)?.title!!}
         onConfirm={handleUnenroll}
+        loading={loading}
       />
     </div>
   )

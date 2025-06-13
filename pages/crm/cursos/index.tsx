@@ -45,8 +45,8 @@ export default function AdminCoursesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((course) => (
-          <CursoCard key={course.id} curso={course} type="crm" />
+        {courses.map((course,idx) => (
+          <CursoCard delay={idx * 0.15} key={course.id} curso={course} type="crm" />
         ))}
       </div>
     </div>

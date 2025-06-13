@@ -54,21 +54,21 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
   return (
     <Card key={enrollment.id}>
       <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex-1">
             <p className="font-medium">Estudiante: {usuario?.name}</p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
               <span>Inscrito: {enrollment.enrollmentDate}</span>
               <span>Último acceso: {enrollment.lastAccess}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-full sm:w-auto">
               <Badge variant={enrollment.status === "Completado" ? "default" : "secondary"}>
                 {enrollment.status}
               </Badge>
-              <div className="mt-1 w-32 bg-gray-200 rounded-full h-2">
+              <div className="mt-1 w-full sm:w-32 bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-primary h-2 rounded-full"
                   style={{ width: `${enrollment.progress}%` }}
@@ -76,22 +76,20 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
               </div>
             </div>
 
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild className="w-full sm:w-auto">
               <Link
                 href={`/admin/estudiantes/${enrollment.studentId}`}
-                //href={`/admin/cursos/`}
               >
                 <span className="flex items-center">Ver Estudiante</span>
               </Link>
             </Button>
-            <Button variant="ghost" disabled={loading} asChild>
+            <Button variant="ghost" disabled={loading} asChild className="w-full sm:w-auto">
               <span onClick={handleRemove} className="cursor-pointer flex items-center">
                 {
                   loading
                     ? <span className="flex items-center gap-2 text-red-500"><Loader2 className="size-4 animate-spin" /> Eliminado</span>
                     : <Trash2 className="size-5 text-red-500" />
                 }
-
               </span>
             </Button>
           </div>
