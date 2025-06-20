@@ -9,11 +9,9 @@ import {
 import { useFetchContents } from "@/hooks/contenidos"
 import { useFetchModules } from "@/hooks/modulos"
 import { useFetchCourses } from "@/hooks/cursos"
-import React, { useRef, useEffect } from "react"
-import gsap from "gsap"
-import { StatCard } from "../StatCard"
-import { SkeletonCard } from "../SkeletonCard"
-
+import React from "react"
+import StatCard from "../StatCard"
+import SkeletonCard from "../SkeletonCard"
 // Utilidad para convertir duración "mm:ss" o "hh:mm:ss" a minutos
 function durationToMinutes(duration: string) {
     const parts = duration.split(":").map(Number)

@@ -11,8 +11,8 @@ import {
 import { useFetchEnrollments } from "@/hooks/enrollments"
 import { useFetchCourses } from "@/hooks/cursos"
 import { useFetchClientes } from "@/hooks/estudiantes/clientes"
-import { StatCard } from "../StatCard"
-import { SkeletonCard } from "../SkeletonCard"
+import StatCard from "../StatCard"
+import SkeletonCard from "../SkeletonCard"
 
 
 export default function EstudiantesDashboard() {

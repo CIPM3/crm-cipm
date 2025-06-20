@@ -1,7 +1,7 @@
 import gsap from "gsap"
 import { useRef,useEffect } from "react"
 
-export const StatCard = ({
+const StatCard = ({
   icon,
   label,
   value,
@@ -47,3 +47,5 @@ export const StatCard = ({
     </div>
   )
 }
+
+export default StatCard
