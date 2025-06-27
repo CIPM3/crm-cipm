@@ -34,7 +34,7 @@ const TableAgendador = ({ setOPEN_DELETE, setOPEN_EDIT, Agendador, estudiantes, 
                     <TableHead>Modalidad y Horario Presencial</TableHead>
                 </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className='h-[20dvh]'>
 
                 {isLoading ? (
                     [...Array(3)].map((_, i) => (

@@ -37,9 +37,9 @@ export function ScheduleEditor() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-center">
         <h2 className="text-2xl font-bold">Asignación de Horarios</h2>
-        <Button onClick={handleSave}>Guardar Cambios</Button>
+        <Button className='w-full lg:w-fit ml-auto' onClick={handleSave}>Guardar Cambios</Button>
       </div>
 
       <div className="space-y-6">

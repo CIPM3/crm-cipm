@@ -82,7 +82,7 @@ const Index = ({ params }: { params: { id: string } }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-[87dvh]">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - {Instructor?.name}</h1>
                 <p className="text-muted-foreground">Información para la gestión de las clases de prueba</p>

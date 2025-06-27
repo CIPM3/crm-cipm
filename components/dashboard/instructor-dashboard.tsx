@@ -58,7 +58,7 @@ export function InstructorDashboard() {
   return (
     <div className="space-y-6">
       {/* Tarjetas (stats) */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
         {isLoading ? (
           <>
             <Skeleton className="h-24 w-full" />
@@ -117,7 +117,7 @@ export function InstructorDashboard() {
       </Card>
 
       {/* Sección de gráficas */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
         {isLoading ? (
           <>
             <Skeleton className="h-64 w-full" />
@@ -126,43 +126,54 @@ export function InstructorDashboard() {
           </>
         ) : (
           <>
-            <ExtendedRechartCard
-              title="Agendados por semana"
-              description="Cantidad por numero de semana"
-              data={estadisticas.porSemana}
-              type="bar"
-              dataKey="total"
-              nameKey="week"
-              colors={COLORS}
-            />
-            <ExtendedRechartCard
-              title="Distribución por Horario"
-              description="Porporción de clases por hora"
-              data={estadisticas.porHorario}
-              type="pie"
-              dataKey="total"
-              nameKey="horario"
-              colors={COLORS}
-            />
-            <ExtendedRechartCard
-              title="Distribución por Dia"
-              description="Ej. L-V, S-D"
-              data={estadisticas.porDia}
-              type="bar"
-              dataKey="total"
-              nameKey="dia"
-              colors={COLORS}
-              barOrientation="horizontal"
-            />
-            <ExtendedRechartCard
-              title="Distribución por nivel"
-              description="Estudiantes segun el nivel"
-              data={estadisticas.porNivel}
-              type="pie"
-              dataKey="total"
-              nameKey="nivel"
-              colors={COLORS}
-            />
+            <div className="col-span-2 lg:col-span-1">
+              <ExtendedRechartCard
+                title="Agendados por semana"
+                description="Cantidad por numero de semana"
+                data={estadisticas.porSemana}
+                type="bar"
+                dataKey="total"
+                nameKey="week"
+                colors={COLORS}
+              />
+            </div>
+            <div className="col-span-2 lg:col-span-1">
+              <ExtendedRechartCard
+                title="Distribución por Horario"
+                description="Porporción de clases por hora"
+                data={estadisticas.porHorario}
+                type="pie"
+                dataKey="total"
+                nameKey="horario"
+                colors={COLORS}
+              />
+            </div>
+
+            <div className="col-span-2 lg:col-span-1">
+              <ExtendedRechartCard
+                title="Distribución por Dia"
+                description="Ej. L-V, S-D"
+                data={estadisticas.porDia}
+                type="bar"
+                dataKey="total"
+                nameKey="dia"
+                colors={COLORS}
+                barOrientation="horizontal"
+              />
+            </div>
+
+            <div className="col-span-2 lg:col-span-1">
+              <ExtendedRechartCard
+                title="Distribución por nivel"
+                description="Estudiantes segun el nivel"
+                data={estadisticas.porNivel}
+                type="pie"
+                dataKey="total"
+                nameKey="nivel"
+                colors={COLORS}
+              />
+            </div>
+
             <div className="col-span-2">
               <ExtendedRechartCard
                 title="Distribución por Maestro"

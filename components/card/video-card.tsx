@@ -1,4 +1,6 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect, useRef } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Clock, Edit, Play } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -6,15 +8,28 @@ import { Button } from '@/components/ui/button'
 import { VideoType } from '@/types'
 import Link from 'next/link'
 import { DeleteVideoDialog } from '../dialog/delete-video-dialog'
+import gsap from 'gsap'
 
 interface Props {
     video: VideoType | any;
-    type: 'crm' | 'cliente'
+    type: 'crm' | 'cliente',
+    delay: number
 }
 
-const VideoCard = ({ video, type }: Props) => {
+const VideoCard = ({ video, type,delay=0 }: Props) => {
+    const cardRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (cardRef.current) {
+            gsap.fromTo(
+                cardRef.current,
+                { opacity: 0, x: -50 },
+                { opacity: 1, x: 0, duration: 0.8, delay, ease: "power2.out" }
+            )
+        }
+    }, [delay])
     return (
-        <Card key={video.id} className="overflow-hidden">
+        <Card ref={cardRef} key={video.id} className="overflow-hidden">
             <div className="aspect-video w-full overflow-hidden bg-muted relative">
                 <img
                     src={`/placeholder.svg?height=200&width=400&text=${encodeURIComponent(video.title)}`}

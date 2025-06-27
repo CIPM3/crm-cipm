@@ -7,7 +7,7 @@ export default function StudentInfoCard({ student }: { student: any }) {
   const CreatedAt = format(new Date(student.createdAt), "dd/MM/yyyy") || new Date().toISOString();
   
   return (
-    <Card>
+    <Card className="col-span-2 lg:col-span-3 xl:col-span-1">
       <CardHeader>
         <CardTitle>Información Personal</CardTitle>
       </CardHeader>

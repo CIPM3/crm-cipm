@@ -5,7 +5,7 @@ import { CheckSquare } from "lucide-react"
 export default function TasksTab() {
   return (
     <div className="space-y-4">
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row justify-between gap-3">
         <h3 className="text-lg font-medium">Tareas Relacionadas</h3>
         <Button size="sm">
           <CheckSquare className="mr-2 h-4 w-4" />

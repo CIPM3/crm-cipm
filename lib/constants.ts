@@ -37,11 +37,11 @@ export const ADMIN_NAVS = [
     //     href: "/admin/contenido",
     //     icon: FileText,
     //   },
-    //   {
-    //     title: "Videos",
-    //     href: "/admin/videos",
-    //     icon: Video,
-    //   },
+      {
+        title: "Videos",
+        href: "/admin/videos",
+        icon: Video,
+      },
     //   {
     //     title: "Reportes",
     //     href: "/admin/reportes",

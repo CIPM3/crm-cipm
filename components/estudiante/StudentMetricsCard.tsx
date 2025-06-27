@@ -14,13 +14,13 @@ export default function StudentMetricsCard({ student, enrollments }: { student: 
     : "N/A"
 
   return (
-    <Card className="md:col-span-2">
+    <Card className="col-span-2 lg:col-span-3 xl:col-span-2">
       <CardHeader>
         <CardTitle>Métricas del Estudiante</CardTitle>
         <CardDescription>Resumen de actividad y progreso</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <MetricItem icon={<BookOpen />} label="Cursos Inscritos" value={enrollments.length} description="Total de cursos en los que está inscrito" />
           <MetricItem icon={<Award />} label="Cursos Completados" value={completedCourses} description={`${totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0}% de tasa de finalización`} />
           <MetricItem icon={<GraduationCap />} label="Progreso Promedio" value={`${averageProgress}%`} description="Promedio de avance en todos los cursos" />

@@ -2,7 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import React, { useState } from 'react'
-import { ClasePruebaDashboard } from "./clasePrueba/ClasePrueba.dashboard"
+import ClasePruebaDashboard from "./clasePrueba/ClasePrueba.dashboard"
 import CursosDashboard from "./cursos/CursosDashboard"
 import VideosDashboard from "./videos/VideosDashboard"
 import EstudiantesDashboard from "./estudiantes/EstudiantesDashboard"
@@ -26,10 +26,9 @@ const index = () => {
           <p className="text-muted-foreground">Resumen de métricas y rendimiento de la plataforma</p>
         </div>
       </div>
-      <Tabs defaultValue="cursos" className="w-full">
+      <Tabs defaultValue="clase-prueba">
         <TabsList
-          className="w-full flex gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide py-2 md:pl-0 pl-[30dvh]"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className="w-full overflow-x-auto pl-[70vw] sm:pl-0"
         >
           {tabsInfo.map((tab) => (
             <TabsTrigger

@@ -12,7 +12,7 @@ import { useFetchContents } from "@/hooks/contenidos"
 
 import React, { useRef, useEffect } from "react"
 import gsap from "gsap"
-import { SkeletonCard } from "../SkeletonCard"
+import SkeletonCard from "../SkeletonCard"
 
 const StatCard = ({
     icon,

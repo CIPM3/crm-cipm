@@ -20,7 +20,7 @@ const page = () => {
                 <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>
             </div>
 
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                 {canViewAgendarClase && (
                     <Card className="border-l-4 border-l-primary">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

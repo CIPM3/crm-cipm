@@ -23,14 +23,14 @@ export default function CoursesTab({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedEnrollment, setSelectedEnrollment] = useState<any>(null)
   const [isUnenrollDialogOpen, setIsUnenrollDialogOpen] = useState(false)
-  
-  const setCanRefetch = useEnrollmentsStore((state)=> state.setCanRefetch)
-  const {remove,loading} = useDeleteEnrollment()
+
+  const setCanRefetch = useEnrollmentsStore((state) => state.setCanRefetch)
+  const { remove, loading } = useDeleteEnrollment()
 
   const router = useRouter();
-  
 
-  const handleUnenroll = async() => {
+
+  const handleUnenroll = async () => {
     if (!selectedEnrollment) return
     await remove(selectedEnrollment.id)
     router.replace("/admin/estudiantes/")
@@ -40,19 +40,19 @@ export default function CoursesTab({
     <div className="space-y-6">
       <div className="flex justify-between">
         <h3 className="text-lg font-medium">Cursos Inscritos</h3>
-        
+
       </div>
 
       <div className="grid gap-4">
         {enrollments.length > 0 ? (
           enrollments.map((e) => {
-            const {course} = useGetCourseById(e.courseId)
+            const { course } = useGetCourseById(e.courseId)
             return (
               <Card key={e.id}>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-center">
                     <CardTitle>{course?.title}</CardTitle>
-                    <Badge variant={e.status === "Completado" ? "default" : "secondary"}>{e.status}</Badge>
+                    <Badge className="text-center" variant={e.status === "Completado" ? "default" : "secondary"}>{e.status}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="grid gap-4">
@@ -64,34 +64,36 @@ export default function CoursesTab({
                     <Item icon={<Award />} label="Duración" value={course?.duration!!} />
                   </div>
 
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span>Progreso: {e.progress}%</span>
-                      
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-gray-200">
-                      <div className="h-2.5 rounded-full bg-primary" style={{ width: `${e.progress}%` }} />
-                    </div>
-                  </div>
+                  <div className="flex-1 flex flex-col gap-2 lg:flex-row">
+                    <div className="flex-1 mb-4 lg:mb-0">
+                      <div className="flex justify-between mb-1">
+                        <span>Progreso: {e.progress}%</span>
 
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedEnrollment(e)
-                        setIsUnenrollDialogOpen(true)
-                      }}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Dar de Baja
-                    </Button>
-                    <Button size="sm" asChild>
-                      <Link href={`/admin/cursos/${course?.id}`}>
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        Ver Curso
-                      </Link>
-                    </Button>
+                      </div>
+                      <div className="w-full h-2.5 rounded-full bg-gray-200">
+                        <div className="h-2.5 rounded-full bg-primary" style={{ width: `${e.progress}%` }} />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedEnrollment(e)
+                          setIsUnenrollDialogOpen(true)
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Dar de Baja
+                      </Button>
+                      <Button size="sm" asChild>
+                        <Link href={`/admin/cursos/${course?.id}`}>
+                          <BookOpen className="mr-2 h-4 w-4" />
+                          Ver Curso
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -109,7 +111,7 @@ export default function CoursesTab({
               <Button onClick={() => {
                 setIsDialogOpen(true)
                 router.push('/admin/cursos')
-                }}>
+              }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Inscribir en un Curso
               </Button>

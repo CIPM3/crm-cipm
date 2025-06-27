@@ -103,7 +103,7 @@ export function AgendadorDashboard() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
         {loading ? (
           <>
             <Skeleton className="h-64 w-full" />
@@ -112,7 +112,7 @@ export function AgendadorDashboard() {
           </>
         ) : (
           <>
-            <div className="col-span-1 md:col-span-2 xl:col-span-3">
+            <div className="">
               <ExtendedRechartCard
                 title="Agendados por Semana"
                 description="Cantidad de eventos agendados por semana"

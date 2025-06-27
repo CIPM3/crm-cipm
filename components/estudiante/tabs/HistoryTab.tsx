@@ -15,7 +15,7 @@ export default function HistoryTab({ enrollments }: { enrollments: any[] }) {
         {enrollments.map((e) => {
           const {course} = useGetCourseById(e.courseId)
           return (
-            <div key={e.id} className="flex items-start gap-4 border p-4 rounded-md">
+            <div key={e.id} className="flex items-start gap-4 border rounded-md">
               <div className="rounded-full bg-primary/10 p-2">
                 <BookOpen className="h-4 w-4 text-primary" />
               </div>

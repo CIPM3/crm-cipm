@@ -12,7 +12,7 @@ export default function StudentTabs({ student, initialEnrollments:enrollments }:
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList className="flex flex-wrap">
+      <TabsList className="flex overflow-x-auto">
         <TabsTrigger value="overview">Resumen</TabsTrigger>
         <TabsTrigger value="courses">Cursos</TabsTrigger>
         <TabsTrigger value="tasks">Tareas</TabsTrigger>

@@ -54,7 +54,7 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
   return (
     <Card key={enrollment.id}>
       <CardContent className="p-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
           <div className="flex-1">
             <p className="font-medium">Estudiante: {usuario?.name}</p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
@@ -63,7 +63,7 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="my-2 flex flex-col lg:flex-row gap-4">
             <div className="w-full sm:w-auto">
               <Badge variant={enrollment.status === "Completado" ? "default" : "secondary"}>
                 {enrollment.status}
@@ -76,22 +76,24 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
               </div>
             </div>
 
-            <Button variant="ghost" asChild className="w-full sm:w-auto">
-              <Link
-                href={`/admin/estudiantes/${enrollment.studentId}`}
-              >
-                <span className="flex items-center">Ver Estudiante</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" disabled={loading} asChild className="w-full sm:w-auto">
-              <span onClick={handleRemove} className="cursor-pointer flex items-center">
-                {
-                  loading
-                    ? <span className="flex items-center gap-2 text-red-500"><Loader2 className="size-4 animate-spin" /> Eliminado</span>
-                    : <Trash2 className="size-5 text-red-500" />
-                }
-              </span>
-            </Button>
+            <div className="flex">
+              <Button variant="ghost" asChild className="w-full sm:w-auto">
+                <Link
+                  href={`/admin/estudiantes/${enrollment.studentId}`}
+                >
+                  <span className="flex items-center">Ver Estudiante</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" disabled={loading} asChild className="w-full sm:w-auto">
+                <span onClick={handleRemove} className="cursor-pointer flex items-center">
+                  {
+                    loading
+                      ? <span className="flex items-center gap-2 text-red-500"><Loader2 className="size-4 animate-spin" /> Eliminado</span>
+                      : <Trash2 className="size-5 text-red-500" />
+                  }
+                </span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

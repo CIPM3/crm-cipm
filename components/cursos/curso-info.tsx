@@ -7,7 +7,7 @@ import Link from "next/link";
 export function CursoInfo({ course, modules, enrollments }: { course: any; modules: any[]; enrollments: any[] }) {
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle>Información del Curso</CardTitle>
@@ -56,7 +56,7 @@ export function CursoInfo({ course, modules, enrollments }: { course: any; modul
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="md:col-span-2 lg:col-span-1">
         <CardHeader>
           <CardTitle>Estado</CardTitle>
         </CardHeader>

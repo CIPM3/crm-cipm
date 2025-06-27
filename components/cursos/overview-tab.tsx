@@ -36,7 +36,7 @@ export function OverviewTab({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <h3 className="text-lg font-medium mb-2">Módulos</h3>
               <div className="space-y-2">

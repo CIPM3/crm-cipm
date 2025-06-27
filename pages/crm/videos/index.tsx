@@ -1,10 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { modules, getCourseById } from "@/lib/utils"
-import { Clock, Edit, Play, Plus } from "lucide-react"
-import { DeleteVideoDialog } from "@/components/dialog/delete-video-dialog"
+import { Plus } from "lucide-react"
 import VideoCard from "@/components/card/video-card"
 
 export default function AdminVideosPage() {
@@ -24,7 +21,7 @@ export default function AdminVideosPage() {
   })
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[87dvh]">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold tracking-tight">Gestión de Videos</h1>
         <Button asChild>
@@ -40,6 +37,7 @@ export default function AdminVideosPage() {
             key={video.id}
             type="crm"
             video={video}
+            delay={index * 0.3}
           />
         ))}
       </div>

@@ -61,7 +61,7 @@ const index = () => {
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - Formacion Grupo</h1>
                 <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>
             </div>
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <Card className="border-l-4 border-l-primary">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Horarios</CardTitle>

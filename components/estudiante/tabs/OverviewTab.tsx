@@ -15,14 +15,15 @@ export default function OverviewTab({ enrollments }: { enrollments: any[] }) {
         {recent.map((enrollment) => {
           const course = getCourseById(enrollment.courseId)
           return (
-            <div key={enrollment.id} className="flex items-start gap-4 rounded-md border p-4">
-              <div className="rounded-full bg-primary/10 p-2">
+            <div key={enrollment.id} className="">
+              <div className="rounded-full bg-primary/10 flex items-center gap-2 mb-2">
                 <BookOpen className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium">
                   {enrollment.status === "Completado" ? "Completó el curso" : "Progreso en el curso"}
                 </p>
+              </div>
+              <div className="flex-1 space-y-1">
+                
                 <p className="text-sm text-muted-foreground">{course?.title}</p>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
                   <div

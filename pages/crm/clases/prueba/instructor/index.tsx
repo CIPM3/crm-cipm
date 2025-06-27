@@ -61,7 +61,7 @@ const Index = () => {
                 <p className="text-muted-foreground">Informacion para la gestion de las clases de prueba</p>
             </div>
 
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {
                     InstructoresRoles.map(profesor => (
                         <Card key={profesor.id} className="border-l-4 border-l-primary">

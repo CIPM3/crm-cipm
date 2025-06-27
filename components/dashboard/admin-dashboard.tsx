@@ -52,7 +52,7 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Tarjetas de estadísticas generales */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
         {isLoading ? (
           <>
             <Skeleton className="h-24 w-full" />
@@ -95,7 +95,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Gráficas combinadas */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 mt-8">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 mt-8">
         {isLoading ? (
           <>
             <Skeleton className="h-64 w-full" />

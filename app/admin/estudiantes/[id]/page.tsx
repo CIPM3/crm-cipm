@@ -7,8 +7,6 @@ import StudentTabs from "@/components/estudiante/StudentTabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useGetClienteById } from "@/hooks/estudiantes/clientes"
 import { useGetEnrollmentsByStudentId } from "@/hooks/enrollments"
-import { useEnrollmentsStore } from "@/store/useEnrollmentStore"
-import { useEffect } from "react"
 
 export default function StudentPage({ params }: { params: { id: string } }) {
   // TODOS los hooks SIEMPRE se llaman
@@ -39,7 +37,7 @@ export default function StudentPage({ params }: { params: { id: string } }) {
   return (
     <div className="space-y-6">
       <StudentHeader student={student} />
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 xl:grid-cols-3">
         <StudentInfoCard student={student} />
         <StudentMetricsCard student={student} enrollments={enrollments} />
       </div>

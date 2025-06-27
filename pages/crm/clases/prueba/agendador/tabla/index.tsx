@@ -45,7 +45,7 @@ const Index = ({ params }: { params: { id: string } }) => {
     const Agendador = Agendadores?.find((instructor) => instructor.id === params.id);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 h-[86dvh]">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Clases Prueba - {Agendador?.name}</h1>
             </div>
@@ -79,11 +79,11 @@ const Index = ({ params }: { params: { id: string } }) => {
                 open={OPEN_DELETE}
             />
 
-            <div className="flex justify-between gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-2">
                 <h1 className="text-2xl font-bold tracking-tight">Tabla de agendados</h1>
                 <button
                     onClick={() => setOPEN_CREATE(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                    className="bg-blue-500 w-fit ml-auto text-white px-4 py-2 rounded-lg flex items-center gap-2"
                 >
                     <Plus size={16} />
                     Agregar Clase Prueba
