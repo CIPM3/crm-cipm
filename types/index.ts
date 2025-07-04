@@ -20,17 +20,28 @@ export interface FiltersType {
 }
 
 export interface VideoType {
-    moduleId: string;
-    moduleTitle: string;
-    courseId: string;
-    courseName: string;
-    moduleStatus: string;
+    moduleId?: string;
+    moduleTitle?: string;
+    courseId?: string;
+    courseName?: string;
+    moduleStatus?: string;
     id: string;
     type: string;
     title: string;
     duration: string;
     url: string;
     questions?: undefined;
+}
+
+export interface CreateVideoForm {
+  id:string
+  title: string
+  description: string
+  url: string
+  duration: string       // formato "mm:ss" o "hh:mm:ss"
+  thumbnail?: string
+  tags?: string          // etiquetas separadas por comas
+  featured?: boolean
 }
 
 export interface ContenidoType {

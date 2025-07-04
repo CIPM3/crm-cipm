@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -10,31 +8,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Save, Video, Clock, Link2, Tag } from "lucide-react"
-import { modules, getCourseById } from "@/lib/utils"
+import { useCreateVideo } from "@/hooks/videos"
 
 export default function NewVideoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedCourseId, setSelectedCourseId] = useState("")
+  const [formError, setFormError] = useState<string | null>(null)
   const router = useRouter()
 
-  // Obtener cursos únicos de los módulos
-  const courses = [...new Set(modules.map((module) => module.courseId))]
-    .map((courseId) => getCourseById(courseId))
-    .filter(Boolean)
-
-  // Filtrar módulos por curso seleccionado
-  const filteredModules = selectedCourseId ? modules.filter((module) => module.courseId === selectedCourseId) : []
+  const {create} = useCreateVideo()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setFormError(null)
+
+    const formData = new FormData(e.currentTarget)
+    const title = formData.get("title")?.toString().trim() || ""
+    const description = formData.get("description")?.toString().trim() || ""
+    const url = formData.get("url")?.toString().trim() || ""
+    const duration = formData.get("duration")?.toString().trim() || ""
+    const thumbnail = formData.get("thumbnail")?.toString().trim() || ""
+    const tags = formData.get("tags")?.toString().trim() || ""
+    const featured = formData.get("featured") === "on"
+
+    // Validaciones básicas
+    if (!title || !description || !url || !duration) {
+      setFormError("Todos los campos obligatorios deben estar completos.")
+      return
+    }
+    // Validar duración formato mm:ss o hh:mm:ss
+    if (!/^(\d{1,2}:)?\d{1,2}:\d{2}$/.test(duration)) {
+      setFormError("La duración debe tener formato mm:ss o hh:mm:ss")
+      return
+    }
+
+    // Mostrar los datos en consola
+    let data = {
+      title,
+      description,
+      url,
+      duration,
+      thumbnail,
+      tags,
+      featured,
+    }
+
     setIsSubmitting(true)
-
-    // Simulación de envío de datos
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Redireccionar a la lista de videos
+    await create(data)
     router.push("/admin/videos")
   }
 
@@ -87,42 +107,6 @@ export default function NewVideoPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="course">Curso</Label>
-                <Select name="course" onValueChange={(value) => setSelectedCourseId(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un curso" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((course) => (
-                      <SelectItem key={course?.id} value={course?.id || ""}>
-                        {course?.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="module">Módulo</Label>
-                <Select name="module">
-                  <SelectTrigger disabled={!selectedCourseId}>
-                    <SelectValue
-                      placeholder={selectedCourseId ? "Selecciona un módulo" : "Primero selecciona un curso"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredModules.map((module) => (
-                      <SelectItem key={module.id} value={module.id}>
-                        {module.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
                 <Label htmlFor="url">URL del Video</Label>
                 <div className="relative">
                   <Link2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -165,6 +149,10 @@ export default function NewVideoPage() {
               <Switch id="featured" name="featured" />
             </div>
 
+            {formError && (
+              <div className="text-red-500 text-sm font-medium">{formError}</div>
+            )}
+
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" asChild>
                 <Link href="/admin/videos">Cancelar</Link>
@@ -180,4 +168,3 @@ export default function NewVideoPage() {
     </div>
   )
 }
-
