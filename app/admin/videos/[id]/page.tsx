@@ -9,8 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useGetVideoById } from "@/hooks/videos"
-import { DeleteVideoDialog } from "@/components/dialog/delete-video-dialog"
+import { useGetVideoById, useUpdateVideo } from "@/hooks/videos"
+import { DeleteVideoDialog } from "@/components/dialog/video/delete-video-dialog";
 
 function VideoActions({
   isEditing,
@@ -45,7 +45,7 @@ function VideoActions({
             <Edit className="mr-2 h-4 w-4" />
             Editar
           </Button>
-          {/* <DeleteVideoDialog videoId={videoId} videoTitle={videoTitle} variant="outline" /> */}
+          <DeleteVideoDialog videoId={videoId} videoTitle={videoTitle} variant="outline" />
         </>
       )}
     </div>
@@ -195,6 +195,8 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
   const { video, loading, error } = useGetVideoById(params.id)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState(initialFormState(video, params.id))
+  const [formError, setFormError] = useState<string | null>(null)
+  const {update} = useUpdateVideo()
 
   React.useEffect(() => {
     setFormData(initialFormState(video, params.id))
@@ -205,10 +207,27 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSave = () => {
-    // Lógica para guardar los cambios
+  const handleSave = async () => {
+    setFormError(null)
+    // Validaciones
+    if (
+      !formData.title.trim() ||
+      !formData.duration.trim() ||
+      !formData.url.trim() ||
+      !formData.description.trim()
+    ) {
+      setFormError("Todos los campos son obligatorios.")
+      return
+    }
+    // Validar duración formato mm:ss o hh:mm:ss
+    if (!/^(\d{1,2}:)?\d{1,2}:\d{2}$/.test(formData.duration.trim())) {
+      setFormError("La duración debe tener formato mm:ss o hh:mm:ss")
+      return
+    }
+    // Aquí iría la lógica para guardar los cambios
     setIsEditing(false)
-    console.log("Datos guardados:", formData)
+    setFormError(null)
+    await update(formData.id,formData)
   }
 
   if (loading) {
@@ -294,12 +313,8 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
           </Button>
           <VideoActions
             isEditing={isEditing}
-            onEdit={() => {
-              // setIsEditing(true)
-            }}
-            onCancel={() => {
-              //setIsEditing(false)
-            }}
+            onEdit={() => setIsEditing(true)}
+            onCancel={() => setIsEditing(false)}
             onSave={handleSave}
             videoId={formData.id}
             videoTitle={formData.title}
@@ -327,7 +342,12 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
             </CardHeader>
             <CardContent>
               {isEditing ? (
-                <VideoFormFields formData={formData} onChange={handleChange} />
+                <>
+                  <VideoFormFields formData={formData} onChange={handleChange} />
+                  {formError && (
+                    <div className="text-red-500 text-sm font-medium mt-2">{formError}</div>
+                  )}
+                </>
               ) : (
                 <VideoDetailView videoData={formData} />
               )}

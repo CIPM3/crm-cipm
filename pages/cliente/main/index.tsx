@@ -20,8 +20,10 @@ export default function HomePage() {
         <Caracteristicas/>
         
         <CursosDestacados/>
-        {/*
+
         <VideosDestacados/>
+        {/*
+        
 
         <Testimonios/>
         */}

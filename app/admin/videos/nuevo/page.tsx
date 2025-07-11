@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -14,9 +14,62 @@ import { useCreateVideo } from "@/hooks/videos"
 export default function NewVideoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [url, setUrl] = useState("")
+  const [duration, setDuration] = useState("")
+  const [autoDuration, setAutoDuration] = useState(false)
   const router = useRouter()
+  const { create } = useCreateVideo()
 
-  const {create} = useCreateVideo()
+  const lastUrlRef = useRef<string>("")
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setUrl(value)
+    setAutoDuration(false)
+    lastUrlRef.current = value
+
+    if (value && /^https?:\/\/.+\.(mp4|webm|ogg)$/i.test(value)) {
+      const video = document.createElement("video")
+      video.src = value
+      video.preload = "metadata"
+      video.crossOrigin = "anonymous" // Intenta usar CORS
+
+      video.onloadedmetadata = () => {
+        if (lastUrlRef.current === value && video.duration && !isNaN(video.duration)) {
+          const totalSeconds = Math.floor(video.duration)
+          const hours = Math.floor(totalSeconds / 3600)
+          const minutes = Math.floor((totalSeconds % 3600) / 60)
+          const seconds = totalSeconds % 60
+          const formatted =
+            hours > 0
+              ? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+                .toString()
+                .padStart(2, "0")}`
+              : `${minutes}:${seconds.toString().padStart(2, "0")}`
+              
+          setDuration(formatted)
+          console.log(duration)
+          setAutoDuration(true)
+        }
+        // Limpia el objeto video
+        video.remove()
+      }
+
+      video.onerror = () => {
+        if (lastUrlRef.current === value) {
+          setFormError("No se pudo obtener la duración del video. Verifica la URL o los permisos del archivo.")
+          setDuration("")
+          setAutoDuration(false)
+        }
+        video.remove()
+      }
+    }
+  }
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDuration(e.target.value)
+    setAutoDuration(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -25,8 +78,6 @@ export default function NewVideoPage() {
     const formData = new FormData(e.currentTarget)
     const title = formData.get("title")?.toString().trim() || ""
     const description = formData.get("description")?.toString().trim() || ""
-    const url = formData.get("url")?.toString().trim() || ""
-    const duration = formData.get("duration")?.toString().trim() || ""
     const thumbnail = formData.get("thumbnail")?.toString().trim() || ""
     const tags = formData.get("tags")?.toString().trim() || ""
     const featured = formData.get("featured") === "on"
@@ -42,7 +93,6 @@ export default function NewVideoPage() {
       return
     }
 
-    // Mostrar los datos en consola
     let data = {
       title,
       description,
@@ -110,7 +160,15 @@ export default function NewVideoPage() {
                 <Label htmlFor="url">URL del Video</Label>
                 <div className="relative">
                   <Link2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="url" name="url" placeholder="https://ejemplo.com/video.mp4" className="pl-10" required />
+                  <Input
+                    id="url"
+                    name="url"
+                    placeholder="https://ejemplo.com/video.mp4"
+                    className="pl-10"
+                    value={url}
+                    onChange={handleUrlChange}
+                    required
+                  />
                 </div>
               </div>
 
@@ -118,7 +176,19 @@ export default function NewVideoPage() {
                 <Label htmlFor="duration">Duración</Label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="duration" name="duration" placeholder="15:30" className="pl-10" required />
+                  <Input
+                    id="duration"
+                    name="duration"
+                    placeholder="15:30"
+                    className="pl-10"
+                    value={duration}
+                    onChange={handleDurationChange}
+                    required
+                    readOnly={autoDuration}
+                  />
+                  {autoDuration && (
+                    <span className="absolute right-3 top-3 text-xs text-green-600">Auto</span>
+                  )}
                 </div>
               </div>
             </div>

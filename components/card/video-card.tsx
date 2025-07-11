@@ -28,11 +28,13 @@ const VideoCard = ({ video, type,delay=0 }: Props) => {
             )
         }
     }, [delay])
+
+    const thumbnail = video.thumbnail ? video.thumbnail  : `/placeholder.svg?height=200&width=400&text=${encodeURIComponent(video.title)}`
     return (
         <Card ref={cardRef} key={video.id} className="overflow-hidden">
             <div className="aspect-video w-full overflow-hidden bg-muted relative">
                 <img
-                    src={`/placeholder.svg?height=200&width=400&text=${encodeURIComponent(video.title)}`}
+                    src={thumbnail}
                     alt={video.title}
                     className="h-full w-full object-cover"
                 />
@@ -57,10 +59,7 @@ const VideoCard = ({ video, type,delay=0 }: Props) => {
             </CardHeader>
             <CardContent className="p-4 pt-0">
                 <div className="flex flex-col gap-1 mb-4">
-                    <div className="flex items-center gap-2">
-                        <Badge variant="outline">{video.courseName}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Módulo: {video.moduleTitle}</p>
+                    
                     <div className="flex items-center justify-between gap-2">
                         <div className='flex items-center gap-2'>
                             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -68,9 +67,17 @@ const VideoCard = ({ video, type,delay=0 }: Props) => {
                         </div>
                         {
                             type === "cliente" && (
-                                <Button variant="outline" size="sm">
+                                <Link 
+                                
+                                href={''}
+                                //TODO: TERMINAR LA PAGINA DE VIDEOS
+                                //href={`/videos/${video.id}`}
+                                >
+                                 <Button variant="outline" size="sm">
                                     Ver Video
                                 </Button>
+                                </Link>
+                               
                             )
                         }
                     </div>
