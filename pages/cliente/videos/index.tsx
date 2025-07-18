@@ -6,6 +6,7 @@ import HeaderCliente from "@/components/header/header-cliente"
 import FiltersSearch from "@/components/filters/filters-search"
 import VideoCard from "@/components/card/video-card";
 import Footer from "@/pages/cliente/main/footer";
+import InfoAdicional from "../cursos/info-adicional";
 
 export default function VideosPage() {
   // Extraer todos los videos de los módulos
@@ -53,6 +54,8 @@ export default function VideosPage() {
             {allVideos.map((video, index) => (
               <Link href={`/videos/${video.id}`} key={index} className="h-full">
                 <VideoCard
+                  key={video.id}
+                  delay={index * 0.1}
                   video={video}
                   type="cliente"
                 />
@@ -60,41 +63,8 @@ export default function VideosPage() {
             ))}
           </div>
 
-          {/* Sección de información adicional */}
-          <div className="mt-16 bg-muted/50 rounded-lg p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">Aprende a tu ritmo</h2>
-              <p className="text-muted-foreground">Accede a contenido educativo de calidad cuando lo necesites</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Play className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Videos Explicativos</h3>
-                <p className="text-muted-foreground">
-                  Explicaciones claras y concisas de conceptos clave por expertos en la materia.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Clock className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Disponible 24/7</h3>
-                <p className="text-muted-foreground">
-                  Accede a los videos en cualquier momento y desde cualquier dispositivo.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Badge className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Contenido Actualizado</h3>
-                <p className="text-muted-foreground">
-                  Nuestros videos se actualizan regularmente para reflejar las últimas tendencias.
-                </p>
-              </div>
-            </div>
+          <div className="bg-muted/50 py-12 md:py-24 mt-12">
+            <InfoAdicional />
           </div>
         </div>
       </main>

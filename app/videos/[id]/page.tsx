@@ -11,15 +11,16 @@ import { useGetContentById } from "@/hooks/contenidos"
 import Header from "@/components/header/header-cliente"
 import React from "react"
 import Footer from "@/pages/cliente/main/footer"
+import ComentarioCard from "@/components/card/comentario-card"
 
 function VideoInfo({ videoData, courseData, moduleData }: any) {
   return (
     <>
-      <h1 className="text-2xl md:text-3xl font-bold mb-4">{videoData.title}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-4">{videoData?.title}</h1>
       <div className="flex flex-wrap items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">{videoData.duration}</span>
+          <span className="text-sm text-muted-foreground">{videoData?.duration}</span>
         </div>
         {courseData && <Badge>{courseData.title}</Badge>}
         {moduleData && <Badge variant="outline">{moduleData.title}</Badge>}
@@ -134,8 +135,10 @@ function CourseInfo({ courseData }: any) {
 
 export default function VideoDetailPage({ params }: { params: { id: string } }) {
   // Obtener datos de ambas fuentes
-  const { content: contentData } = useGetContentById(params.id)
-  const { video: videoIndependiente } = useGetVideoById(params.id)
+  const { content: contentData, loading: loadingContent } = useGetContentById(params.id)
+  const { video: videoIndependiente, loading: loadingVideo } = useGetVideoById(params.id)
+
+  const isLoading = loadingContent || loadingVideo
 
   let videoData: any = null
   let moduleData: any = null
@@ -155,7 +158,101 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
     videoData = videoIndependiente
   }
 
-  if (!videoData) {
+  const relatedVideos = (courseData && moduleData)
+    ? modules
+      .filter((module) => module.courseId === moduleData.courseId && module.status === "Activo")
+      .flatMap((module) =>
+        module.content
+          .filter((content) => content.type === "video" && content.id !== videoData?.id)
+          .map((video) => ({
+            ...video,
+            moduleTitle: module.title,
+          })),
+      )
+      .slice(0, 4)
+    : []
+
+  // Mostrar skeleton si está cargando
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <div className="container mx-auto py-12">
+            {/* Breadcrumb skeleton */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-10 w-10 bg-muted rounded-full animate-pulse" />
+              <div className="flex gap-2">
+                <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                {/* Video skeleton */}
+                <div className="aspect-video bg-muted rounded-lg mb-6 animate-pulse" />
+                {/* Title skeleton */}
+                <div className="h-8 w-2/3 bg-muted rounded mb-4 animate-pulse" />
+                {/* Info skeleton */}
+                <div className="flex gap-4 mb-6">
+                  <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                </div>
+                {/* Description skeleton */}
+                <div className="border-t pt-6 mb-8">
+                  <div className="h-6 w-1/4 bg-muted rounded mb-4 animate-pulse" />
+                  <div className="h-4 w-full bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-4 w-2/3 bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+                </div>
+                {/* Related videos skeleton */}
+                <div className="h-6 w-1/3 bg-muted rounded mb-4 animate-pulse" />
+                <div className="space-y-4 mb-8">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="flex gap-3">
+                      <div className="w-24 h-16 bg-muted rounded-md animate-pulse" />
+                      <div>
+                        <div className="h-4 w-32 bg-muted rounded mb-2 animate-pulse" />
+                        <div className="h-3 w-20 bg-muted rounded animate-pulse" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Comments skeleton */}
+                <div className="border-t pt-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="h-6 w-32 bg-muted rounded animate-pulse" />
+                    <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                  </div>
+                  <div className="space-y-4">
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="h-10 w-full bg-muted rounded animate-pulse" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                {/* Course info skeleton */}
+                <div className="mb-6">
+                  <div className="h-6 w-1/2 bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-4 w-full bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-4 w-1/2 bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-4 w-1/3 bg-muted rounded mb-2 animate-pulse" />
+                  <div className="h-10 w-full bg-muted rounded animate-pulse" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Mostrar mensaje si no se encontró el video
+  if (!videoData && !isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <h2 className="text-2xl font-bold mb-2">Video no encontrado</h2>
@@ -167,19 +264,6 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
     )
   }
 
-  const relatedVideos = (courseData && moduleData)
-    ? modules
-        .filter((module) => module.courseId === moduleData.courseId && module.status === "Activo")
-        .flatMap((module) =>
-          module.content
-            .filter((content) => content.type === "video" && content.id !== videoData.id)
-            .map((video) => ({
-              ...video,
-              moduleTitle: module.title,
-            })),
-        )
-        .slice(0, 4)
-    : []
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -187,28 +271,34 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
       <main className="flex-1">
         <div className="container mx-auto py-12">
           {/* Breadcrumb y navegación */}
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
             <Button variant="outline" size="icon" asChild>
-              <Link href="/videos">
+              <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="sr-only">Volver</span>
               </Link>
             </Button>
             <nav className="flex">
-              <ol className="flex items-center gap-1 text-sm text-muted-foreground">
-                <li>
-                  <Link href="/" className="hover:text-foreground">
-                    Inicio
-                  </Link>
-                </li>
-                <li>/</li>
-                <li>
-                  <Link href="/videos" className="hover:text-foreground">
-                    Videos
-                  </Link>
-                </li>
-                <li>/</li>
-                <li className="font-medium text-foreground">{videoData.title}</li>
+              <ol className="flex flex-col md:flex-row md:items-center gap-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1">
+                    <li>
+                      <Link href="/" className="hover:text-foreground">
+                        Inicio
+                      </Link>
+                    </li>
+                    <li>/</li>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <li>
+                      <Link href="/videos" className="hover:text-foreground">
+                        Videos
+                      </Link>
+                    </li>
+                    <li>/</li>
+                  </div>
+                </div>
+                <li className="font-medium text-foreground">{videoData?.title}</li>
               </ol>
             </nav>
           </div>
@@ -217,39 +307,16 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
             <div className="lg:col-span-2">
               {/* Reproductor de video */}
               <div className="aspect-video bg-black rounded-lg mb-6 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <svg
-                    className="mx-auto h-16 w-16 mb-4 text-white/70"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-xl font-medium">Reproducir video</p>
-                  <p className="text-sm text-white/70 mt-2">
-                    Regístrate o inicia sesión para ver el contenido completo
-                  </p>
-                  <div className="mt-4 flex justify-center gap-4">
-                    <Button asChild>
-                      <Link href="/register">Registrarse</Link>
-                    </Button>
-                    <Button variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                      <Link href="/login">Iniciar Sesión</Link>
-                    </Button>
-                  </div>
-                </div>
+                <video
+                  controls
+                  controlsList="nodownload"
+                  className="w-full h-full object-cover rounded-lg"
+                  src={videoData?.url}
+                  poster={videoData?.thumbnail || "/placeholder.svg?height=360&width=640&text=Video"}
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  Tu navegador no soporta la etiqueta de video.
+                </video>
               </div>
 
               <VideoInfo videoData={videoData} courseData={courseData} moduleData={moduleData} />
@@ -260,9 +327,10 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
               <div className="border-t pt-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold">Comentarios</h2>
-                  <span className="text-sm text-muted-foreground">12 comentarios</span>
+                  <span className="text-sm text-muted-foreground">1 comentario</span>
                 </div>
-                {/* ...comentarios igual... */}
+                {/* Comentario random */}
+                <ComentarioCard/>
               </div>
             </div>
             <div>
@@ -271,7 +339,7 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
           </div>
         </div>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   )
 }

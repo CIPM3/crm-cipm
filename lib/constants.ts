@@ -59,22 +59,22 @@ export const NAVS = [
         title: "Inicio",
         href: "/",
     },
-    // {
-    //     title: "Cursos",
-    //     href: "/cursos",
-    // },
-    // {
-    //     title: "Videos",
-    //     href: "/videos",
-    // },
+    {
+        title: "Cursos",
+        href: "/cursos",
+    },
+    {
+        title: "Videos",
+        href: "/",// videos falta completar
+    },
     // {
     //     title: "Testimonios",
     //     href: "/#testimonios",
     // },
-    // {
-    //     title: "Contacto",
-    //     href: "/#contacto",
-    // },
+    {
+        title: "Contacto",
+        href: "/#contacto",
+    },
 ]
 
 export const STATUS_VALS = [
