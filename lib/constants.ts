@@ -65,7 +65,7 @@ export const NAVS = [
     },
     {
         title: "Videos",
-        href: "/",// videos falta completar
+        href: "/videos",// videos falta completar
     },
     // {
     //     title: "Testimonios",

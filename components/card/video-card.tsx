@@ -69,9 +69,9 @@ const VideoCard = ({ video, type,delay=0 }: Props) => {
                             type === "cliente" && (
                                 <Link 
                                 
-                                href={''}
+                                //href={''}
                                 //TODO: TERMINAR LA PAGINA DE VIDEOS
-                                //href={`/videos/${video.id}`}
+                                href={`/videos/${video.id}`}
                                 >
                                  <Button variant="outline" size="sm">
                                     Ver Video

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { modules, getCourseById } from "@/lib/utils"
 import { ArrowLeft, BookOpen, Clock, Play } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { useGetVideoById } from "@/hooks/videos"
+import { useFetchVideos, useGetVideoById } from "@/hooks/videos"
 import { useGetContentById } from "@/hooks/contenidos"
 import Header from "@/components/header/header-cliente"
 import React from "react"
@@ -61,20 +61,62 @@ function VideoDescription({ courseData, moduleData }: any) {
   )
 }
 
-function RelatedVideos({ relatedVideos }: { relatedVideos: any[] }) {
+function RelatedVideos({ relatedVideos, videoId }: { relatedVideos: any[], videoId?: string }) {
+  const { videos, loading, error } = useFetchVideos()
+
+  if (error) {
+    return <div className="text-red-500">Error al cargar videos relacionados.</div>
+  }
+
+  // Filtrar videos relacionados, excluyendo el video actual
+  if (videoId) {
+    relatedVideos = videos.filter(video => video.id !== videoId).slice(0, 4)
+  } else {
+    relatedVideos = videos.slice(0, 4)
+  }
+
+
   if (!relatedVideos.length) {
     return <div className="text-muted-foreground">No hay videos relacionados.</div>
   }
+
   return (
-    <>
+    <div className="w-full h-fit pb-1  shadow-md shadow-black/10 px-4 rounded-lg">
       <h3 className="font-bold text-lg mb-4">Videos relacionados</h3>
-      <div className="space-y-4 mb-8">
-        {relatedVideos.map((video, index) => (
+      <div className="space-y-4 mb-8 grid">
+
+        {
+          loading && (
+            <>
+              {
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div className="flex gap-3 group">
+                    <div className="relative size-28 h-20 flex-shrink-0">
+                      <div className="animate-pulse w-full h-full object-cover rounded-md bg-muted" />
+                    </div>
+                    <div className="w-full flex flex-col gap-2">
+                      <div className="animate-pulse bg-muted w-full h-3 rounded-md" />
+                      <div className="animate-pulse bg-muted w-1/3 h-3 rounded-md" />
+                    </div>
+                  </div>
+                ))
+              }
+            </>
+          )
+        }
+
+        {
+          error && (
+            <div className="flex justify-center items-center text-gray-400 font-semibold">Error al cargar videos relacionados.</div>
+          )
+        }
+
+        {relatedVideos.length > 0 && relatedVideos.map((video, index) => (
           <Link href={`/videos/${video.id}`} key={index}>
             <div className="flex gap-3 group">
-              <div className="relative w-24 h-16 flex-shrink-0">
+              <div className="relative size-28 h-20 flex-shrink-0">
                 <img
-                  src={`/placeholder.svg?height=64&width=96&text=Video`}
+                  src={`${video.thumbnail ? video.thumbnail : "/placeholder.svg?height=64&width=96&text=Video"}`}
                   alt={video.title}
                   className="w-full h-full object-cover rounded-md"
                 />
@@ -96,8 +138,18 @@ function RelatedVideos({ relatedVideos }: { relatedVideos: any[] }) {
             </div>
           </Link>
         ))}
+
+        {
+          relatedVideos.length >= 4 && (
+            <Link href={`/videos`}>
+              <div className="text-center text-primary hover:underline mt-4">
+                Ver más videos
+              </div>
+            </Link>
+          )
+        }
       </div>
-    </>
+    </div>
   )
 }
 
@@ -170,7 +222,24 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
           })),
       )
       .slice(0, 4)
-    : []
+    : [
+      // {
+      //   id: "random1",
+      //   title: "Video Aleatorio 1",
+      //   duration: "5:00",
+      //   url: "/placeholder.mp4",
+      //   thumbnail: "/placeholder.svg?height=360&width=640&text=Video+Aleatorio+1",
+      //   moduleTitle: "Módulo Aleatorio 1",
+      // },
+      // {
+      //   id: "random2",
+      //   title: "Video Aleatorio 2",
+      //   duration: "6:30",
+      //   url: "/placeholder.mp4",
+      //   thumbnail: "/placeholder.svg?height=360&width=640&text=Video+Aleatorio+2",
+      //   moduleTitle: "Módulo Aleatorio 2",
+      // },
+    ]
 
   // Mostrar skeleton si está cargando
   if (isLoading) {
@@ -330,8 +399,11 @@ export default function VideoDetailPage({ params }: { params: { id: string } }) 
                   <span className="text-sm text-muted-foreground">1 comentario</span>
                 </div>
                 {/* Comentario random */}
-                <ComentarioCard/>
+                <ComentarioCard />
               </div>
+            </div>
+            <div>
+              <RelatedVideos videoId={params.id} relatedVideos={relatedVideos} />
             </div>
             <div>
               <CourseInfo courseData={courseData} />

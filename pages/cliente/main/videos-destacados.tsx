@@ -11,7 +11,7 @@ import React from 'react'
 
 const VideosDestacados = () => {
     const User = useAuthStore((state) => state.user)
-    const Href = User ? "/" : "/register"
+    const Href = User ? "/videos" : "/register"
 
     const { videos, loading, error } = useFetchVideos()
     const filteredVideos = videos.filter((video) => video.featured === true)
