@@ -84,7 +84,7 @@ export const useGetContentsByModuleId = (courseId: string) => {
       setError(null)
       try {
         const result = await getAllContent()
-        const filteredContents = result.filter((content) => content.courseId === courseId)
+        const filteredContents = result.filter((item) => item.courseId === courseId)
         setContents(filteredContents)
       } catch (err) {
         setError(err as Error)

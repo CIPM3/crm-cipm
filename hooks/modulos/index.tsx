@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react"
-import { Module } from "@/types/"
+import { Content, Module } from "@/types/"
 import { createModule, getAllModules,getModuleById,updateModule,deleteModule } from "@/api/Modulos";
 
 export const useCreateModule= () => {
@@ -84,16 +84,21 @@ export const useGetModulesByCourseId = (courseId: string) => {
       setError(null)
       try {
         const result = await getAllModules()
-        const filteredModules = result.filter((module) => module.courseId === courseId)
+        const filteredModules = result.filter((module: Module) => module.courseId === courseId)
         setModules(filteredModules)
       } catch (err) {
         setError(err as Error)
+        setModules([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchData()
+    if (courseId) {
+      fetchData()
+    } else {
+      setModules([])
+    }
   }, [courseId])
 
   return { modules, loading, error }

@@ -241,10 +241,11 @@ export interface Course {
 export interface Module {
     id: string
     courseId: string
-    title: string
+    title: string,
+    description: string
+    type: string, 
     order: number
     status: 'Activo' | 'Inactivo'
-    content: ContentItem[]
 }
 
 export type ContentItem =
@@ -277,6 +278,7 @@ export type Content = {
     duration: string
     questions: number
     moduleId: string
+    courseId:string
 }
 // types/Enrollment.ts
 export interface Enrollment {
