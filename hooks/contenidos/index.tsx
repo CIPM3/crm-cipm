@@ -99,6 +99,32 @@ export const useGetContentsByModuleId = (courseId: string) => {
   return { content, loading, error }
 }
 
+export const useGetContentsByModule = (moduleId: string) => {
+  const [content, setContents] = useState<Content[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const result = await getAllContent()
+        const filteredContents = result.filter((item) => item.moduleId === moduleId)
+        setContents(filteredContents)
+      } catch (err) {
+        setError(err as Error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [moduleId])
+
+  return { content, loading, error }
+}
+
 export const useUpdateContent= () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)

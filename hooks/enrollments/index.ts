@@ -7,6 +7,7 @@ import {
   deleteEnrollment,
   getEnrollmentsByCourseId,
   getEnrollmentsByStudentId,
+  updateEnrollmentByStudentAndCourse,
 } from "@/api/Enrollment"
 import type { Enrollment } from "@/types"
 
@@ -154,6 +155,34 @@ export const useUpdateEnrollment = () => {
 
   return { update, loading, error }
 }
+
+export const useUpdateEnrollmentByStudentAndCourse = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const updateEnrollment = async (
+    studentId: string,
+    courseId: string,
+    data: Partial<Enrollment>
+  ) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+    
+    try {
+      await updateEnrollmentByStudentAndCourse(studentId, courseId, data);
+      setSuccess(true);
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateEnrollment, loading, error, success };
+};
 
 // Eliminar enrollment
 export const useDeleteEnrollment = () => {

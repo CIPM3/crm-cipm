@@ -288,5 +288,7 @@ export interface Enrollment {
     enrollmentDate: string // formato ISO string
     status: string
     progress: number
-    lastAccess: string // formato ISO string
+    lastAccessed: string; // formato ISO string (modifiqué lastAccess a lastAccessed para consistencia)
+    completedContentIds: string[]; // array de IDs de contenidos completados
+    lastContentCompleted?: string; // ID del último contenido completado (opcional)
 }

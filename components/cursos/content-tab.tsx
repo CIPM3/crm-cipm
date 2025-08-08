@@ -107,8 +107,7 @@ export function ContentTab({ modules, courseId }: { modules: Module[]; courseId:
                             <Button variant="outline" asChild>
                               <Link
                                 //TERMINAR ESTO
-                                href={`/admin/videos/${content.id}`}
-                                //href={`/admin/cursos/${courseId}`}
+                                href={`/cursos/${courseId}`}
                               >Ver</Link>
                             </Button>}
                           {content.type === "document" && (

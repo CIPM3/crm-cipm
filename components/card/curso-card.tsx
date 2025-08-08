@@ -63,11 +63,7 @@ const CursoCard = ({ curso, type, delay = 0 }: Props) => {
           ? (
             <CardFooter className="flex justify-between">
               <div className="text-lg font-bold">${curso.price.toLocaleString()}</div>
-              <Button>
-                <Link href={'/'}>
-                  Ver Detalles
-                </Link>
-              </Button>
+             
             </CardFooter>)
           : (
             <div className="flex justify-between gap-2 px-4 mb-2">

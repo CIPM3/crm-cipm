@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, BookOpen, CheckCircle, Clock, FileText, Heart, Loader2, MessageCircle, Play, Share2, Star, ThumbsUp, Video } from "lucide-react"
+import { ArrowLeft, Award, BookOpen, CheckCircle, Clock, FileText, Heart, Loader2, Menu, MessageCircle, Play, Share2, Star, ThumbsUp, Undo2, Video, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import HeaderCliente from "@/components/header/header-cliente"
 import Footer from "@/pages/cliente/main/footer"
@@ -11,9 +11,11 @@ import { useFetchCourses, useGetCourseById } from "@/hooks/cursos"
 import CursoCard from "@/components/card/curso-card"
 import { useGetModulesByCourseId } from "@/hooks/modulos"
 import { useGetContentsByModuleId } from "@/hooks/contenidos"
-import { useGetEnrollmentsByCourseId, useGetEnrollmentsByStudentId } from "@/hooks/enrollments"
+import { useGetEnrollmentsByCourseId, useGetEnrollmentsByStudentId, useUpdateEnrollment, useUpdateEnrollmentByStudentAndCourse } from "@/hooks/enrollments"
 import { useAuthStore } from "@/store/useAuthStore"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { Progress } from "@/components/ui/progress"
+import { toast } from "sonner"
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   // Hooks principales (todos se llaman siempre, antes de cualquier return)
@@ -282,130 +284,315 @@ function CourseTabsSection({ modules, course, contentsByModule }) {
 }
 
 // --- PLAYER COMPONENTE ---
-function CoursePlayer({ course, modules, contentsByModule, onBack }) {
-  const firstModule = modules[0]
-  const firstContent = (contentsByModule[firstModule?.id] || [])[0]
-  const [selectedContent, setSelectedContent] = useState(firstContent)
+export function CoursePlayer({ course, modules, contentsByModule, onBack }) {
+  // Mobile sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  
+  // Content selection
+  const firstModule = modules[0];
+  const firstContent = (contentsByModule[firstModule?.id] || [])[0];
+  const [selectedContent, setSelectedContent] = useState(firstContent);
+  
+  // Get current user
+  const USER = useAuthStore(state => state.user);
+  
+  // Get enrollment data
+  const { enrollments, loading: loadingEnrollment } = useGetEnrollmentsByStudentId(USER?.id!!);
+  const courseEnrollment = enrollments?.find(e => e.courseId === course.id);
+  
+  // Calculate progress
+  const allContents = modules.flatMap(m => contentsByModule[m.id] || []);
+  const totalContent = allContents.length;
+  const [completedContent, setCompletedContent] = useState<string[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  const progressPercentage = totalContent ? (completedContent.length / totalContent) * 100 : 0;
+  
+  // Update enrollment hook
+  const { updateEnrollment, loading: updatingEnrollment } = useUpdateEnrollmentByStudentAndCourse();
+
+  // Initialize from enrollment data
+  useEffect(() => {
+    if (!loadingEnrollment && courseEnrollment && !initialized) {
+      setCompletedContent(courseEnrollment.completedContentIds || []);
+      setInitialized(true);
+      
+      // Select first uncompleted content if exists
+      if (courseEnrollment.completedContentIds) {
+        const firstIncomplete = allContents.find(
+          content => !courseEnrollment.completedContentIds.includes(content.id)
+        );
+        if (firstIncomplete) {
+          const module = modules.find(m => 
+            contentsByModule[m.id]?.some(c => c.id === firstIncomplete.id)
+          );
+          setSelectedContent({ 
+            ...firstIncomplete, 
+            moduleTitle: module?.title || "" 
+          });
+        }
+      }
+    }
+  }, [loadingEnrollment, courseEnrollment, initialized, allContents, modules, contentsByModule]);
+
+  const handleContentSelect = (content: typeof firstContent, moduleTitle: string) => {
+    setSelectedContent({ ...content, moduleTitle });
+  };
+
+  const handleToggleCompleted = async () => {
+    if (!selectedContent || !USER?.id) return;
+
+    try {
+      let newCompleted: string[];
+      let newProgress: number;
+      let action: 'completed' | 'uncompleted';
+
+      if (completedContent.includes(selectedContent.id)) {
+        // Undo completion
+        newCompleted = completedContent.filter(id => id !== selectedContent.id);
+        action = 'uncompleted';
+      } else {
+        // Mark as completed
+        newCompleted = [...completedContent, selectedContent.id];
+        action = 'completed';
+      }
+
+      newProgress = Math.round((newCompleted.length / totalContent) * 100);
+      setCompletedContent(newCompleted);
+      
+      await updateEnrollment(USER.id, course.id, {
+        progress: newProgress,
+        completedContentIds: newCompleted,
+        lastAccessed: new Date().toISOString(),
+        ...(action === 'completed' && { 
+          lastContentCompleted: selectedContent.id 
+        }),
+      });
+      
+
+      // Auto-advance to next content when marking as completed
+      if (action === 'completed' && newCompleted.length < totalContent) {
+        const currentIndex = allContents.findIndex(c => c.id === selectedContent.id);
+        if (currentIndex < allContents.length - 1) {
+          const nextContent = allContents[currentIndex + 1];
+          const module = modules.find(m => 
+            contentsByModule[m.id]?.some(c => c.id === nextContent.id)
+          );
+          setSelectedContent({ 
+            ...nextContent, 
+            moduleTitle: module?.title || "" 
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      setCompletedContent(completedContent);
+    
+    }
+  };
+
+  if (loadingEnrollment || !initialized) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh] gap-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-lg font-medium">Cargando tu progreso...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-8">
-      {/* Sidebar de lecciones */}
-      <div className="w-full md:w-80 bg-white rounded-lg shadow p-4">
-        <button onClick={onBack} className="flex items-center mb-4 text-primary font-medium">
-          <ArrowLeft className="h-4 w-4 mr-2" /> {course.title}
-        </button>
-        <div className="mb-4">
-          <div className="text-sm text-muted-foreground">Progreso del curso</div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-1 mb-2">
-            <div className="bg-yellow-400 h-2 rounded-full" style={{ width: "0%" }} />
-          </div>
-          <div className="text-xs text-muted-foreground">0 de {modules.reduce((acc, m) => acc + (contentsByModule[m.id]?.length || 0), 0)} lecciones completadas</div>
-        </div>
-        {modules.map((module, idx) => (
-          <div key={module.id} className="mb-4">
-            <div className="font-semibold mb-2">Módulo {idx + 1}: {module.title}</div>
-            <div className="space-y-1">
-              {(contentsByModule[module.id] || []).map((content) => (
-                <button
-                  key={content.id}
-                  className={`flex items-center w-full px-2 py-1 rounded ${selectedContent?.id === content.id ? "bg-primary/10 text-primary font-semibold" : "hover:bg-muted"}`}
-                  onClick={() => setSelectedContent(content)}
-                >
-                  {content.type === "video" && <Play className="h-4 w-4 mr-2" />}
-                  {content.type === "document" && <FileText className="h-4 w-4 mr-2" />}
-                  {content.type === "quiz" && <CheckCircle className="h-4 w-4 mr-2" />}
-                  <span className="flex-1 truncate">{content.title}</span>
-                  {content.duration && <span className="ml-2 text-xs">{content.duration}</span>}
-                  {content.type === "quiz" && <span className="ml-2 text-xs">{content.questions} preguntas</span>}
-                  {content.type === "document" && <span className="ml-2 text-xs">Descarga</span>}
-                </button>
-              ))}
+    <div className="flex flex-col-reverse lg:flex-row gap-8 relative">
+      {/* Mobile sidebar toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
+
+      {/* Course content sidebar */}
+      <div
+        className={`
+          fixed lg:static inset-y-0 left-0 z-40 w-80 border-r bg-background overflow-y-auto
+          transform transition-transform duration-300 ease-in-out lg:transform-none
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Button variant="ghost" size="icon" asChild className="flex-shrink-0">
+                <Link href="/cursos">
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+              <h2 className="font-semibold truncate">{course.title}</h2>
             </div>
-          </div>
-        ))}
-      </div>
-      {/* Player principal */}
-      <div className="flex-1">
-        <div className="bg-gradient-to-b from-[#1a2236] to-[#232b3e] rounded-lg shadow-lg flex flex-col items-center justify-center min-h-[350px]">
-          {selectedContent?.type === "video" ? (
-            <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
-              {selectedContent.url ? (
-              <video
-                
-                src={selectedContent.url}
-                poster={selectedContent.thumbnail || course.thumbnail || "/placeholder.svg?height=200&width=400&text=Curso"}
-                controls
-                className="w-full h-full object-contain bg-black"
-              />
-              ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#1a2236] to-[#232b3e]">
-                <div className="text-center text-white">
-                <img
-                  src={selectedContent.thumbnail || course.thumbnail || "/placeholder.svg?height=200&width=400&text=Curso"}
-                  alt={selectedContent.title}
-                  className="mx-auto mb-4 rounded max-h-60 object-contain"
-                />
-                <Play className="h-16 w-16 mx-auto mb-4 opacity-70" />
-                <p className="text-lg font-medium">{selectedContent.title}</p>
-                <p className="text-sm opacity-70">{selectedContent.duration}</p>
-                </div>
-              </div>
-              )}
-            </div>
-          ) : selectedContent?.type === "document" ? (
-            <>
-              <FileText className="h-16 w-16 text-white opacity-70 mb-4" />
-              <div className="text-2xl text-white font-semibold mb-2">{selectedContent.title}</div>
-              <div className="text-white/80 mb-2">Lectura</div>
-            </>
-          ) : selectedContent?.type === "quiz" ? (
-            <>
-              <CheckCircle className="h-16 w-16 text-white opacity-70 mb-4" />
-              <div className="text-2xl text-white font-semibold mb-2">{selectedContent.title}</div>
-              <div className="text-white/80 mb-2">{selectedContent.questions} preguntas</div>
-            </>
-          ) : (
-            <div className="text-white">Selecciona una lección</div>
-          )}
-        </div>
-        <div className="flex mt-6 py-4 flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex-1">
-            <h3 className="text-xl font-bold">{selectedContent.title}</h3>
-            <p className="text-muted-foreground">{selectedContent.moduleTitle}</p>
-            <p className="text-sm text-muted-foreground mt-2">{selectedContent.description}</p>
-          </div>
-          <div className="flex items-center gap-2">
             <Button
-              // onClick={() => markContentAsCompleted(content.id)}
-              // disabled={completedContent.includes(content.id)}
-              // variant={completedContent.includes(content.id) ? "secondary" : "default"}
-              className="flex-shrink-0"
+              variant="ghost"
+              size="icon"
+              className="lg:hidden flex-shrink-0"
+              onClick={() => setSidebarOpen(false)}
             >
-              Marcar como completado
+              <X className="h-4 w-4" />
             </Button>
           </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span>Progreso del curso</span>
+              <span>{Math.round(progressPercentage)}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              {completedContent.length} de {totalContent} lecciones completadas
+            </p>
+          </div>
         </div>
-
-        <div className="flex items-center gap-4 py-4 border-y">
-          <Button variant="ghost" size="sm">
-            <ThumbsUp className="h-4 w-4 mr-2" />
-            Me gusta
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Compartir
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Heart className="h-4 w-4 mr-2" />
-            Guardar
-          </Button>
+        <div className="p-4 space-y-4">
+          {modules.map((module, moduleIndex) => (
+            <div key={module.id} className="space-y-2">
+              <h3 className="font-medium text-sm">
+                Módulo {moduleIndex + 1}: {module.title}
+              </h3>
+              <div className="space-y-1">
+                {(contentsByModule[module.id] || []).map((content) => (
+                  <button
+                    key={content.id}
+                    onClick={() => handleContentSelect(content, module.title)}
+                    className={`w-full text-left p-3 rounded-md text-sm transition-colors ${
+                      selectedContent?.id === content.id 
+                        ? "bg-primary text-primary-foreground" 
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {content.type === "video" && <Play className="h-4 w-4 flex-shrink-0" />}
+                      {content.type === "document" && <FileText className="h-4 w-4 flex-shrink-0" />}
+                      {content.type === "quiz" && <Award className="h-4 w-4 flex-shrink-0" />}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{content.title}</p>
+                        <p className="text-xs opacity-70">
+                          {content.type === "video" && content.duration}
+                          {content.type === "document" && content.duration}
+                          {content.type === "quiz" && `${content.questions} preguntas`}
+                        </p>
+                      </div>
+                      {completedContent.includes(content.id) && (
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-        <CommentsSection />
-
       </div>
 
+      {/* Main content player */}
+      <div className="flex-1">
+        {selectedContent ? (
+          <>
+            <div className="bg-gradient-to-b from-[#1a2236] to-[#232b3e] rounded-lg shadow-lg flex flex-col items-center justify-center min-h-[350px]">
+              {selectedContent.type === "video" ? (
+                <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
+                  {selectedContent.url ? (
+                    <video
+                      src={selectedContent.url}
+                      poster={selectedContent.thumbnail || course.thumbnail}
+                      controls
+                      controlsList="nodownload noremoteplayback"
+                      className="w-full h-full object-contain bg-black"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#1a2236] to-[#232b3e]">
+                      <div className="text-center text-white">
+                        <img
+                          src={selectedContent.thumbnail || course.thumbnail}
+                          alt={selectedContent.title}
+                          className="mx-auto mb-4 rounded max-h-60 object-contain"
+                        />
+                        <Play className="h-16 w-16 mx-auto mb-4 opacity-70" />
+                        <p className="text-lg font-medium">{selectedContent.title}</p>
+                        <p className="text-sm opacity-70">{selectedContent.duration}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : selectedContent.type === "document" ? (
+                <div className="p-8 text-center">
+                  <FileText className="h-16 w-16 text-white opacity-70 mb-4 mx-auto" />
+                  <h3 className="text-2xl text-white font-semibold mb-2">{selectedContent.title}</h3>
+                  <p className="text-white/80">Documento de lectura</p>
+                </div>
+              ) : selectedContent.type === "quiz" ? (
+                <div className="p-8 text-center">
+                  <Award className="h-16 w-16 text-white opacity-70 mb-4 mx-auto" />
+                  <h3 className="text-2xl text-white font-semibold mb-2">{selectedContent.title}</h3>
+                  <p className="text-white/80">{selectedContent.questions} preguntas</p>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex mt-6 py-4 flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold">{selectedContent.title}</h3>
+                <p className="text-muted-foreground">{selectedContent.moduleTitle}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {selectedContent.description}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleToggleCompleted}
+                  disabled={!USER || updatingEnrollment}
+                  variant={
+                    completedContent.includes(selectedContent.id) 
+                      ? "secondary" 
+                      : "default"
+                  }
+                  className="flex-shrink-0"
+                >
+                  {updatingEnrollment ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : completedContent.includes(selectedContent.id) ? (
+                    <>
+                      <Undo2 className="h-4 w-4 mr-2" />
+                      Deshacer completado
+                    </>
+                  ) : (
+                    "Marcar como completado"
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 py-4 border-y">
+              <Button variant="ghost" size="sm">
+                <ThumbsUp className="h-4 w-4 mr-2" />
+                Me gusta
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Share2 className="h-4 w-4 mr-2" />
+                Compartir
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Heart className="h-4 w-4 mr-2" />
+                Guardar
+              </Button>
+            </div>
+
+            <CommentsSection />
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-muted-foreground">Selecciona una lección para comenzar</p>
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }
 
 function CommentsSection() {

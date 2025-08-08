@@ -9,6 +9,29 @@ export const getAllEnrollments = () => fetchItems<Enrollment>(collectionName)
 export const getEnrollmentById = (id: string) => fetchItem<Enrollment>(collectionName, id)
 export const createEnrollment = (data: Omit<Enrollment, 'id'>) => addItem<Enrollment>(collectionName, data)
 export const updateEnrollment = (id: string, data: Partial<Enrollment>) => updateItem<Enrollment>(collectionName, id, data)
+
+export const updateEnrollmentByStudentAndCourse = async (
+  studentId: string, 
+  courseId: string, 
+  data: Partial<Enrollment>
+): Promise<void> => {
+  const q = query(
+    collection(db, collectionName),
+    where("studentId", "==", studentId),
+    where("courseId", "==", courseId)
+  );
+  
+  const querySnapshot = await getDocs(q);
+  
+  if (querySnapshot.empty) {
+    throw new Error(`No enrollment found for studentId: ${studentId} and courseId: ${courseId}`);
+  }
+  
+  // Asumimos que solo hay un enrollment por studentId + courseId
+  const enrollmentDoc = querySnapshot.docs[0];
+  await updateItem<Enrollment>(collectionName, enrollmentDoc.id, data);
+}
+
 export const deleteEnrollment = (id: string) => deleteItem(collectionName, id)
 export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enrollment[]> => {
   const q = query(
