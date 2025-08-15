@@ -292,3 +292,47 @@ export interface Enrollment {
     completedContentIds: string[]; // array de IDs de contenidos completados
     lastContentCompleted?: string; // ID del último contenido completado (opcional)
 }
+
+export interface ContentsByModule {
+  [moduleId: string]: Content[];
+}
+
+
+export interface Video {
+  id: string;
+  title: string;
+  description?: string;
+  duration: string;
+  url?: string;
+  thumbnail?: string;
+  type?: string;
+  moduleTitle?: string;
+}
+
+export interface VideoDetailData {
+  videoData: Video | null;
+  moduleData: Module | null;
+  courseData: Course | null;
+  relatedVideos: Video[];
+}
+
+export interface VideoPlayerProps {
+  videoData: Video;
+  courseData?: Course | null;
+  moduleData?: Module | null;
+}
+
+export interface RelatedVideosProps {
+  relatedVideos: Video[];
+  videoId?: string;
+  isLoading?: boolean;
+  error?: string | null;
+}
+
+export interface CourseInfoProps {
+  courseData: Course | null;
+}
+
+export interface BreadcrumbNavProps {
+  videoTitle?: string;
+}

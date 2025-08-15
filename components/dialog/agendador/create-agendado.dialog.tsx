@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import React, { Dispatch, SetStateAction } from 'react'
 import { AgendadoForm } from '@/components/form/agendado-agendador-form';
-import { useCreateUsuario } from '@/hooks/agendador/useCreateAgengado';
+import { useCreateAgendado } from '@/hooks/agendador/useCreateAgendado';
 import { AgendadorFormValues } from '@/types';
 
 interface Props {
@@ -11,12 +11,12 @@ interface Props {
 }
 
 const CreateAgendadoDialog = ({ open, setIsOpen, onSuccess }: Props) => {
-    const { register, loading } = useCreateUsuario();
+    const { mutate, loading } = useCreateAgendado();
 
     const handleSubmit = async (values: AgendadorFormValues) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await register(values);
+            await mutate(values);
             onSuccess();
             setIsOpen(false);
         } catch (error) {

@@ -1,27 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getUsers } from "@/api/Usuarios/get";
 import { UsersType } from "@/types";
 
 export const useGetFormacion = () => {
-  const [FormacionGrupo, setStudents] = useState<UsersType[]>([]);
+  const [data, setData] = useState<UsersType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await getUsers();
-        const FormacionGrupo = response.filter((profesor) => profesor.role === "formacion de grupo");
-        setStudents(FormacionGrupo);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudents();
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getUsers();
+      const formacionUsers = response.filter((user) => user.role === "formacion de grupo");
+      setData(formacionUsers);
+      return formacionUsers;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { FormacionGrupo, loading, error };
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { data, loading, error, refetch };
 };

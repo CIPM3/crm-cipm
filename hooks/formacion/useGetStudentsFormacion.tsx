@@ -1,29 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { FormacionDataType } from "@/types";
-import { getAllStudentsFormacion } from "@/api/Estudiantes/Formacion/get";
-
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryKeys';
+import { getAllStudentsFormacion } from '@/lib/firebaseService';
+import { useAppStore } from '@/store';
 
 export const useGetFormacionStudents = () => {
-  const [FormacionData, setStudents] = useState<FormacionDataType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { updateLastFetch } = useAppStore();
+  
+  const query = useQuery({
+    queryKey: queryKeys.formacionStudents(),
+    queryFn: async () => {
+      const data = await getAllStudentsFormacion();
+      updateLastFetch('formacion-students');
+      return data;
+    },
+    staleTime: 3 * 60 * 1000, // 3 minutes (more frequent updates for formacion)
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-  const fetchUsuarios = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getAllStudentsFormacion();
-      setStudents(response);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUsuarios();
-  }, [fetchUsuarios]);
-
-  return { FormacionData, loading, error, refetch: fetchUsuarios };
+  return { 
+    data: query.data || [], 
+    loading: query.isLoading, 
+    error: query.error, 
+    refetch: query.refetch 
+  };
 }

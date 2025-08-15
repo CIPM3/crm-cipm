@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDeleteUsuarioFormacion } from '@/hooks/formacion/useDeleteAgendado';
+import { useDeleteFormacion } from '@/hooks/formacion/useDeleteAgendado';
 import { FormacionDataType } from '@/types';
 import React, { Dispatch, SetStateAction } from 'react'
 
@@ -11,12 +11,12 @@ interface Props {
 }
 
 const DeleteStudentDialog = ({ open, setIsOpen, onSuccess, selected }: Props) => {
-    const { remove, loading } = useDeleteUsuarioFormacion();
+    const { mutate, loading } = useDeleteFormacion();
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await remove(values.id);
+            await mutate(values.id);
             onSuccess();
             setIsOpen(false)
         } catch (error) {

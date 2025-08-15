@@ -1,11 +1,7 @@
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { fetchItems } from "@/lib/firebaseService";
 import { ClasePrubeaType } from "@/types";
 import { DB_COLLECCTIONS } from "@/lib/constants";
 
-export const getAllStudents = async (): Promise<ClasePrubeaType[]> => {
-    const studentsCollectionRef = collection(db, DB_COLLECCTIONS.INSTRUCTOR);
-    const studentsSnapshot = await getDocs(studentsCollectionRef);
-    const studentsList = studentsSnapshot.docs.map(doc => doc.data() as ClasePrubeaType);
-    return studentsList;
+export const getAllInstructors = async (): Promise<ClasePrubeaType[]> => {
+    return await fetchItems<ClasePrubeaType>(DB_COLLECCTIONS.INSTRUCTOR);
 };

@@ -40,8 +40,16 @@ export function StudentsTab({ enrollments }: { enrollments: any[] }) {
 
 const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
   const { remove, loading } = useDeleteEnrollment()
-  const { usuario } = useGetUsuarioById(enrollment.studentId)
+  const { data: usuario, loading: userLoading, error: userError } = useGetUsuarioById(enrollment.studentId)
   const { setCanRefetch } = useEnrollmentsStore()
+  
+  // Debug logging
+  console.log('Enrollment data:', enrollment)
+  console.log('Student ID:', enrollment.studentId)
+  console.log('Usuario data:', usuario)
+  console.log('User loading:', userLoading)
+  console.log('User error:', userError)
+  
   const handleRemove = async () => {
     try {
       await remove(enrollment.id)
@@ -56,7 +64,20 @@ const EnrollmentCard = ({ enrollment }: { enrollment: any }) => {
       <CardContent className="p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between">
           <div className="flex-1">
-            <p className="font-medium">Estudiante: {usuario?.name}</p>
+            <p className="font-medium">
+              Estudiante: {userLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cargando...
+                </span>
+              ) : userError ? (
+                <span className="text-red-500">Error al cargar usuario</span>
+              ) : usuario?.name ? (
+                usuario.name
+              ) : (
+                <span className="text-gray-500">Usuario no encontrado</span>
+              )}
+            </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
               <span>Inscrito: {enrollment.enrollmentDate}</span>
               <span>Último acceso: {enrollment.lastAccess}</span>

@@ -12,14 +12,14 @@ interface Props {
 }
 
 const DeleteUserDialog = ({ open, setIsOpen, user }: Props) => {
-  const {remove} = useDeleteUsuario()
+  const {mutate} = useDeleteUsuario()
   const {triggerRefetch} = useRefetchUsuariosStore()
 
   const handleSubmit = async (values: UsersType) => {
     try {
       
       // Llamar a la mutación para crear el usuario
-      await remove(values.id);
+      await mutate(values.id);
       triggerRefetch()
       setIsOpen(false)
       console.log("Usuario Eliminado con éxito");

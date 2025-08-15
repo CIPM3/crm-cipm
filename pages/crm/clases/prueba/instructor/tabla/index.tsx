@@ -46,9 +46,9 @@ const Index = ({ params }: { params: { id: string } }) => {
     });
 
     // Obtener datos
-    const { Instructores } = useGetInstructores();
-    const { Users: Estudiantes, refetch: refetchEstudiantes,loading,error } = useGetEstudiantes();
-    const { Usuarios: Agendados, refetch: refetchAgendados } = useGetAgendados();
+    const { data: Instructores } = useGetInstructores();
+    const { data: Estudiantes, refetch: refetchEstudiantes,loading,error } = useGetEstudiantes();
+    const { data: Agendados, refetch: refetchAgendados } = useGetAgendados();
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
@@ -60,8 +60,8 @@ const Index = ({ params }: { params: { id: string } }) => {
     }, [shouldRefetch, refetchEstudiantes, refetchAgendados, resetRefetch]);
 
     // Filtrar datos por el ID del instructor
-    const estudiantesFiltrados = Estudiantes?.filter(estudiante => estudiante.maestro === params.id && estudiante.anoSemana === ActualWeek) || [];
-    const agendadosFiltrados = Agendados?.filter(agendado => agendado.maestro === params.id && agendado.anoSemana === ActualWeek) || [];
+    const estudiantesFiltrados = (Estudiantes || []).filter(estudiante => estudiante.maestro === params.id && estudiante.anoSemana === ActualWeek);
+    const agendadosFiltrados = (Agendados || []).filter(agendado => agendado.maestro === params.id && agendado.anoSemana === ActualWeek);
 
 
     const Instructor = Instructores?.find(instructor => instructor.id === params.id);

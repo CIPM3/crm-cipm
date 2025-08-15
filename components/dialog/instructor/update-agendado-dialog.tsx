@@ -4,7 +4,7 @@ import { AgendadoForm } from '@/components/form/agendado-instructor-form';
 import { AgendadoFormValues } from '@/types';
 import { useUpdateStudent } from '@/hooks/estudiantes/clases-prueba/useUpdateStudent';
 import { STATUS_VALS } from '@/lib/constants';
-import { createStudent } from '@/api/Estudiantes/Formacion/create';
+import { createFormacionStudent } from '@/api/Estudiantes/Formacion/create';
 
 interface Props {
     open: boolean;
@@ -14,13 +14,13 @@ interface Props {
 }
 
 const UpdateAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props) => {
-    const { update, loading } = useUpdateStudent();
+    const { mutate, loading } = useUpdateStudent();
 
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await update(values.id, values);
+            await mutate(values.id, values);
             let FORMACION_DATA = {
                 status: STATUS_VALS[2].value,
                 week: values.anoSemana,
@@ -34,7 +34,7 @@ const UpdateAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props)
                 nivel: values.nivel,
                 tipo: "Online"
             }
-            await createStudent(FORMACION_DATA)
+            await createFormacionStudent(FORMACION_DATA)
             onSuccess();
             setIsOpen(false)
         } catch (error) {

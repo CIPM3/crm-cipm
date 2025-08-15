@@ -1,27 +1,27 @@
-import { useState, useEffect } from "react";
-import { getUsers } from "@/api/Usuarios/get";
-import { UsersType } from "@/types";
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryKeys';
+import { getAllUsuarios } from '@/lib/firebaseService';
+import { useAppStore } from '@/store';
 
 export const useGetInstructores = () => {
-  const [Instructores, setStudents] = useState<UsersType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { updateLastFetch } = useAppStore();
+  
+  const query = useQuery({
+    queryKey: queryKeys.instructoresList(),
+    queryFn: async () => {
+      const users = await getAllUsuarios();
+      const instructors = users.filter((user) => user.role === "instructor");
+      updateLastFetch('instructores');
+      return instructors;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await getUsers();
-        const Instructores = response.filter((profesor) => profesor.role === "instructor");
-        setStudents(Instructores);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudents();
-  }, []);
-
-  return { Instructores, loading, error };
+  return { 
+    data: query.data || [], 
+    loading: query.isLoading, 
+    error: query.error, 
+    refetch: query.refetch 
+  };
 };

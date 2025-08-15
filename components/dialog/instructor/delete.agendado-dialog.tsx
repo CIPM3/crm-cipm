@@ -12,12 +12,12 @@ interface Props {
 }
 
 const DeleteAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props) => {
-    const {remove,loading} = useDeleteStudent();
+    const {mutate,loading} = useDeleteStudent();
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await remove(values.id);
+            await mutate(values.id);
             onSuccess();
             setIsOpen(false)
         } catch (error) {

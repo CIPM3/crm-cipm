@@ -20,23 +20,23 @@ const COLORS = ['#82ca9d', '#0080ff', '#4b5563', '#000000', '#ffc403']
 
 export function InstructorDashboard() {
   const User = useAuthStore((state) => state.user);
-  const { Instructores, loading: loadingInstructores } = useGetInstructores();
-  const { Usuarios: Agendados, loading: loadingAgendados } = useGetAgendados();
-  const { Users: Estudiantes, loading: loadingEstudiantes } = useGetEstudiantes();
+  const { data: Instructores, loading: loadingInstructores } = useGetInstructores();
+  const { data: Agendados, loading: loadingAgendados } = useGetAgendados();
+  const { data: Estudiantes, loading: loadingEstudiantes } = useGetEstudiantes();
 
   const isLoading = loadingInstructores || loadingAgendados || loadingEstudiantes;
 
-  const CalendarAgendados = Agendados.filter((agendado) => {
+  const CalendarAgendados = (Agendados || []).filter((agendado) => {
     if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
     else return agendado.quienAgendo === User?.id;
   });
 
-  const InstructorAgendados = Estudiantes.filter((agendado) => {
+  const InstructorAgendados = (Estudiantes || []).filter((agendado) => {
     if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Estudiantes;
     else return agendado.maestro === User?.id;
   });
 
-  const usuariosMap = Instructores.reduce((acc, user) => {
+  const usuariosMap = (Instructores || []).reduce((acc, user) => {
     acc[user.id] = user.name;
     return acc;
   }, {} as Record<string, string>);

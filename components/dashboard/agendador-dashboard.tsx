@@ -53,16 +53,16 @@ const generarEstadisticas = (agendados: any[], usuariosMap: Record<string, strin
 };
 
 export function AgendadorDashboard() {
-  const { Usuarios: Agendados, loading, error } = useGetAgendados();
-  const { Agendadores, loading: loadingAg, error: errorAg } = useGetAgendadores();
+  const { data: Agendados, loading, error } = useGetAgendados();
+  const { data: Agendadores, loading: loadingAg, error: errorAg } = useGetAgendadores();
   const User = useAuthStore((state) => state.user);
 
-  const agendadosFiltered = Agendados.filter((agendado) => {
+  const agendadosFiltered = (Agendados || []).filter((agendado) => {
     if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
     else return agendado.quienAgendo === User?.id;
   });
 
-  const usuariosMap = Agendadores.reduce((acc, user) => {
+  const usuariosMap = (Agendadores || []).reduce((acc, user) => {
     acc[user.id] = user.name;
     return acc;
   }, {} as Record<string, string>);
@@ -70,8 +70,8 @@ export function AgendadorDashboard() {
   const estadisticas = useMemo(() => generarEstadisticas(agendadosFiltered, usuariosMap), [agendadosFiltered]);
 
   const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`;
-  const pendingSchedules = Agendados.length;
-  const completedSchedules = Agendados.filter((agendado) => agendado.anoSemana === AnoSemana).length;
+  const pendingSchedules = (Agendados || []).length;
+  const completedSchedules = (Agendados || []).filter((agendado) => agendado.anoSemana === AnoSemana).length;
 
   return (
     <div className="space-y-6">

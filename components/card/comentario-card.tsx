@@ -10,7 +10,7 @@ const ComentarioCard = () => {
             />
             <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-foreground">Juan Pérez</span>
+                    <span className="font-semibold text-foreground">Juan Pérez Prueba</span>
                     <span className="text-xs text-muted-foreground">• hace 2 horas</span>
                 </div>
                 <p className="text-sm text-muted-foreground">

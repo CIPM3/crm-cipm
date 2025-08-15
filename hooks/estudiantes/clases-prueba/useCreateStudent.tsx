@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStudent } from "@/api/Estudiantes/Instructores/create";
+import { createInstructor } from "@/api/Estudiantes/Instructores/create";
 import { ClasePrubeaType } from "@/types";
 
 // Hook para usar la mutación de registro
@@ -7,21 +7,23 @@ export const useCreateStudent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const create = async (studentData: ClasePrubeaType) => {
+  const [data, setData] = useState<ClasePrubeaType | null>(null);
+
+  const mutate = async (studentData: ClasePrubeaType) => {
     setLoading(true);
     setError(null);
     try {
-      const student = await createStudent(studentData);
-      console.log("Estudiante registrado con éxito:", student);
-      return student;
+      const result = await createInstructor(studentData);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al registrar estudiante:", err);
+      console.error("Error al registrar instructor:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { create, loading, error };
+  return { mutate, data, loading, error };
 };

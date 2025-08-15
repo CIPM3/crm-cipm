@@ -14,23 +14,23 @@ import { useGetAgendadores } from "@/hooks/agendador/useGetAgendadores"
 const COLORS = ['#82ca9d', '#0080ff', '#4b5563', '#000000', '#ffc403']
 
 export function AdminDashboard() {
-  const { Usuarios: Agendados, loading: loadingAgendados } = useGetAgendados()
-  const { Instructores, loading: loadingInstructores } = useGetInstructores()
-  const { FormacionData, loading: loadingFormacion } = useGetFormacionStudents()
-  const { Agendadores, loading: loadingAgendadores } = useGetAgendadores()
+  const { data: Agendados, loading: loadingAgendados } = useGetAgendados()
+  const { data: Instructores, loading: loadingInstructores } = useGetInstructores()
+  const { data: FormacionData, loading: loadingFormacion } = useGetFormacionStudents()
+  const { data: Agendadores, loading: loadingAgendadores } = useGetAgendadores()
 
   const isLoading = loadingAgendados || loadingInstructores || loadingFormacion || loadingAgendadores
 
   // Mapeo de usuarios
-  const usuariosMap = Instructores.reduce((acc, user) => {
+  const usuariosMap = (Instructores || []).reduce((acc, user) => {
     acc[user.id] = user.name
     return acc
   }, {} as Record<string, string>)
 
   // Generar estadísticas combinadas
   const estadisticasAgendador = useMemo(() => {
-    const porAgendador = Agendadores.reduce((acc, user) => {
-      const totalAgendados = Agendados.filter((agendado) => agendado.quienAgendo === user.id).length
+    const porAgendador = (Agendadores || []).reduce((acc, user) => {
+      const totalAgendados = (Agendados || []).filter((agendado) => agendado.quienAgendo === user.id).length
       acc.push({ nombre: user.name, total: totalAgendados })
       return acc
     }, [] as { nombre: string; total: number }[])
@@ -39,14 +39,14 @@ export function AdminDashboard() {
     } as const
   }, [Agendadores, Agendados])
 
-  const estadisticasCierre = useMemo(() => generarEstadisticasCierres(FormacionData, usuariosMap), [FormacionData])
-  const estadisticasAgendados = useMemo(() => generarEstadisticas(Agendados, usuariosMap), [Agendados])
-  const estadisticasFormacion = useMemo(() => generarEstadisticas(FormacionData, usuariosMap), [FormacionData])
+  const estadisticasCierre = useMemo(() => generarEstadisticasCierres(FormacionData || [], usuariosMap), [FormacionData])
+  const estadisticasAgendados = useMemo(() => generarEstadisticas(Agendados || [], usuariosMap), [Agendados])
+  const estadisticasFormacion = useMemo(() => generarEstadisticas(FormacionData || [], usuariosMap), [FormacionData])
 
   // Datos generales
-  const totalAgendados = Agendados.length
-  const totalFormacion = FormacionData.length
-  const totalInstructores = Instructores.length
+  const totalAgendados = (Agendados || []).length
+  const totalFormacion = (FormacionData || []).length
+  const totalInstructores = (Instructores || []).length
   const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
 
   return (

@@ -1,26 +1,27 @@
 import { useState } from "react";
-import { FormacionDataType } from "@/types"; // Asegúrate de importar el tipo UsersType
-import { updateStudent } from "@/api/Estudiantes/Formacion/update";
+import { FormacionDataType } from "@/types";
+import { updateFormacionStudent } from "@/api/Estudiantes/Formacion/update";
 
-// Hook para usar la mutación de actualización
-export const useUpdateUsuariosFormacion = () => {
+export const useUpdateFormacion = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<{ id: string } | null>(null);
 
-  const update = async (data: FormacionDataType) => {
+  const mutate = async (id: string, updateData: Partial<FormacionDataType>) => {
     setLoading(true);
     setError(null);
     try {
-      const user = updateStudent(data.id!!,data)
-      return user;
+      const result = await updateFormacionStudent(id, updateData);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al actualizar el usuario:", err);
+      console.error("Error al actualizar estudiante de formación:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { update, loading, error };
+  return { mutate, data, loading, error };
 };

@@ -1,28 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { getUsers } from "@/api/Usuarios/get";
-import { UsersType } from "@/types";
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryKeys';
+import { getAllUsuarios } from '@/lib/firebaseService';
+import { useAppStore } from '@/store';
 
 export const useGetUsuarios = () => {
-  const [Usuarios, setUsuarios] = useState<UsersType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { updateLastFetch } = useAppStore();
+  
+  const query = useQuery({
+    queryKey: queryKeys.usersList(),
+    queryFn: async () => {
+      const users = await getAllUsuarios();
+      updateLastFetch('usuarios');
+      return users;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-  const fetchUsuarios = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getUsers();
-      setUsuarios(response);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUsuarios();
-  }, [fetchUsuarios]);
-
-  return { Usuarios, loading, error, refetch: fetchUsuarios };
+  return { 
+    data: query.data || [], 
+    loading: query.isLoading, 
+    error: query.error, 
+    refetch: query.refetch 
+  };
 };

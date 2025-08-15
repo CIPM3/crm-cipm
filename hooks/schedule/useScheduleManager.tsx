@@ -5,10 +5,10 @@ import { DAYS, HOURS } from "@/components/schedule/Schedule-profesores";
 import { toast } from "@/components/ui/use-toast";
 
 export const useScheduleManager = () => {
-    const { Instructores, loading: loadingInstructors } = useGetInstructores();
+    const { data: Instructores, loading: loadingInstructors } = useGetInstructores();
     const { schedule, setSchedule, loading, error, saveSchedule } = useSchedule();
   
-    const validInstructores = Instructores.filter(
+    const validInstructores = (Instructores || []).filter(
       instructor => instructor.id && instructor.id.trim() !== ''
     );
   

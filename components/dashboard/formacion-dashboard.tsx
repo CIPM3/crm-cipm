@@ -13,20 +13,20 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function FormacionDashboard() {
   const COLORS = ['#82ca9d', '#0080ff', '#4b5563', '#000000', '#ffc403'];
-  const { FormacionData, loading, error } = useGetFormacionStudents();
-  const { Instructores } = useGetInstructores();
+  const { data: FormacionData, loading, error } = useGetFormacionStudents();
+  const { data: Instructores } = useGetInstructores();
 
   // Mapeo ID → nombre maestro
-  const usuariosMap = Instructores.reduce<Record<string, string>>((acc, user) => {
+  const usuariosMap = (Instructores || []).reduce<Record<string, string>>((acc, user) => {
     acc[user.id] = user.name;
     return acc;
   }, {});
 
   // 1) Generar estadísticas
-  const estadisticas = generarEstadisticasCierres(FormacionData, usuariosMap);
+  const estadisticas = generarEstadisticasCierres(FormacionData || [], usuariosMap);
 
   // 2) Filtrar pendientes
-  const EstudiantesPendientes = FormacionData.filter(
+  const EstudiantesPendientes = (FormacionData || []).filter(
     (student) => student.status === "ESPERA"
   );
 
@@ -120,7 +120,7 @@ export function FormacionDashboard() {
                       Horario: {grupo.horario} - Semana: {grupo.week}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Maestro: {Instructores.find((x) => x.id === grupo.maestro)?.name}
+                      Maestro: {(Instructores || []).find((x) => x.id === grupo.maestro)?.name}
                     </p>
                     <span className="text-sm text-muted-foreground">
                       Estudiantes: {grupo.estudiantes.length}

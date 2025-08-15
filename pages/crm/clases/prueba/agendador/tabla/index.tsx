@@ -30,8 +30,8 @@ const Index = ({ params }: { params: { id: string } }) => {
         diaClasePrueba: ""
     });
 
-    const { Agendadores } = useGetAgendadores()
-    const { Usuarios: Estudiantes, loading, error, refetch } = useGetAgendados()
+    const { data: Agendadores } = useGetAgendadores()
+    const { data: Estudiantes, loading, error, refetch } = useGetAgendados()
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
@@ -41,8 +41,8 @@ const Index = ({ params }: { params: { id: string } }) => {
         }
     }, [shouldRefetch, refetch, resetRefetch]);
     const AnoSemana = `${getYear(new Date()).toString().replace("20", "")}${getWeek(new Date())}`
-    const agendados = Estudiantes?.filter((estudiante) => estudiante.quienAgendo === params.id && estudiante.anoSemana === AnoSemana) || [];
-    const Agendador = Agendadores?.find((instructor) => instructor.id === params.id);
+    const agendados = (Estudiantes || []).filter((estudiante) => estudiante.quienAgendo === params.id && estudiante.anoSemana === AnoSemana);
+    const Agendador = (Agendadores || []).find((instructor) => instructor.id === params.id);
 
     return (
         <div className="space-y-6 h-[86dvh]">

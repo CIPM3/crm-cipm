@@ -1,24 +1,26 @@
-import { deleteStudent } from "@/api/Estudiantes/Formacion/delete";
+import { deleteFormacionStudent } from "@/api/Estudiantes/Formacion/delete";
 import { useState } from "react";
 
-// Hook para usar la mutación de eliminación
-export const useDeleteUsuarioFormacion = () => {
+export const useDeleteFormacion = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<{ id: string } | null>(null);
 
-  const remove = async (userId: string) => {
+  const mutate = async (id: string) => {
     setLoading(true);
     setError(null);
     try {
-      await deleteStudent(userId);
-      console.log("Usuario eliminado con éxito");
+      const result = await deleteFormacionStudent(id);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al eliminar el usuario:", err);
+      console.error("Error al eliminar estudiante de formación:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { remove, loading, error };
+  return { mutate, data, loading, error };
 };

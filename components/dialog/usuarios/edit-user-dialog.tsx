@@ -12,7 +12,7 @@ interface Props {
 }
 
 const EditUserDialog = ({ open, setIsOpen,user }: Props) => {
-    const {update} = useUpdateUsuarios()
+    const {mutate} = useUpdateUsuarios()
     const {triggerRefetch} = useRefetchUsuariosStore()
 
     const handleSubmit = async (values: UsersType) => {
@@ -22,7 +22,7 @@ const EditUserDialog = ({ open, setIsOpen,user }: Props) => {
                 avatar: ''
             }
             // Llamar a la mutación para crear el usuario
-            await update(newUser);
+            await mutate(newUser);
             triggerRefetch()
             setIsOpen(false)
             console.log("Usuario Actualizado con éxito");

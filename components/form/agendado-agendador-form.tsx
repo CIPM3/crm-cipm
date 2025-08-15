@@ -16,7 +16,7 @@ import { HORARIO_VALS } from "@/lib/constants";
 import { useSchedule } from "@/hooks/schedule/useSchedule";
 import { useGetAgendados } from "@/hooks/agendador/useGetAgendados";
 import { useEffect, useState } from "react";
-import { createStudent } from "@/api/Estudiantes/Instructores/create";
+import { createInstructor } from "@/api/Estudiantes/Instructores/create";
 
 const daysOfMonth = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
 const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -96,7 +96,7 @@ export function AgendadoForm({ initialValues, onSubmit, onCancel, IsLoading }: A
         anoSemana: values.anoSemana
       }
 
-      await createStudent(InstructorData)
+      await createInstructor(InstructorData)
     } catch (error) {
       console.error("Error al guardar:", error);
     }

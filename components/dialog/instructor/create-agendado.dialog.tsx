@@ -10,13 +10,13 @@ interface Props {
 }
 
 const CreateAgendadoDialog = ({ open, setIsOpen,onSuccess }: Props) => {
-    const {create,loading} = useCreateStudent()
+    const {mutate,loading} = useCreateStudent()
     
 
     const handleSubmit = async (values:any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await create(values);
+            await mutate(values);
             
             onSuccess();
             setIsOpen(false)

@@ -1,26 +1,27 @@
 import { useState } from "react";
 import { createUser } from "@/api/Usuarios/create";
-import { RegisterUserData } from "@/types"; // Asegúrate de importar el tipo UsersType
+import { RegisterUserData, UsersType } from "@/types";
 
-// Hook para usar la mutación de registro
 export const useCreateUsuario = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<UsersType | null>(null);
 
-  const register = async (data: RegisterUserData) => {
+  const mutate = async (userData: RegisterUserData) => {
     setLoading(true);
     setError(null);
     try {
-      const user = await createUser(data);
-      return user;
+      const result = await createUser(userData);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al registrar usuario:", err);
+      console.error("Error al crear usuario:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { register, loading, error };
+  return { mutate, data, loading, error };
 };

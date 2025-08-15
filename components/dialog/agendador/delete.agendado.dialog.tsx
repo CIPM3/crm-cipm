@@ -3,7 +3,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { AgendadorFormValues } from '@/types';
 import { useUpdateStudent } from '@/hooks/estudiantes/clases-prueba/useUpdateStudent';
 import { useDeleteStudent } from '@/hooks/estudiantes/clases-prueba/useDeleteStudent';
-import { useDeleteUsuario } from '@/hooks/agendador/useDeleteAgendado';
+import { useDeleteAgendado } from '@/hooks/agendador/useDeleteAgendado';
 
 interface Props {
     open: boolean;
@@ -13,12 +13,12 @@ interface Props {
 }
 
 const DeleteAgendadoDialog = ({ open, setIsOpen, estudiante, onSuccess }: Props) => {
-    const {remove,loading} = useDeleteUsuario();
+    const {mutate,loading} = useDeleteAgendado();
 
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await remove(values.id);
+            await mutate(values.id);
             onSuccess();
             setIsOpen(false)
         } catch (error) {

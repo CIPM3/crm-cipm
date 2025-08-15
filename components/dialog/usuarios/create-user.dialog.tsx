@@ -11,7 +11,7 @@ interface Props {
 }
 
 const CreateUserDialog = ({ open, setIsOpen }: Props) => {
-    const {register} = useCreateUsuario();
+    const {mutate} = useCreateUsuario();
     const { triggerRefetch } = useRefetchUsuariosStore();
 
     const handleSubmit = async (values:any) => {
@@ -21,7 +21,7 @@ const CreateUserDialog = ({ open, setIsOpen }: Props) => {
                 avatar: ''
             }
             // Llamar a la mutación para crear el usuario
-            await register(newUser);
+            await mutate(newUser);
             triggerRefetch();
             setIsOpen(false)
             console.log("Usuario creado con éxito");

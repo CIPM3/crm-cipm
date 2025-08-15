@@ -1,34 +1,36 @@
 import { useState } from 'react';
-import { signInWithGoogle } from '@/api/auth/sing-with-google'; // Corrige la ruta de importación
+import { signInWithGoogle } from '@/api/auth/sing-with-google';
 import { useAuthStore } from '@/store/useAuthStore';
 import { UsersType } from '@/types';
 
 const useFirebaseAuth = () => {
     const setUser = useAuthStore((state) => state.setUser);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [data, setData] = useState<UsersType | null>(null);
 
-    const handleSignInWithGoogle = async () => {
-        setIsLoading(true);
+    const mutate = async () => {
+        setLoading(true);
         setError(null);
         try {
             const userData: UsersType = await signInWithGoogle();
             setUser(userData);
-            setIsAuthenticated(true); // Establece isAuthenticated en true
+            setData(userData);
+            return userData;
         } catch (err) {
             setError(err as Error);
             console.error("Error durante la autenticación:", err);
+            throw err;
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     return {
-        signInWithGoogle: handleSignInWithGoogle,
-        isLoading,
+        mutate,
+        data,
+        loading,
         error,
-        isAuthenticated, // Devuelve isAuthenticated
     };
 };
 

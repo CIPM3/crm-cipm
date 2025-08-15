@@ -10,7 +10,7 @@ import { useRefetchUsuariosStore } from "@/store/useRefetchUsuariosStore";
 
 const UsuariosTab = () => {
     const [OpenCreateDialog, setOpenCreateDialog] = useState(false);
-    const { Usuarios: Users, loading: LoadingUsers, refetch } = useGetUsuarios();
+    const { data: Users, loading: LoadingUsers, refetch } = useGetUsuarios();
     const { shouldRefetch, resetRefetch } = useRefetchUsuariosStore();
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const UsuariosTab = () => {
                                     .map((_, index) => <SkeletonDemo key={index} />)
                             ) : (
                                 <>
-                                    {Users.filter((user) => user.role !== "cliente").map((user) => (
+                                    {(Users || []).filter((user) => user.role !== "cliente").map((user) => (
                                         <UsuarioCard key={user.id} user={user} />
                                     ))}</>
                             )

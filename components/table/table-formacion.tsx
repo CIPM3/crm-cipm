@@ -35,8 +35,8 @@ const toDateObject = (fecha: any): Date | null => {
 };
 
 const TableFormacion = () => {
-    const { FormacionData, loading, error, refetch } = useGetFormacionStudents()
-    const { Instructores } = useGetInstructores()
+    const { data: FormacionData, loading, error, refetch } = useGetFormacionStudents()
+    const { data: Instructores } = useGetInstructores()
     const { shouldRefetch, resetRefetch, triggerRefetch } = useRefetchUsuariosStore()
 
     const [OPEN_EDIT, setOPEN_EDIT] = useState(false)
@@ -44,11 +44,11 @@ const TableFormacion = () => {
     const [Selected, setSelected] = useState<FormacionDataType>()
 
     const uniqueWeeks = Array.from(
-        new Set(FormacionData.map((item) => item.week).filter(Boolean))
+        new Set((FormacionData || []).map((item) => item.week).filter(Boolean))
     ).sort();
 
     const uniqueHours = Array.from(
-        new Set(FormacionData.map((item) => item.horario).filter(Boolean))
+        new Set((FormacionData || []).map((item) => item.horario).filter(Boolean))
     ).sort();
 
 
@@ -195,7 +195,7 @@ const TableFormacion = () => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Todos</SelectItem>
-                            {Instructores.map((i) => (
+                            {(Instructores || []).map((i) => (
                                 <SelectItem key={i.id} value={i.id}>
                                     {i.name}
                                 </SelectItem>
@@ -243,7 +243,7 @@ const TableFormacion = () => {
                                 <TableCell className="w-fit px-3">{safeRender(estudiante.observaciones)}</TableCell>
                                 <TableCell className="w-fit px-3">{formatFirebaseDate(estudiante.fecha)}</TableCell>
                                 <TableCell className="w-fit px-3">
-                                    {Instructores.find(maestro => maestro.id === estudiante.maestro)?.name || "-"}
+                                    {(Instructores || []).find(maestro => maestro.id === estudiante.maestro)?.name || "-"}
                                 </TableCell>
                                 <TableCell className="w-fit px-3">{safeRender(estudiante.nivel)}</TableCell>
                                 <TableCell className="w-fit px-3">{safeRender(estudiante.tipo)}</TableCell>

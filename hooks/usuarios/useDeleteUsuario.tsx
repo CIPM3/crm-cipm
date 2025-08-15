@@ -1,24 +1,26 @@
 import { useState } from "react";
 import { deleteUser } from "@/api/Usuarios/delete";
 
-// Hook para usar la mutación de eliminación
 export const useDeleteUsuario = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<{ id: string } | null>(null);
 
-  const remove = async (userId: string) => {
+  const mutate = async (userId: string) => {
     setLoading(true);
     setError(null);
     try {
-      await deleteUser(userId);
-      console.log("Usuario eliminado con éxito");
+      const result = await deleteUser(userId);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al eliminar el usuario:", err);
+      console.error("Error al eliminar usuario:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { remove, loading, error };
+  return { mutate, data, loading, error };
 };

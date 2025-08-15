@@ -7,12 +7,15 @@ import { createCourse,getAllCourses,getCourseById, updateCourse,deleteCourse } f
 export const useCreateCourse = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+  const [data, setData] = useState<{ id: string } | null>(null)
 
-  const create = async (course: Omit<Course, "id">) => {
+  const mutate = async (course: Omit<Course, "id">) => {
     setLoading(true)
     setError(null)
     try {
-      return await createCourse(course)
+      const result = await createCourse(course)
+      setData(result)
+      return result
     } catch (err) {
       setError(err as Error)
       throw err
@@ -21,7 +24,7 @@ export const useCreateCourse = () => {
     }
   }
 
-  return { create, loading, error }
+  return { mutate, data, loading, error }
 }
 
 export const useFetchCourses = () => {
@@ -77,12 +80,15 @@ export const useGetCourseById = (id: string) => {
 export const useUpdateCourse = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+  const [data, setData] = useState<{ id: string } | null>(null)
 
-  const update = async (id: string, course: Partial<Course>) => {
+  const mutate = async (id: string, course: Partial<Course>) => {
     setLoading(true)
     setError(null)
     try {
-      return await updateCourse(id, course)
+      const result = await updateCourse(id, course)
+      setData(result)
+      return result
     } catch (err) {
       setError(err as Error)
       throw err
@@ -91,18 +97,21 @@ export const useUpdateCourse = () => {
     }
   }
 
-  return { update, loading, error }
+  return { mutate, data, loading, error }
 }
 
 export const useDeleteCourse = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+  const [data, setData] = useState<{ id: string } | null>(null)
 
-  const remove = async (id: string) => {
+  const mutate = async (id: string) => {
     setLoading(true)
     setError(null)
     try {
-      return await deleteCourse(id)
+      const result = await deleteCourse(id)
+      setData(result)
+      return result
     } catch (err) {
       setError(err as Error)
       throw err
@@ -111,5 +120,5 @@ export const useDeleteCourse = () => {
     }
   }
 
-  return { remove, loading, error }
+  return { mutate, data, loading, error }
 }

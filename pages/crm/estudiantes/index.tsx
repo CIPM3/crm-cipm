@@ -11,8 +11,8 @@ export default function StudentsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
 
-  const { Usuarios, loading, error } = useGetUsuarios()
-  const Estudiantes = Usuarios.filter((user) => user.role === "cliente")
+  const { data: Usuarios, loading, error } = useGetUsuarios()
+  const Estudiantes = (Usuarios || []).filter((user) => user.role === "cliente")
 
   const students = Estudiantes.map((user) => ({
     id: user.id,
@@ -75,20 +75,35 @@ export default function StudentsPage() {
         </select>
       </div>
       <div className="grid gap-6">
-        {filteredStudents.map((student,idx) => (
-          <EstudianteCard
-            key={student.id}
-            student={{
-              id: student.id,
-              name: student.name,
-              email: student.email,
-              phone: student.phone,
-              status: student.status,
-              lastLogin: student.lastLogin || "N/A",
-            }}
-            delay={idx * 0.15}
-          />
-        ))}
+        {filteredStudents.length > 0 ? (
+          filteredStudents.map((student,idx) => (
+            <EstudianteCard
+              key={student.id}
+              student={{
+                id: student.id,
+                name: student.name,
+                email: student.email,
+                phone: student.phone,
+                status: student.status,
+                lastLogin: student.lastLogin || "N/A",
+              }}
+              delay={idx * 0.15}
+            />
+          ))
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              {Estudiantes.length === 0 
+                ? "No hay estudiantes registrados con rol 'cliente'"
+                : "No se encontraron estudiantes que coincidan con los filtros"}
+            </p>
+            {Usuarios && Usuarios.length > 0 && Estudiantes.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Total de usuarios en el sistema: {Usuarios.length}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

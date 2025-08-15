@@ -3,7 +3,7 @@ import { getUserById } from "@/api/Usuarios/getById";
 import { UsersType } from "@/types";
 
 export const useGetUsuarioById = (id: string) => {
-  const [usuario, setUsuario] = useState<UsersType | null>(null);
+  const [data, setData] = useState<UsersType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -12,10 +12,10 @@ export const useGetUsuarioById = (id: string) => {
     setError(null);
     try {
       const response = await getUserById(id);
-      setUsuario(response);
+      setData(response);
     } catch (err) {
       setError(err as Error);
-      setUsuario(null);
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -25,5 +25,5 @@ export const useGetUsuarioById = (id: string) => {
     if (id) fetchUsuario();
   }, [id, fetchUsuario]);
 
-  return { usuario, loading, error, refetch: fetchUsuario };
+  return { data, loading, error, refetch: fetchUsuario };
 };

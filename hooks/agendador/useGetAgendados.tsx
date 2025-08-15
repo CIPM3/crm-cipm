@@ -3,26 +3,28 @@ import { getAllStudents } from "@/api/Estudiantes/Agendador/get";
 import { ClasePrubeaAgendadorType } from "@/types";
 
 export const useGetAgendados = () => {
-  const [Usuarios, setUsuarios] = useState<ClasePrubeaAgendadorType[]>([]);
+  const [data, setData] = useState<ClasePrubeaAgendadorType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchUsuarios = useCallback(async () => {
+  const refetch = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await getAllStudents();
-      setUsuarios(response);
+      setData(response);
+      return response;
     } catch (err) {
       setError(err as Error);
+      throw err;
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchUsuarios();
-  }, [fetchUsuarios]);
+    refetch();
+  }, [refetch]);
 
-  return { Usuarios, loading, error, refetch: fetchUsuarios };
+  return { data, loading, error, refetch };
 };

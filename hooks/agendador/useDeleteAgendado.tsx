@@ -1,24 +1,26 @@
 import { useState } from "react";
 import { deleteStudent } from "@/api/Estudiantes/Agendador/delete";
 
-// Hook para usar la mutación de eliminación
-export const useDeleteUsuario = () => {
+export const useDeleteAgendado = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<{ id: string } | null>(null);
 
-  const remove = async (userId: string) => {
+  const mutate = async (id: string) => {
     setLoading(true);
     setError(null);
     try {
-      await deleteStudent(userId);
-      console.log("Usuario eliminado con éxito");
+      const result = await deleteStudent(id);
+      setData(result);
+      return result;
     } catch (err) {
       setError(err as Error);
-      console.error("Error al eliminar el usuario:", err);
+      console.error("Error al eliminar agendado:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { remove, loading, error };
+  return { mutate, data, loading, error };
 };

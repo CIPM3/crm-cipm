@@ -1,6 +1,6 @@
 import { FormacionForm } from '@/components/form/agendado-formacion-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useUpdateUsuariosFormacion } from '@/hooks/formacion/useUpdateStudentFormacion';
+import { useUpdateFormacion } from '@/hooks/formacion/useUpdateStudentFormacion';
 import { FormacionDataType } from '@/types';
 import React, { Dispatch, SetStateAction } from 'react'
 
@@ -13,11 +13,11 @@ interface Props {
 
 const UpdateStudentDialog = ({ open, setIsOpen, onSuccess, selected }: Props) => {
 
-    const { update, loading } = useUpdateUsuariosFormacion()
+    const { mutate, loading } = useUpdateFormacion()
     const handleSubmit = async (values: any) => {
         try {
             // Llamar a la mutación para crear el usuario
-            await update(values);
+            await mutate(values.id, values);
             onSuccess();
             setIsOpen(false)
         } catch (error) {

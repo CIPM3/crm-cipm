@@ -16,6 +16,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 .DS_Store
+.claude
+CLAUDE.md
+CACHING-GUIDE.md
 
 # env files
 .env*
