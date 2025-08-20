@@ -19,6 +19,7 @@ yarn-error.log*
 .claude
 CLAUDE.md
 CACHING-GUIDE.md
+task.md
 
 # env files
 .env*
