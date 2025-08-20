@@ -9,9 +9,16 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
   DocumentData,
   WithFieldValue,
   PartialWithFieldValue,
+  QueryConstraint,
+  DocumentSnapshot,
 } from 'firebase/firestore'
 import { 
   signInWithEmailAndPassword, 
@@ -28,69 +35,227 @@ import {
   VideoDataType 
 } from '@/types'
 
-// Obtener todos los documentos
-export const fetchItems = async <T extends DocumentData>(collectionName: string): Promise<(T & { id: string })[]> => {
-  try {
-    const querySnapshot = await getDocs(collection(db, collectionName))
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) }))
-  } catch (error) {
-    console.error(`Error al obtener documentos de la colección "${collectionName}":`, error)
-    throw new Error('No se pudieron obtener los documentos.')
+// Enhanced error types for better error handling
+export class FirebaseServiceError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public operation: string,
+    public collection?: string
+  ) {
+    super(message)
+    this.name = 'FirebaseServiceError'
   }
 }
 
-// Obtener un documento por ID
-export const fetchItem = async <T extends DocumentData>(collectionName: string, id: string): Promise<T & { id: string }> => {
+// Query options for enhanced data fetching
+export interface QueryOptions {
+  where?: { field: string; operator: any; value: any }[]
+  orderBy?: { field: string; direction?: 'asc' | 'desc' }[]
+  limit?: number
+  startAfter?: DocumentSnapshot
+}
+
+// Pagination result interface
+export interface PaginatedResult<T> {
+  data: (T & { id: string })[]
+  hasNextPage: boolean
+  nextPageCursor?: DocumentSnapshot
+  totalCount?: number
+}
+
+// Enhanced method to fetch items with advanced querying and pagination
+export const fetchItems = async <T extends DocumentData>(
+  collectionName: string,
+  options?: QueryOptions
+): Promise<(T & { id: string })[]> => {
+  try {
+    let q = collection(db, collectionName)
+    const constraints: QueryConstraint[] = []
+
+    if (options?.where) {
+      options.where.forEach(({ field, operator, value }) => {
+        constraints.push(where(field, operator, value))
+      })
+    }
+
+    if (options?.orderBy) {
+      options.orderBy.forEach(({ field, direction = 'asc' }) => {
+        constraints.push(orderBy(field, direction))
+      })
+    }
+
+    if (options?.limit) {
+      constraints.push(limit(options.limit))
+    }
+
+    if (options?.startAfter) {
+      constraints.push(startAfter(options.startAfter))
+    }
+
+    if (constraints.length > 0) {
+      q = query(q, ...constraints)
+    }
+
+    const querySnapshot = await getDocs(q)
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as T) }))
+  } catch (error: any) {
+    console.error(`Error fetching documents from collection "${collectionName}":`, error)
+    throw new FirebaseServiceError(
+      'Failed to fetch documents',
+      error.code || 'unknown',
+      'fetchItems',
+      collectionName
+    )
+  }
+}
+
+// Paginated fetch with metadata
+export const fetchItemsPaginated = async <T extends DocumentData>(
+  collectionName: string,
+  options?: QueryOptions
+): Promise<PaginatedResult<T>> => {
+  try {
+    const data = await fetchItems<T>(collectionName, options)
+    const hasNextPage = options?.limit ? data.length === options.limit : false
+    const nextPageCursor = hasNextPage && data.length > 0 
+      ? await getDoc(doc(db, collectionName, data[data.length - 1].id))
+      : undefined
+
+    return {
+      data,
+      hasNextPage,
+      nextPageCursor
+    }
+  } catch (error: any) {
+    throw new FirebaseServiceError(
+      'Failed to fetch paginated documents',
+      error.code || 'unknown',
+      'fetchItemsPaginated',
+      collectionName
+    )
+  }
+}
+
+// Enhanced method to fetch a single item by ID
+export const fetchItem = async <T extends DocumentData>(
+  collectionName: string, 
+  id: string
+): Promise<T & { id: string }> => {
   try {
     const docRef = doc(db, collectionName, id)
     const docSnap = await getDoc(docRef)
-    if (!docSnap.exists()) throw new Error('El documento no existe.')
+    
+    if (!docSnap.exists()) {
+      throw new FirebaseServiceError(
+        'Document not found',
+        'not-found',
+        'fetchItem',
+        collectionName
+      )
+    }
+    
     return { id: docSnap.id, ...(docSnap.data() as T) }
-  } catch (error) {
-    console.error(`Error al obtener el documento con ID "${id}" de la colección "${collectionName}":`, error)
-    throw new Error('No se pudo obtener el documento.')
+  } catch (error: any) {
+    console.error(`Error fetching document with ID "${id}" from collection "${collectionName}":`, error)
+    
+    if (error instanceof FirebaseServiceError) {
+      throw error
+    }
+    
+    throw new FirebaseServiceError(
+      'Failed to fetch document',
+      error.code || 'unknown',
+      'fetchItem',
+      collectionName
+    )
   }
 }
 
-// Agregar un documento
+// Enhanced method to add a document with validation
 export const addItem = async <T extends DocumentData>(
   collectionName: string,
   data: WithFieldValue<T>
 ): Promise<{ id: string }> => {
   try {
-    const docRef = await addDoc(collection(db, collectionName), data)
+    // Add timestamp fields automatically
+    const enrichedData = {
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    
+    const docRef = await addDoc(collection(db, collectionName), enrichedData)
     return { id: docRef.id }
-  } catch (error) {
-    console.error(`Error al agregar un documento a la colección "${collectionName}":`, error)
-    throw new Error('No se pudo agregar el documento.')
+  } catch (error: any) {
+    console.error(`Error adding document to collection "${collectionName}":`, error)
+    throw new FirebaseServiceError(
+      'Failed to add document',
+      error.code || 'unknown',
+      'addItem',
+      collectionName
+    )
   }
 }
 
-// Actualizar un documento
+// Enhanced method to update a document with validation
 export const updateItem = async <T extends DocumentData>(
   collectionName: string,
   id: string,
   data: PartialWithFieldValue<T>
 ): Promise<{ id: string }> => {
   try {
-    const docRef = doc(db, collectionName, id)  
-    await updateDoc(docRef, data)
+    // Add updatedAt timestamp automatically
+    const enrichedData = {
+      ...data,
+      updatedAt: new Date()
+    }
+    
+    const docRef = doc(db, collectionName, id)
+    await updateDoc(docRef, enrichedData)
     return { id }
-  } catch (error) {
-    console.error(`Error al actualizar el documento con ID "${id}" en la colección "${collectionName}":`, error)
-    throw new Error('No se pudo actualizar el documento.')
+  } catch (error: any) {
+    console.error(`Error updating document with ID "${id}" in collection "${collectionName}":`, error)
+    throw new FirebaseServiceError(
+      'Failed to update document',
+      error.code || 'unknown',
+      'updateItem',
+      collectionName
+    )
   }
 }
 
-// Eliminar un documento
+// Enhanced method to delete a document with existence check
 export const deleteItem = async (collectionName: string, id: string): Promise<{ id: string }> => {
   try {
     const docRef = doc(db, collectionName, id)
+    
+    // Check if document exists before deleting
+    const docSnap = await getDoc(docRef)
+    if (!docSnap.exists()) {
+      throw new FirebaseServiceError(
+        'Document not found',
+        'not-found',
+        'deleteItem',
+        collectionName
+      )
+    }
+    
     await deleteDoc(docRef)
     return { id }
-  } catch (error) {
-    console.error(`Error al eliminar el documento con ID "${id}" de la colección "${collectionName}":`, error)
-    throw new Error('No se pudo eliminar el documento.')
+  } catch (error: any) {
+    console.error(`Error deleting document with ID "${id}" from collection "${collectionName}":`, error)
+    
+    if (error instanceof FirebaseServiceError) {
+      throw error
+    }
+    
+    throw new FirebaseServiceError(
+      'Failed to delete document',
+      error.code || 'unknown',
+      'deleteItem',
+      collectionName
+    )
   }
 }
 

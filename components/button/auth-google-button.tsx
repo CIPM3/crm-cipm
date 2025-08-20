@@ -1,20 +1,22 @@
+"use client";
 import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import useFirebaseAuth from '@/hooks/auth/useFirebaseAuth';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const AuthButtonGoogle = () => {
-    const { signInWithGoogle, isLoading, isAuthenticated } = useFirebaseAuth();
+    const { mutate, loading, data } = useFirebaseAuth();
+    const router = useRouter();
 
     useEffect(() => {
-      if(isAuthenticated){
-        redirect("/")
+      if (data) {
+        router.push("/");
       }
-    }, [isAuthenticated])
-    
+    }, [data, router])
 
     return (
-        <Button className='flex flex-col' onClick={signInWithGoogle} variant="outline">
+        <Button className='flex flex-col' 
+        onClick={mutate} variant="outline" disabled={loading}>
             <div className='flex items-center justify-center'>
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -35,7 +37,7 @@ const AuthButtonGoogle = () => {
                 />
             </svg>
 
-            {isLoading ? 'Cargando...' : 'Google'}
+            {loading ? 'Cargando...' : 'Google'}
             </div>
         </Button>
     )

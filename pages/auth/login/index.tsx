@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import HeaderAuth from "@/components/header/header-auth";
 import FooterAuth from "@/components/footer/footer-auth";
 import { useLoginUser } from "@/hooks/login"; // Importa el hook de inicio de sesión
 import AuthButtonGoogle from "@/components/button/auth-google-button";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,8 +21,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useAuthStore();
 
   const { login, loading } = useLoginUser();
+
+  // Si ya está autenticado, redirigir según parámetro "redirect" o al dashboard
+  useEffect(() => {
+    if (user) {
+      const redirectTo = (searchParams?.get('redirect') as any) || '/admin/dashboard';
+      router.replace(redirectTo as any);
+    }
+  }, [user, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,11 +47,9 @@ export default function LoginPage() {
       setIsLoading(true);
 
       // Iniciar sesión usando el hook de inicio de sesión
-      const data = await login({ email, password });
-      // Redirección después del inicio de sesión exitoso
-      if(data !== null){
-        router.push("/");
-      }
+      await login({ email, password });
+      const redirectTo = (searchParams?.get('redirect') as any) || '/admin/dashboard';
+      router.replace(redirectTo as any);
     } catch (err) {
       setError("Error al iniciar sesión. Verifica tus credenciales.");
       console.error("Error al iniciar sesión:", err);
