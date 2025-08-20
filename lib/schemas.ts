@@ -15,7 +15,11 @@ export const userFormSchema = Yup.object().shape({
     .min(6, "La contraseña debe tener al menos 6 caracteres.")
     .required("La contraseña es requerida."),
   role: Yup.string()
-    .oneOf(ROLES, "Rol no válido.")
+    .test(
+      'role-valid',
+      'Rol no válido.',
+      (value) => (Object.values(ROLES) as string[]).includes(String(value))
+    )
     .required("El rol es requerido."),
   avatar: Yup.string(),
 });
@@ -32,7 +36,11 @@ export const userFormUpdateSchema = Yup.object().shape({
     .min(6, "La contraseña debe tener al menos 6 caracteres.")
     .optional(), // Hacer el campo opcional
   role: Yup.string()
-    .oneOf(ROLES, "Rol no válido.")
+    .test(
+      'role-valid',
+      'Rol no válido.',
+      (value) => (Object.values(ROLES) as string[]).includes(String(value))
+    )
     .required("El rol es requerido."),
   avatar: Yup.string(),
 });
