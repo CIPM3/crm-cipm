@@ -19,6 +19,7 @@ import {
   PartialWithFieldValue,
   QueryConstraint,
   DocumentSnapshot,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { 
   signInWithEmailAndPassword, 
@@ -27,12 +28,12 @@ import {
   UserCredential 
 } from 'firebase/auth'
 import { 
-  UserDataType, 
-  InstructorDataType, 
-  EstudianteDataType, 
+  UsersType as UserDataType, 
+  ClasePrubeaType as InstructorDataType, 
+  UsersType as EstudianteDataType, 
   FormacionDataType, 
-  CursoDataType, 
-  VideoDataType 
+  CursoType as CursoDataType, 
+  VideoType as VideoDataType 
 } from '@/types'
 
 // Enhanced error types for better error handling
@@ -181,8 +182,8 @@ export const addItem = async <T extends DocumentData>(
     // Add timestamp fields automatically
     const enrichedData = {
       ...data,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     }
     
     const docRef = await addDoc(collection(db, collectionName), enrichedData)
@@ -208,7 +209,7 @@ export const updateItem = async <T extends DocumentData>(
     // Add updatedAt timestamp automatically
     const enrichedData = {
       ...data,
-      updatedAt: new Date()
+      updatedAt: serverTimestamp()
     }
     
     const docRef = doc(db, collectionName, id)

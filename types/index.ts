@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
-import { ROLES } from '../lib/constants';
+import { ROLES_ARRAY } from '../lib/constants';
 export interface CursoType {
     id: string;
     title: string;
@@ -77,7 +77,7 @@ export interface UsersType {
     id: string;
     name: string;
     email: string;
-    role: typeof ROLES[number];
+    role: typeof ROLES_ARRAY[number];
     avatar: string;
     createdAt?: string;
     phone?: string;
@@ -156,14 +156,14 @@ export interface RegisterUserData {
     name: string;
     email: string;
     password: string;
-    role: typeof ROLES[number]; // Agregar el campo "role"
+    role: typeof ROLES_ARRAY[number]; // Agregar el campo "role"
 }
 
 export interface UpdateUserData {
     id: string; // ID del usuario a actualizar
     name?: string;
     email?: string;
-    role?: typeof ROLES[number];
+    role?: typeof ROLES_ARRAY[number];
     avatar?: string;
 }
 

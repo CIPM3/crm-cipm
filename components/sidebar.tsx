@@ -1,42 +1,20 @@
 "use client"
 
 import Link from "next/link"
-import { redirect, usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useLogout } from "@/hooks/user/useLogout"
 import { ADMIN_NAVS } from "@/lib/constants"
-import { useEffect, useState } from "react"
-import { auth } from "@/lib/firebase"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { onAuthStateChanged } from "firebase/auth"
 
-
-const IS_DEV = process.env.NODE_ENV === 'development'
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [authChecked, setAuthChecked] = useState(false);
   const currentUser = useAuthStore((state) => state.user);
-  const router = useRouter();
-
   const UserData = useAuthStore((state) => state.user)
   const logout = useLogout()
-
-
-  useEffect(() => {
-    // Suscribirse a cambios en el estado de autenticación
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user && !IS_DEV) {
-        router.push('/login');
-      }
-      setAuthChecked(true);
-    });
-
-    // Limpiar suscripción al desmontar
-    return () => unsubscribe();
-  }, [router]);
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-white border-r shadow-sm">

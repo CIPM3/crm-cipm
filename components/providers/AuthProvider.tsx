@@ -124,10 +124,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       if (storeUser) {
         // Normaliza el rol para SSR/middleware
+        const originalRole = (storeUser as any).role ?? (storeUser as any).rol ?? 'cliente'
         const normalized: UsersType & { rol?: string } = {
           ...storeUser,
-          role: (storeUser as any).role ?? (storeUser as any).rol ?? 'cliente',
+          role: originalRole,
         }
+        
         const payload = { state: { user: normalized } }
         const value = encodeURIComponent(JSON.stringify(payload))
         const maxAge = 60 * 60 * 24 * 7 // 7 días
@@ -141,8 +143,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [storeUser])
 
-  // Don't render children until auth is initialized
-  if (!initialized) {
+  // Don't render children until auth is initialized and not loading
+  if (!initialized || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>

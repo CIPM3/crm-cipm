@@ -53,10 +53,12 @@ async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
       return null
     }
 
+    const extractedRole = user.role || user.rol || 'cliente'
+
     return {
       uid: user.uid || user.id,
       email: user.email,
-      role: user.role || user.rol || 'cliente',
+      role: extractedRole,
       displayName: user.displayName || user.name
     }
   } catch (error) {
@@ -119,8 +121,13 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/login' || pathname === '/register') {
     const user = await getAuthUser(request)
     if (user) {
-      const redirectUrl = new URL('/admin/dashboard', request.url)
-      return NextResponse.redirect(redirectUrl)
+      // Check if there's a redirect parameter - if so, don't redirect here
+      // Let the client handle the redirect to avoid loops
+      const hasRedirectParam = request.nextUrl.searchParams.has('redirect')
+      if (!hasRedirectParam) {
+        const redirectUrl = new URL('/admin/dashboard', request.url)
+        return NextResponse.redirect(redirectUrl)
+      }
     }
     return NextResponse.next()
   }

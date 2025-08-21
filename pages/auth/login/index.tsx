@@ -28,11 +28,11 @@ export default function LoginPage() {
 
   // Si ya está autenticado, redirigir según parámetro "redirect" o al dashboard
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       const redirectTo = (searchParams?.get('redirect') as any) || '/admin/dashboard';
       router.replace(redirectTo as any);
     }
-  }, [user, router, searchParams]);
+  }, [user, loading, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +48,8 @@ export default function LoginPage() {
 
       // Iniciar sesión usando el hook de inicio de sesión
       await login({ email, password });
-      const redirectTo = (searchParams?.get('redirect') as any) || '/admin/dashboard';
-      router.replace(redirectTo as any);
+      // El redirect se maneja en el useEffect cuando user cambia
+      // No hacer redirect aquí para evitar loops
     } catch (err) {
       setError("Error al iniciar sesión. Verifica tus credenciales.");
       console.error("Error al iniciar sesión:", err);

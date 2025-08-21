@@ -1,6 +1,6 @@
 // lib/schemas.ts
 import * as Yup from "yup";
-import { ROLES } from "@/lib/constants";
+import { ROLES_ARRAY } from "@/lib/constants";
 import { Timestamp } from "firebase/firestore";
 
 // Esquema de validación para la creación de usuarios
@@ -18,7 +18,7 @@ export const userFormSchema = Yup.object().shape({
     .test(
       'role-valid',
       'Rol no válido.',
-      (value) => (Object.values(ROLES) as string[]).includes(String(value))
+      (value) => ROLES_ARRAY.includes(value as any)
     )
     .required("El rol es requerido."),
   avatar: Yup.string(),
@@ -39,7 +39,7 @@ export const userFormUpdateSchema = Yup.object().shape({
     .test(
       'role-valid',
       'Rol no válido.',
-      (value) => (Object.values(ROLES) as string[]).includes(String(value))
+      (value) => ROLES_ARRAY.includes(value as any)
     )
     .required("El rol es requerido."),
   avatar: Yup.string(),

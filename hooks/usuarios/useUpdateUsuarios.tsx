@@ -10,14 +10,34 @@ export const useUpdateUsuarios = () => {
   const mutate = async (updateData: UpdateUserData) => {
     setLoading(true);
     setError(null);
+    
     try {
+      // Validaciones previas
+      if (!updateData.id) {
+        throw new Error('ID del usuario es requerido');
+      }
+      
+      if (updateData.email && !/\S+@\S+\.\S+/.test(updateData.email)) {
+        throw new Error('Email no tiene un formato válido');
+      }
+      
       const result = await updateUser(updateData);
+      
+      if (!result) {
+        throw new Error('La operación de actualización no retornó datos');
+      }
+      
       setData(result);
       return result;
     } catch (err) {
-      setError(err as Error);
-      console.error("Error al actualizar usuario:", err);
-      throw err;
+      const error = err instanceof Error ? err : new Error('Error desconocido al actualizar usuario');
+      setError(error);
+      console.error("Error al actualizar usuario:", {
+        originalError: err,
+        updateData,
+        timestamp: new Date().toISOString()
+      });
+      throw error;
     } finally {
       setLoading(false);
     }

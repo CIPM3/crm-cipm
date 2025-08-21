@@ -1,0 +1,10 @@
+{
+  "buildTime": "2025-08-21T18:13:58.901Z",
+  "version": "0.1.0",
+  "nodeVersion": "v21.7.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "environment": "production",
+  "commit": "41624e0db3e5152beabdbb8cd613b29627c311a8",
+  "branch": "main"
+}

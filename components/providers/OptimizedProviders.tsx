@@ -52,6 +52,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Prevent multiple initializations
+        if (useAuthStore.getState().user) return
+        
         // Any auth initialization logic
         const authStorage = localStorage.getItem('auth-storage')
         if (authStorage) {
