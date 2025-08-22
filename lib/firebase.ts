@@ -15,13 +15,18 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_DB_MEASUREMENT_ID,
 };
 
-// Initialize Firebase only if it hasn't been initialized already
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Initialize Firebase only on client side and if it hasn't been initialized already
+let app: any = null;
+let db: any = null;
+let storage: any = null;
+let auth: any = null;
 
-// Initialize Firebase services
-const db = getFirestore(app);
-const storage = getStorage(app);
-const auth = getAuth(app);
+if (typeof window !== 'undefined') {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  db = getFirestore(app);
+  storage = getStorage(app);
+  auth = getAuth(app);
+}
 
 // Export Firebase services
 export { db, storage, auth };
