@@ -38,7 +38,8 @@ const nextConfig = {
     parallelServerCompiles: true,
     serverComponentsExternalPackages: ['firebase', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
     typedRoutes: true,
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Desactivado: causaba problemas de importación con componentes de iconos (undefined en SSR)
+    // optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     // Habilitar PPR solo es compatible con canary. Con Next estable lo desactivamos.
     ppr: false, // Partial Prerendering
   },
