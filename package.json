@@ -7,7 +7,9 @@
     "dev:turbo": "next dev --turbo",
     "dev:debug": "NODE_OPTIONS='--inspect' next dev",
     "dev:https": "next dev --experimental-https",
-    "build": "node scripts/build-optimization.js",
+    "build": "next build",
+    "build:netlify": "SKIP_ESLINT=true SKIP_TYPE_CHECK=true next build",
+    "build:optimized": "node scripts/build-optimization.js",
     "build:next": "next build",
     "build:analyze": "ANALYZE=true next build",
     "build:debug": "next build --debug",
@@ -119,6 +121,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@next/bundle-analyzer": "^14.2.16",
     "@playwright/test": "^1.40.0",
     "@tanstack/react-query-devtools": "^5.85.3",

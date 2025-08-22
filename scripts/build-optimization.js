@@ -389,7 +389,7 @@ async function buildApplication() {
   
   try {
     // Run the Next.js build
-    execSync('npm run build', { 
+    execSync('npm run build:next', { 
       stdio: 'inherit',
       env: { 
         ...process.env, 

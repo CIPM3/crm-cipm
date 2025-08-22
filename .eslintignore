@@ -1,0 +1,57 @@
+# Build directories
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Configuration files
+*.config.js
+*.config.mjs
+next.config.mjs
+tailwind.config.js
+postcss.config.mjs
+
+# Static assets
+public/
+
+# Environment files
+.env*
+
+# Documentation
+*.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Firebase
+firebase.json
+.firebaserc
+.firebase/
+
+# Netlify
+.netlify/
+netlify.toml
+
+# Testing
+jest.config.*
+playwright.config.*
