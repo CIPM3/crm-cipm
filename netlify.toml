@@ -18,12 +18,7 @@
   command = "npm run dev"
   port = 3000
 
-# Redirect configuration for Next.js app router
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = { Role = ["public"] }
+# No definas redirecciones catch-all; el plugin de Next.js maneja rutas/SSR automáticamente
 
 # Headers for enhanced security and performance
 [[headers]]
