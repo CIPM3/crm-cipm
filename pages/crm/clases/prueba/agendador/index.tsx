@@ -5,13 +5,14 @@ import { useGetAgendadores } from '@/hooks/agendador/useGetAgendadores'
 import { useAuthStore } from '@/store/useAuthStore'
 import { UsersType } from '@/types'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const Index = () => {
-    const { Agendadores, loading, error } = useGetAgendadores();
+    const { data: Agendadores, loading, error } = useGetAgendadores();
     const [InstructoresRoles, setInstructoresRoles] = useState<UsersType[]>([]);
     const User = useAuthStore((state) => state.user);
+    const router = useRouter();
 
     useEffect(() => {
         if (loading) return;
@@ -21,30 +22,31 @@ const Index = () => {
 
         // Validar si el usuario está autenticado
         if (!User) {
-            redirect('/admin/clases/prueba');
+            router.push('/admin/clases/prueba');
             return;
         }
 
         // Permitir acceso a un usuario específico (independientemente de su rol)
         if (User.id === 'fZBbWtrIihQvkITliDfLHHhK6rA3') {
-            setInstructoresRoles(Agendadores); // Permitir acceso completo
+            setInstructoresRoles(Agendadores || []); // Permitir acceso completo
             return;
         }
 
         // Validar roles permitidos para otros usuarios
         if (!allowedRoles.includes(User.role)) {
-            redirect('/admin/clases/prueba');
+            router.push('/admin/clases/prueba');
             return;
         }
 
         // Lógica para roles permitidos
         if (User.role === "agendador") {
-            redirect('/admin/clases/prueba/agendador/'+User.id)
-            //setInstructoresRoles(Agendadores.filter(profesor => profesor.id === User.id));
+            // Si el usuario es agendador, solo mostrar su propio perfil
+            setInstructoresRoles(Agendadores?.filter(agendador => agendador.id === User.id) || []);
         } else {
-            setInstructoresRoles(Agendadores);
+            // Admin y formacion de grupo pueden ver todos
+            setInstructoresRoles(Agendadores || []);
         }
-    }, [User, Agendadores, loading]);
+    }, [User, Agendadores, loading, router]);
 
     if (loading) {
         return <div>Cargando...</div>;
@@ -69,7 +71,7 @@ const Index = () => {
                                 <CardTitle className="text-sm font-medium">{agendador.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <Link href={'agendador/'+agendador.id}>
+                                <Link href={`/admin/clases/prueba/agendador/${agendador.id}`}>
                                     <button className='w-full border-input border my-3 rounded-md text-[12px] p-2'>Agendar aqui</button>
                                 </Link>
                             </CardContent>
