@@ -5,14 +5,15 @@ import { useGetFormacion } from '@/hooks/formacion/useGetFormacion';
 import { useAuthStore } from '@/store/useAuthStore';
 import { UsersType } from '@/types';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const index = () => {
 
-    const { FormacionGrupo, loading, error } = useGetFormacion();
+    const { data: FormacionGrupo, loading, error } = useGetFormacion();
     const [InstructoresRoles, setInstructoresRoles] = useState<UsersType[]>([]);
     const User = useAuthStore((state) => state.user);
+    const router = useRouter();
 
     useEffect(() => {
         if (loading) return;
@@ -22,30 +23,26 @@ const index = () => {
 
         // Validar si el usuario está autenticado
         if (!User) {
-            redirect('/admin/clases/prueba');
+            router.push('/admin/clases/prueba');
             return;
         }
 
         // Permitir acceso a un usuario específico (independientemente de su rol)
         if (User.id === 'fZBbWtrIihQvkITliDfLHHhK6rA3') {
-            setInstructoresRoles(FormacionGrupo); // Permitir acceso completo
+            setInstructoresRoles(FormacionGrupo || []); // Permitir acceso completo
             return;
         }
 
         // Validar roles permitidos para otros usuarios
         if (!allowedRoles.includes(User.role)) {
-            redirect('/admin/clases/prueba');
+            router.push('/admin/clases/prueba');
             return;
         }
 
-        // Lógica para roles permitidos
-        if (User.role === "formacion de grupo") {
-            //redirect('/admin/clases/prueba/formacion/' + User.id)
-            //setInstructoresRoles(Instructores.filter(profesor => profesor.id === User.id));
-        } else {
-            setInstructoresRoles(FormacionGrupo);
-        }
-    }, [User, FormacionGrupo, loading]);
+        // Lógica para roles permitidos - mostrar opciones para formacion de grupo
+        // No necesitamos filtrar por usuario aquí porque esta página muestra opciones generales
+        setInstructoresRoles(FormacionGrupo || []);
+    }, [User, FormacionGrupo, loading, router]);
 
     if (loading) {
         return <div>Cargando...</div>;
@@ -67,7 +64,7 @@ const index = () => {
                         <CardTitle className="text-sm font-medium">Horarios</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Link href={'formacion/horarios'}>
+                        <Link href={'/admin/clases/prueba/formacion/horarios'}>
                             <button className='w-full border-input border my-3 rounded-md text-[12px] p-2'>Ver horario aqui</button>
                         </Link>
                     </CardContent>
@@ -78,7 +75,7 @@ const index = () => {
                         <CardTitle className="text-sm font-medium">Clase Prueba</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Link href={'formacion/clase-prueba'}>
+                        <Link href={'/admin/clases/prueba/formacion/clase-prueba'}>
                             <button className='w-full border-input border my-3 rounded-md text-[12px] p-2'>Ver horario aqui</button>
                         </Link>
                     </CardContent>

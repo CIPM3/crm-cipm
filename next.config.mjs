@@ -11,10 +11,22 @@ const nextConfig = {
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   eslint: {
+    // Ignore ESLint errors during builds for Netlify deployment
     ignoreDuringBuilds: true,
+    // Only run ESLint on specific directories to improve build performance
+    dirs: ['pages', 'components', 'lib', 'app', 'hooks', 'api'],
   },
   typescript: {
+    // Ignore TypeScript errors during builds to prevent deployment failures
     ignoreBuildErrors: true,
+  },
+  // Optimize build output for better performance
+  swcMinify: true,
+  // Reduce build size by removing unused code
+  modularizeImports: {
+    lodash: {
+      transform: 'lodash/{{member}}',
+    },
   },
   images: {
     unoptimized: true, // Disable Next.js image optimization for Netlify compatibility
@@ -29,7 +41,8 @@ const nextConfig = {
     parallelServerCompiles: true,
     serverComponentsExternalPackages: ['firebase', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
     typedRoutes: true,
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Desactivado: causaba problemas de importación con componentes de iconos (undefined en SSR)
+    // optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     // Habilitar PPR solo es compatible con canary. Con Next estable lo desactivamos.
     ppr: false, // Partial Prerendering
   },

@@ -5,3 +5,4 @@ export * from './useEstudiantes';
 export * from './useFormacion';
 export * from './useCursos';
 export * from './useVideos';
+export * from './useComments';

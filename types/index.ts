@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
-import { ROLES_ARRAY } from '../lib/constants';
+import { ROLES_ARRAY, UserRole } from '../lib/constants';
 export interface CursoType {
     id: string;
     title: string;
@@ -335,4 +335,94 @@ export interface CourseInfoProps {
 
 export interface BreadcrumbNavProps {
   videoTitle?: string;
+}
+
+// === COMMENTS SYSTEM TYPES ===
+
+export interface CourseComment {
+  id: string;
+  courseId: string;
+  userId: string;
+  userName: string;
+  userRole: UserRole;
+  userAvatar?: string;
+  content: string;
+  parentId: string | null; // null for top-level comments, ID for replies
+  likes: number;
+  likedBy: string[]; // Array of user IDs who liked this comment
+  isPinned: boolean; // Admins can pin important comments
+  isModerated: boolean; // For content moderation
+  isEdited: boolean; // Track if comment was edited
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  editedAt?: Timestamp;
+}
+
+export interface CreateCommentData {
+  courseId: string;
+  content: string;
+  parentId?: string | null;
+}
+
+export interface UpdateCommentData {
+  content: string;
+}
+
+export interface CommentWithReplies extends CourseComment {
+  replies?: CourseComment[];
+  replyCount: number;
+}
+
+export interface CommentsQueryOptions {
+  courseId?: string;
+  parentId?: string | null;
+  userId?: string;
+  isPinned?: boolean;
+  limit?: number;
+  orderBy?: 'createdAt' | 'likes' | 'updatedAt';
+  order?: 'asc' | 'desc';
+}
+
+// Form interfaces for comment operations
+export interface CommentFormValues {
+  content: string;
+}
+
+export interface CommentFormProps {
+  courseId: string;
+  parentId?: string | null;
+  initialContent?: string;
+  onSubmit: (values: CommentFormValues) => Promise<void>;
+  onCancel?: () => void;
+  isLoading?: boolean;
+  placeholder?: string;
+}
+
+// Component props interfaces
+export interface CommentsListProps {
+  courseId: string;
+  showReplies?: boolean;
+  maxComments?: number;
+  allowModeration?: boolean;
+}
+
+export interface CommentItemProps {
+  comment: CourseComment;
+  onReply?: (parentId: string) => void;
+  onEdit?: (commentId: string) => void;
+  onDelete?: (commentId: string) => void;
+  onLike?: (commentId: string) => void;
+  onPin?: (commentId: string) => void;
+  onModerate?: (commentId: string) => void;
+  canModerate?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  showReplies?: boolean;
+  level?: number; // For nested comment depth
+}
+
+export interface CommentStatsProps {
+  totalComments: number;
+  totalReplies: number;
+  isLoading?: boolean;
 }

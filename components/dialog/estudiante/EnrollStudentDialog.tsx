@@ -26,7 +26,7 @@ export default function EnrollStudentDialog({
   const params = useParams()
   const courseId = params?.id as string
   const { course } = useGetCourseById(courseId)
-  const { Usuarios: students = [] } = useGetUsuarios()
+  const { data: students = [] } = useGetUsuarios()
   const { create, loading } = useCreateEnrollment()
   const { enrollments } = useGetEnrollmentsByCourseId(courseId)
   const enrolledIds = enrollments?.map((e: any) => e.studentId) ?? []
