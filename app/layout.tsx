@@ -48,9 +48,15 @@ export const metadata: Metadata = {
     description: "Plataforma de gestión de cursos, estudiantes y recursos educativos",
   },
   icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    icon: [
+      { url: "/icons/favicon-16x16.svg", sizes: "16x16", type: "image/svg+xml" },
+      { url: "/icons/favicon-32x32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/icons/icon-192x192.svg", sizes: "192x192", type: "image/svg+xml" }
+    ],
+    shortcut: "/icons/favicon-32x32.svg",
+    apple: [
+      { url: "/icons/apple-touch-icon.svg", sizes: "180x180", type: "image/svg+xml" }
+    ],
   },
   manifest: "/manifest.json",
 }
@@ -60,7 +66,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#ffffff',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#1f2937' },
+    { media: '(prefers-color-scheme: dark)', color: '#1f2937' }
+  ],
 }
 
 export default function RootLayout({
@@ -78,6 +87,12 @@ export default function RootLayout({
         
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="https://firebase.googleapis.com" />
+        
+        {/* PWA meta tags */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="CIPM CRM" />
         
         {/* Prevent FOUC */}
         <style dangerouslySetInnerHTML={{
