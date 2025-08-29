@@ -10,8 +10,6 @@
     "build": "next build",
     "build:netlify": "SKIP_ESLINT=true SKIP_TYPE_CHECK=true next build",
     "build:optimized": "node scripts/build-optimization.js",
-    "build": "next build",
-    "build:optimized": "node scripts/build-optimization.js",
     "build:next": "next build",
     "build:analyze": "ANALYZE=true next build",
     "build:debug": "next build --debug",
