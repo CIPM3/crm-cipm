@@ -13,6 +13,7 @@ export const COLLECTIONS = {
   VIDEOS: 'Videos',                     // Video content library
   MODULES: 'Modulos',                   // Course modules
   CONTENTS: 'Contenidos',               // Module contents (videos, docs, quizzes)
+  COURSE_COMMENTS: 'CourseComments',    // Course comments and discussions
   
   // === EDUCATIONAL MANAGEMENT ===
   TRIAL_CLASSES: 'Prueba',              // Trial class records
@@ -64,6 +65,8 @@ export const COLLECTION_RELATIONSHIPS = {
   COURSE_TO_MODULES: `${COLLECTIONS.COURSES} -> ${COLLECTIONS.MODULES}`,
   MODULE_TO_CONTENTS: `${COLLECTIONS.MODULES} -> ${COLLECTIONS.CONTENTS}`,
   COURSE_TO_ENROLLMENTS: `${COLLECTIONS.COURSES} -> ${COLLECTIONS.ENROLLMENTS}`,
+  COURSE_TO_COMMENTS: `${COLLECTIONS.COURSES} -> ${COLLECTIONS.COURSE_COMMENTS}`,
+  USER_TO_COMMENTS: `${COLLECTIONS.USERS} -> ${COLLECTIONS.COURSE_COMMENTS}`,
   
   // Scheduling relationships
   INSTRUCTOR_TO_SCHEDULE: `${COLLECTIONS.USERS} -> ${COLLECTIONS.INSTRUCTOR_SCHEDULE}`,
@@ -93,11 +96,13 @@ export const COLLECTION_ACCESS_PATTERNS = {
       COLLECTIONS.STUDENT_PROGRESS,
       COLLECTIONS.INSTRUCTOR_SCHEDULE,
       COLLECTIONS.CLASS_SCHEDULE,
+      COLLECTIONS.COURSE_COMMENTS,
     ],
     write: [
       COLLECTIONS.INSTRUCTOR_SCHEDULE,
       COLLECTIONS.STUDENT_PROGRESS,
       COLLECTIONS.FEEDBACK,
+      COLLECTIONS.COURSE_COMMENTS,
     ],
     description: 'Course delivery and student management'
   },
@@ -131,9 +136,11 @@ export const COLLECTION_ACCESS_PATTERNS = {
       COLLECTIONS.VIDEOS,
       COLLECTIONS.MODULES,
       COLLECTIONS.CONTENTS,
+      COLLECTIONS.COURSE_COMMENTS,
     ],
     write: [
       COLLECTIONS.FEEDBACK,
+      COLLECTIONS.COURSE_COMMENTS,
     ],
     description: 'Course consumption and feedback'
   }
@@ -209,7 +216,9 @@ export const ROLE_PERMISSIONS = {
       'course-delivery',
       'student-progress',
       'class-scheduling',
-      'feedback-management'
+      'feedback-management',
+      'comment-management',
+      'comment-moderation'
     ],
     description: 'Teaching and student management'
   },
@@ -246,7 +255,9 @@ export const ROLE_PERMISSIONS = {
       'course-consumption',
       'video-viewing',
       'progress-tracking',
-      'feedback-submission'
+      'feedback-submission',
+      'comment-creation',
+      'comment-interaction'
     ],
     description: 'Course consumption and learning'
   }
