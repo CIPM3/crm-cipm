@@ -4,9 +4,6 @@ import { Inter } from "next/font/google"
 import OptimizedProviders from "@/components/providers/OptimizedProviders"
 import type { Metadata, Viewport } from 'next'
 
-// Evita la prerenderización estática para prevenir errores en build
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 
 // Optimize font loading
 const inter = Inter({ 

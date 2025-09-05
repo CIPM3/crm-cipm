@@ -13,9 +13,6 @@ export const metadata = generatePageMetadata({
   keywords: ["admin", "panel", "gestión", "CRM", "dashboard"]
 })
 
-// Evita SSG de rutas admin durante build
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 
 // Loading components for streaming UI
 function SidebarLoading() {
