@@ -1,0 +1,209 @@
+import { COLLECTIONS } from './collections'
+
+// === USER ROLES & PERMISSIONS SYSTEM ===
+
+/**
+ * System roles with hierarchical permissions
+ * Each role inherits permissions from lower-level roles
+ */
+export const ROLES = {
+  ADMIN: "admin",
+  DEVELOP: "develop",
+  INSTRUCTOR: "instructor", 
+  FORMACION: "formacion de grupo",
+  AGENDADOR: "agendador",
+  BASE: "base",
+  CLIENTE: "cliente"
+} as const
+
+export type UserRole = typeof ROLES[keyof typeof ROLES]
+
+/**
+ * Role hierarchy - higher roles inherit lower role permissions
+ */
+export const ROLE_HIERARCHY = {
+  [ROLES.DEVELOP]: 110,      // Developer - above admin for debugging/maintenance
+  [ROLES.ADMIN]: 100,        // Full system access
+  [ROLES.INSTRUCTOR]: 80,    // Course delivery and student management
+  [ROLES.FORMACION]: 60,     // Group formation and management
+  [ROLES.AGENDADOR]: 40,     // Scheduling and trial classes
+  [ROLES.BASE]: 20,          // Basic authenticated user
+  [ROLES.CLIENTE]: 10        // Course consumption only
+} as const
+
+/**
+ * Access patterns for different user roles
+ */
+export const COLLECTION_ACCESS_PATTERNS = {
+  ADMIN: {
+    READ: Object.values(COLLECTIONS),
+    WRITE: Object.values(COLLECTIONS),
+    description: 'Full system access'
+  },
+  INSTRUCTOR: {
+    READ: [
+      COLLECTIONS.USERS,
+      COLLECTIONS.COURSES,
+      COLLECTIONS.MODULES,
+      COLLECTIONS.CONTENTS,
+      COLLECTIONS.ENROLLMENTS,
+      COLLECTIONS.STUDENT_PROGRESS,
+      COLLECTIONS.INSTRUCTOR_SCHEDULE,
+      COLLECTIONS.CLASS_SCHEDULE,
+      COLLECTIONS.COURSE_COMMENTS,
+    ],
+    WRITE: [
+      COLLECTIONS.INSTRUCTOR_SCHEDULE,
+      COLLECTIONS.STUDENT_PROGRESS,
+      COLLECTIONS.FEEDBACK,
+      COLLECTIONS.COURSE_COMMENTS,
+    ],
+    description: 'Course delivery and student management'
+  },
+  AGENDADOR: {
+    READ: [
+      COLLECTIONS.USERS,
+      COLLECTIONS.TRIAL_CLASSES,
+      COLLECTIONS.AGENDADOR_CLASSES,
+      COLLECTIONS.INSTRUCTOR_SCHEDULE,
+    ],
+    WRITE: [
+      COLLECTIONS.TRIAL_CLASSES,
+      COLLECTIONS.AGENDADOR_CLASSES,
+    ],
+    description: 'Scheduling and trial class management'
+  },
+  FORMACION: {
+    READ: [
+      COLLECTIONS.USERS,
+      COLLECTIONS.FORMACION_CLASSES,
+      COLLECTIONS.STUDENT_PROGRESS,
+    ],
+    WRITE: [
+      COLLECTIONS.FORMACION_CLASSES,
+    ],
+    description: 'Group formation and management'
+  },
+  CLIENTE: {
+    READ: [
+      COLLECTIONS.COURSES,
+      COLLECTIONS.VIDEOS,
+      COLLECTIONS.MODULES,
+      COLLECTIONS.CONTENTS,
+      COLLECTIONS.COURSE_COMMENTS,
+    ],
+    WRITE: [
+      COLLECTIONS.FEEDBACK,
+      COLLECTIONS.COURSE_COMMENTS,
+    ],
+    description: 'Course consumption and feedback'
+  }
+} as const
+
+/**
+ * Role-based permissions matrix
+ */
+export const ROLE_PERMISSIONS = {
+  [ROLES.DEVELOP]: {
+    collections: COLLECTION_ACCESS_PATTERNS.ADMIN,
+    routes: ['/admin/**'],
+    features: [
+      'user-management',
+      'course-management', 
+      'video-management',
+      'system-configuration',
+      'analytics',
+      'reports',
+      'audit-logs'
+    ],
+    description: 'Developer role with full system administration'
+  },
+  [ROLES.ADMIN]: {
+    collections: COLLECTION_ACCESS_PATTERNS.ADMIN,
+    routes: ['/admin/**'],
+    features: [
+      'user-management',
+      'course-management', 
+      'video-management',
+      'system-configuration',
+      'analytics',
+      'reports',
+      'audit-logs'
+    ],
+    description: 'Full system administration'
+  },
+  [ROLES.INSTRUCTOR]: {
+    collections: COLLECTION_ACCESS_PATTERNS.INSTRUCTOR,
+    routes: ['/admin/clases/**', '/admin/estudiantes/**', '/admin/cursos/**'],
+    features: [
+      'course-delivery',
+      'student-progress',
+      'class-scheduling',
+      'feedback-management',
+      'comment-management',
+      'comment-moderation'
+    ],
+    description: 'Teaching and student management'
+  },
+  [ROLES.FORMACION]: {
+    collections: COLLECTION_ACCESS_PATTERNS.FORMACION,
+    routes: ['/admin/clases/prueba/formacion/**'],
+    features: [
+      'group-formation',
+      'student-classification',
+      'group-management'
+    ],
+    description: 'Student grouping and classification'
+  },
+  [ROLES.AGENDADOR]: {
+    collections: COLLECTION_ACCESS_PATTERNS.AGENDADOR,
+    routes: ['/admin/clases/prueba/agendador/**'],
+    features: [
+      'trial-scheduling',
+      'calendar-management',
+      'instructor-assignment'
+    ],
+    description: 'Scheduling and calendar management'
+  },
+  [ROLES.BASE]: {
+    collections: { READ: [COLLECTIONS.USERS], WRITE: [], description: 'Basic user profile' },
+    routes: ['/profile/**'],
+    features: ['profile-management'],
+    description: 'Authenticated user with basic access'
+  },
+  [ROLES.CLIENTE]: {
+    collections: COLLECTION_ACCESS_PATTERNS.CLIENTE,
+    routes: ['/cursos/**', '/videos/**'],
+    features: [
+      'course-consumption',
+      'video-viewing',
+      'progress-tracking',
+      'feedback-submission',
+      'comment-creation',
+      'comment-interaction'
+    ],
+    description: 'Course consumption and learning'
+  }
+} as const
+
+/**
+ * Helper function to check if user has access to a specific route
+ */
+export const hasRouteAccess = (userRole: UserRole, route: string): boolean => {
+  const rolePermissions = ROLE_PERMISSIONS[userRole]
+  if (!rolePermissions) return false
+  
+  return rolePermissions.routes.some(allowedRoute => {
+    if (allowedRoute.endsWith('/**')) {
+      const baseRoute = allowedRoute.slice(0, -3)
+      return route.startsWith(baseRoute)
+    }
+    return route === allowedRoute
+  })
+}
+
+/**
+ * Legacy roles array for backward compatibility
+ * @deprecated Use ROLES object instead
+ */
+export const ROLES_ARRAY = ["admin", "instructor", "formacion de grupo", "agendador", "base", "cliente"] as const
