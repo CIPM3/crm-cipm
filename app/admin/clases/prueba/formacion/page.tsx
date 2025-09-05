@@ -1,5 +1,6 @@
 "use client"
 
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetFormacion } from '@/hooks/formacion/useGetFormacion';
 import { useAuthStore } from '@/store/useAuthStore';
