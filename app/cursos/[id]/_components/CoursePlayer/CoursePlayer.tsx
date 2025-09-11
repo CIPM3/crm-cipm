@@ -157,7 +157,19 @@ export default function CoursePlayer({
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
         
-        <CommentsSection />
+        {/* Comments Section with Error Boundary */}
+        {course?.id ? (
+          <CommentsSection 
+            courseId={course.id} 
+            contentId={selectedContent?.id}
+            contentTitle={selectedContent?.title}
+          />
+        ) : (
+          <div className="mt-8 p-4 border rounded-lg">
+            <h3 className="text-lg font-semibold mb-4">Comentarios</h3>
+            <p className="text-sm text-gray-500">Cargando curso...</p>
+          </div>
+        )}
       </div>
     </div>
   )

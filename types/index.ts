@@ -339,6 +339,9 @@ export interface BreadcrumbNavProps {
 
 // === COMMENTS SYSTEM TYPES ===
 
+// Comment types for different contexts
+export type CommentType = 'opinion' | 'video' | 'general';
+
 export interface CourseComment {
   id: string;
   courseId: string;
@@ -348,6 +351,9 @@ export interface CourseComment {
   userAvatar?: string;
   content: string;
   parentId: string | null; // null for top-level comments, ID for replies
+  commentType: CommentType; // Type of comment: opinion, video, or general
+  contentId?: string; // ID of the video/content (only for video comments)
+  contentTitle?: string; // Title of the video/content (optional for better UX)
   likes: number;
   likedBy: string[]; // Array of user IDs who liked this comment
   isPinned: boolean; // Admins can pin important comments
@@ -362,6 +368,9 @@ export interface CreateCommentData {
   courseId: string;
   content: string;
   parentId?: string | null;
+  commentType: CommentType;
+  contentId?: string; // Required for video comments
+  contentTitle?: string; // Optional for better UX
 }
 
 export interface UpdateCommentData {

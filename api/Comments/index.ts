@@ -87,6 +87,9 @@ export const createCourseComment = async (data: CreateCommentData, userId: strin
       userRole: (userRole || 'cliente') as UserRole,
       content: data.content.trim(),
       parentId: data.parentId || null,
+      commentType: data.commentType || 'general',
+      contentId: data.contentId || null,
+      contentTitle: data.contentTitle || null,
       likes: 0,
       likedBy: [],
       isPinned: false,
@@ -177,16 +180,67 @@ export const getPinnedCommentsForCourse = (courseId: string) => {
 /**
  * Get comments with moderation flag
  */
-export const getModeratedComments = (courseId?: string) => {
+export const getModeratedComments = async (courseId?: string) => {
   const constraints: any[] = [where("isModerated", "==", true)]
   
   if (courseId) {
     constraints.push(where("courseId", "==", courseId))
   }
   
-  constraints.push(orderBy("createdAt", "desc"))
+  // Remove orderBy to avoid index requirement, sort in memory instead
+  const comments = await queryItems<CourseComment>(collectionName, constraints)
   
-  return queryItems<CourseComment>(collectionName, constraints)
+  // Sort in memory by creation date (descending)
+  return comments.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0
+    const bTime = b.createdAt?.seconds || 0
+    return bTime - aTime // descending order
+  })
+}
+
+// === TYPE-SPECIFIC QUERY OPERATIONS ===
+
+/**
+ * Get comments by type for a specific course
+ */
+export const getCommentsByType = async (courseId: string, commentType: 'opinion' | 'video' | 'general'): Promise<CourseComment[]> => {
+  const allComments = await queryItems<CourseComment>(collectionName, [
+    where("courseId", "==", courseId),
+    where("commentType", "==", commentType)
+  ])
+  
+  // Sort in memory by creation date (descending for opinions, ascending for videos)
+  return allComments.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0
+    const bTime = b.createdAt?.seconds || 0
+    // Opinion comments: newest first, Video comments: oldest first
+    return commentType === 'opinion' ? bTime - aTime : aTime - bTime
+  })
+}
+
+/**
+ * Get video comments for specific content
+ */
+export const getVideoComments = async (courseId: string, contentId: string): Promise<CourseComment[]> => {
+  const allComments = await queryItems<CourseComment>(collectionName, [
+    where("courseId", "==", courseId),
+    where("commentType", "==", "video"),
+    where("contentId", "==", contentId)
+  ])
+  
+  // Sort in memory by creation date (ascending for chronological order)
+  return allComments.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0
+    const bTime = b.createdAt?.seconds || 0
+    return aTime - bTime
+  })
+}
+
+/**
+ * Get opinion comments for a course
+ */
+export const getOpinionComments = async (courseId: string): Promise<CourseComment[]> => {
+  return getCommentsByType(courseId, 'opinion')
 }
 
 // === INTERACTION OPERATIONS ===
@@ -222,11 +276,17 @@ export const toggleCommentModeration = async (commentId: string, isModerated: bo
  * Get comments with their replies in a nested structure
  */
 export const getCommentsWithReplies = async (courseId: string): Promise<CommentWithReplies[]> => {
-  // Get all comments for the course
+  // Get all comments for the course (without orderBy to avoid index requirement)
   const allComments = await queryItems<CourseComment>(collectionName, [
-    where("courseId", "==", courseId),
-    orderBy("createdAt", "asc")
+    where("courseId", "==", courseId)
   ])
+  
+  // Sort in memory by creation date
+  allComments.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0
+    const bTime = b.createdAt?.seconds || 0
+    return aTime - bTime
+  })
   
   // Separate top-level comments and replies
   const topLevelComments = allComments.filter(comment => !comment.parentId)

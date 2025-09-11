@@ -10,6 +10,9 @@ import {
   getPinnedCommentsForCourse,
   queryComments,
   getCommentsWithReplies,
+  getCommentsByType,
+  getVideoComments,
+  getOpinionComments,
   getCommentStats,
   createCourseComment,
   updateCourseComment,
@@ -824,6 +827,91 @@ export const useCommentManager = (courseId: string) => {
     refetchComments: commentsQuery.refetch,
     refetchStats: statsQuery.refetch
   }
+}
+
+// === TYPE-SPECIFIC COMMENT HOOKS ===
+
+/**
+ * Get comments by type for a specific course
+ */
+export const useGetCommentsByType = (
+  courseId: string, 
+  commentType: 'opinion' | 'video' | 'general',
+  enabled: boolean = true
+) => {
+  return useServerOptimizedQuery({
+    queryKey: [...queryKeys.comentariosByCurso(courseId), 'type', commentType],
+    queryFn: async () => {
+      console.log('🎯 FETCHING COMMENTS BY TYPE:', { courseId, commentType })
+      const result = await getCommentsByType(courseId, commentType)
+      console.log('✅ Comments by type fetched:', result.length)
+      return result
+    },
+    enabled: !!courseId && enabled,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 10 * 60 * 1000,
+    select: useCallback((data: CourseComment[]) => {
+      return data.map(comment => ({
+        ...comment,
+        timeAgo: new Date(comment.createdAt.seconds * 1000)
+      }))
+    }, [])
+  })
+}
+
+/**
+ * Get video comments for specific content
+ */
+export const useGetVideoComments = (
+  courseId: string,
+  contentId: string,
+  enabled: boolean = true
+) => {
+  return useServerOptimizedQuery({
+    queryKey: [...queryKeys.comentariosByCurso(courseId), 'video', contentId],
+    queryFn: async () => {
+      console.log('📹 FETCHING VIDEO COMMENTS:', { courseId, contentId })
+      const result = await getVideoComments(courseId, contentId)
+      console.log('✅ Video comments fetched:', result.length)
+      return result
+    },
+    enabled: !!courseId && !!contentId && enabled,
+    staleTime: 1 * 60 * 1000, // 1 minute - video comments change more frequently
+    gcTime: 5 * 60 * 1000,
+    select: useCallback((data: CourseComment[]) => {
+      return data.map(comment => ({
+        ...comment,
+        timeAgo: new Date(comment.createdAt.seconds * 1000)
+      }))
+    }, [])
+  })
+}
+
+/**
+ * Get opinion comments for a course
+ */
+export const useGetOpinionComments = (
+  courseId: string,
+  enabled: boolean = true
+) => {
+  return useServerOptimizedQuery({
+    queryKey: [...queryKeys.comentariosByCurso(courseId), 'opinions'],
+    queryFn: async () => {
+      console.log('💭 FETCHING OPINION COMMENTS:', courseId)
+      const result = await getOpinionComments(courseId)
+      console.log('✅ Opinion comments fetched:', result.length)
+      return result
+    },
+    enabled: !!courseId && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes - opinions don't change as frequently
+    gcTime: 15 * 60 * 1000,
+    select: useCallback((data: CourseComment[]) => {
+      return data.map(comment => ({
+        ...comment,
+        timeAgo: new Date(comment.createdAt.seconds * 1000)
+      }))
+    }, [])
+  })
 }
 
 // === LEGACY COMPATIBILITY EXPORTS ===
