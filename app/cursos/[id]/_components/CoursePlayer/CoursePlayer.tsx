@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
+import { Menu } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useGetEnrollmentsByStudentId, useUpdateEnrollmentByStudentAndCourse } from "@/hooks/enrollments"
 import PlayerSidebar from "./PlayerSidebar"
 import PlayerContent from "./PlayerContent"
 import CommentsSection from "./CommentsSection"
 import { PlayerSkeleton } from "../LoadingStates"
+import { Button } from "@/components/ui/button"
 import { Content, ContentsByModule, Course } from "@/types"
 import Module from "module"
 
@@ -13,16 +15,19 @@ interface CoursePlayerProps {
   modules: Module[]
   contentsByModule: ContentsByModule
   onBack: () => void
+  sidebarOpen: boolean
+  onToggleSidebar: () => void
 }
 
 export default function CoursePlayer({
   course,
   modules,
   contentsByModule,
-  onBack
+  onBack,
+  sidebarOpen,
+  onToggleSidebar
 }: CoursePlayerProps) {
   // Estados
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [completedContent, setCompletedContent] = useState<string[]>([])
   const [initialized, setInitialized] = useState(false)
 
@@ -130,7 +135,7 @@ export default function CoursePlayer({
   }
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-8 relative">
+    <div className="flex flex-col xl:flex-row gap-4 lg:gap-6 xl:gap-8 relative min-h-[calc(100vh-8rem)]">
       <PlayerSidebar
         course={course}
         modules={modules}
@@ -141,11 +146,11 @@ export default function CoursePlayer({
         totalContent={totalContent}
         sidebarOpen={sidebarOpen}
         onContentSelect={handleContentSelect}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        onToggleSidebar={onToggleSidebar}
         onBack={onBack}
       />
 
-      <div className="flex-1">
+      <div className="flex-1 min-w-0 order-1 xl:order-2">
         <PlayerContent
           course={course}
           selectedContent={selectedContent}
@@ -154,7 +159,7 @@ export default function CoursePlayer({
           updatingEnrollment={updatingEnrollment}
           onToggleCompleted={handleToggleCompleted}
           sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onToggleSidebar={onToggleSidebar}
         />
         
         {/* Comments Section with Error Boundary */}

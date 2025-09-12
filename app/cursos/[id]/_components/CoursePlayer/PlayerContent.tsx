@@ -79,25 +79,15 @@ export default function PlayerContent({
 }: PlayerContentProps) {
   return (
     <>
-      {/* Mobile sidebar toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
-        onClick={onToggleSidebar}
-      >
-        {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
-
       {selectedContent ? (
         <>
           {/* Video/Content Player */}
-          <div className="bg-gradient-to-b from-[#1a2236] to-[#232b3e] rounded-lg shadow-lg flex flex-col items-center justify-center min-h-[350px]">
+          <div className="bg-gradient-to-b from-[#1a2236] to-[#232b3e] rounded-lg shadow-lg flex flex-col items-center justify-center min-h-[250px] sm:min-h-[350px] lg:min-h-[450px]">
             {renderContentPlayer(selectedContent, course)}
           </div>
 
           {/* Content Info and Actions */}
-          <div className="flex mt-6 py-4 flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex mt-4 sm:mt-6 py-3 sm:py-4 flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1">
               <h3 className="text-xl font-bold">{selectedContent.title}</h3>
               <p className="text-muted-foreground">{selectedContent.moduleTitle}</p>
@@ -106,7 +96,7 @@ export default function PlayerContent({
               </p>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full lg:w-auto">
               <Button
                 onClick={onToggleCompleted}
                 disabled={!user || updatingEnrollment}
@@ -115,7 +105,8 @@ export default function PlayerContent({
                     ? "secondary"
                     : "default"
                 }
-                className="flex-shrink-0"
+                className="flex-shrink-0 w-full lg:w-auto"
+                size="sm"
               >
                 {updatingEnrollment ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -132,18 +123,18 @@ export default function PlayerContent({
           </div>
 
           {/* Social Actions */}
-          <div className="flex items-center gap-4 py-4 border-y">
-            <Button variant="ghost" size="sm">
-              <ThumbsUp className="h-4 w-4 mr-2" />
-              Me gusta
+          <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4 border-y overflow-x-auto scrollbar-hide">
+            <Button variant="ghost" size="sm" className="flex-shrink-0">
+              <ThumbsUp className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Me gusta</span>
             </Button>
-            <Button variant="ghost" size="sm">
-              <Share2 className="h-4 w-4 mr-2" />
-              Compartir
+            <Button variant="ghost" size="sm" className="flex-shrink-0">
+              <Share2 className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Compartir</span>
             </Button>
-            <Button variant="ghost" size="sm">
-              <Heart className="h-4 w-4 mr-2" />
-              Guardar
+            <Button variant="ghost" size="sm" className="flex-shrink-0">
+              <Heart className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Guardar</span>
             </Button>
           </div>
         </>

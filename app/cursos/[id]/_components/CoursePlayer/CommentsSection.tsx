@@ -219,9 +219,9 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
   }
 
   return (
-    <div className="mt-8">
+    <div className="mt-6 sm:mt-8 ">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-3 lg:gap-4">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-muted-foreground" />
           <span className="font-semibold text-lg">
@@ -233,7 +233,7 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
         </div>
         
         {/* Comment Type Filter */}
-        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1 overflow-x-auto scrollbar-hide">
           {contentId && (
             <Button
               variant={commentTypeFilter === 'video' ? "secondary" : "ghost"}
@@ -279,7 +279,7 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
 
       {/* Add Comment Form */}
       {user ? (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-4 sm:mb-6">
           {replyingTo && (
             <div className="bg-muted/30 border-l-4 border-primary px-3 py-2 mb-2 text-sm">
               <span className="font-medium">Respondiendo a comentario</span>
@@ -297,7 +297,7 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
           <div className="relative">
             <textarea
               id="comment-textarea"
-              className="w-full border rounded-lg p-3 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 pr-12"
+              className="w-full border rounded-lg p-3 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 pr-12 text-sm"
               rows={3}
               placeholder={
                 replyingTo 
@@ -315,7 +315,7 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
             <Button
               type="submit"
               size="icon"
-              className="absolute bottom-4 right-2 h-8 w-8"
+              className="absolute bottom-4 right-2 h-8 w-8 sm:h-10 sm:w-10"
               disabled={!input.trim() || isSubmitting}
             >
               {isSubmitting ? (
@@ -327,8 +327,8 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
           </div>
         </form>
       ) : (
-        <div className="mb-6 p-4 bg-muted/50 rounded-lg text-center">
-          <p className="text-muted-foreground">Inicia sesión para participar en la conversación</p>
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted/50 rounded-lg text-center">
+          <p className="text-sm text-muted-foreground">Inicia sesión para participar en la conversación</p>
         </div>
       )}
 
@@ -358,11 +358,11 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
 
       {/* Comments List */}
       {!isLoading && !error && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {comments.length === 0 ? (
-            <div className="text-center py-8">
-              <MessageCircle className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground">
+            <div className="text-center py-6 sm:py-8">
+              <MessageCircle className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {commentTypeFilter === 'video' && contentId 
                   ? "Aún no hay comentarios para este video"
                   : commentTypeFilter === 'opinion'
@@ -629,14 +629,14 @@ function CommentItem({
       
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="mt-4 space-y-4 pl-6 border-l-2 border-muted">
+        <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4 pl-3 sm:pl-6 border-l-2 border-muted">
           {comment.replies.map(reply => (
-            <div key={reply.id} className="bg-background/80 rounded-lg p-3">
+            <div key={reply.id} className="bg-background/80 rounded-lg p-2 sm:p-3">
               <div className="flex items-center gap-2 mb-2">
-                <div className="rounded-full bg-gradient-to-br from-muted to-muted/50 h-6 w-6 flex items-center justify-center text-xs font-medium">
+                <div className="rounded-full bg-gradient-to-br from-muted to-muted/50 h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center text-xs font-medium">
                   {(reply.userName || 'U')[0].toUpperCase()}
                 </div>
-                <span className="font-medium text-sm">{reply.userName || 'Usuario'}</span>
+                <span className="font-medium text-xs sm:text-sm">{reply.userName || 'Usuario'}</span>
                 {['admin', 'instructor'].includes(reply.userRole?.toLowerCase() || '') && (
                   <span className="bg-primary/10 text-primary text-xs px-1.5 py-0.5 rounded-full">
                     {reply.userRole === 'admin' ? 'Admin' : 'Instructor'}
@@ -646,7 +646,7 @@ function CommentItem({
                   {formatTime(reply.createdAt)}
                 </span>
               </div>
-              <div className="text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
                 {reply.content}
               </div>
               <div className="flex items-center gap-2 mt-2">

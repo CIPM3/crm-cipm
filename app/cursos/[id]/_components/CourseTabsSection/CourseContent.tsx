@@ -59,15 +59,15 @@ export default function CourseContent({
   contentsByModule
 }: CourseContentProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Learning Objectives */}
       <section>
-        <h2 className="text-2xl font-bold mb-6">Lo que aprenderás</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Lo que aprenderás</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
           {LEARNING_OBJECTIVES.map((objective, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <span>{objective}</span>
+            <div key={index} className="flex items-start gap-2 md:gap-3">
+              <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary mt-0.5 flex-shrink-0" />
+              <span className="text-sm md:text-base leading-relaxed">{objective}</span>
             </div>
           ))}
         </div>
@@ -75,8 +75,8 @@ export default function CourseContent({
 
       {/* Course Modules */}
       <section>
-        <h2 className="text-2xl font-bold mb-6">Módulos del curso</h2>
-        <div className="space-y-4">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Módulos del curso</h2>
+        <div className="space-y-3 md:space-y-4">
           {modules.map((module, index) => (
             <ModuleCard
               key={module.id}
@@ -102,13 +102,13 @@ interface ModuleCardProps {
 function ModuleCard({ module, moduleIndex, contents, courseId }: ModuleCardProps) {
   return (
     <Card>
-      <CardHeader className="p-4">
-        <CardTitle className="text-lg">
+      <CardHeader className="p-3 md:p-4">
+        <CardTitle className="text-base md:text-lg leading-tight">
           Módulo {moduleIndex + 1}: {module.title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <div className="space-y-3">
+      <CardContent className="p-3 md:p-4 pt-0">
+        <div className="space-y-2 md:space-y-3">
           {contents.map((content, contentIndex) => (
             <ContentItem
               key={contentIndex}
@@ -131,18 +131,24 @@ function ContentItem({ content, courseId }: ContentItemProps) {
   return (
     <Link
       href={`/cursos/${courseId}`}
-      className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors"
+      className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-md hover:bg-muted transition-colors min-h-[60px] md:min-h-[auto]"
     >
-      {getContentIcon(content.type)}
-      <div className="flex-1">
-        <p className="font-medium">{content.title}</p>
-        <p className="text-sm text-muted-foreground">
+      <div className="flex-shrink-0">
+        {getContentIcon(content.type)}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm md:text-base leading-tight line-clamp-2 md:line-clamp-1">
+          {content.title}
+        </p>
+        <p className="text-xs md:text-sm text-muted-foreground mt-1">
           {getContentDescription(content)}
         </p>
       </div>
-      <Badge variant="outline">
-        {getContentBadge(content.type)}
-      </Badge>
+      <div className="flex-shrink-0">
+        <Badge variant="outline" className="text-xs px-2 py-1">
+          {getContentBadge(content.type)}
+        </Badge>
+      </div>
     </Link>
   )
 }

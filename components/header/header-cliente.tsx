@@ -11,7 +11,12 @@ import { redirect } from 'next/navigation'
 import { NAVS } from '@/lib/constants'
 import { auth } from '@/lib/firebase'
 
-const HeaderCliente = () => {
+interface HeaderClienteProps {
+    sidebarOpen?: boolean
+    onToggleSidebar?: () => void
+}
+
+const HeaderCliente = ({ sidebarOpen, onToggleSidebar }: HeaderClienteProps) => {
     const [showMobileMenu, setShowMobileMenu] = useState(false)
     const UserData = useAuthStore((state) => state.user)
     const logout = useLogout()
@@ -47,6 +52,17 @@ const HeaderCliente = () => {
                     }
                 </nav>
                 <div className="hidden md:flex items-center gap-2">
+                    {/* Botón del sidebar para cursos - solo desktop */}
+                    {onToggleSidebar && (
+                        <Button 
+                            variant="outline" 
+                            size="icon"
+                            onClick={onToggleSidebar}
+                            className="mr-2 md:hidden"
+                        >
+                            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                        </Button>
+                    )}
                     {
                         UserData
                             ? (
@@ -63,10 +79,22 @@ const HeaderCliente = () => {
                             </>)
                     }
                 </div>
-                <Button variant="outline" size="icon" className="md:hidden" onClick={() => setShowMobileMenu(true)}>
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle menu</span>
-                </Button>
+                <div className="flex items-center gap-2 md:hidden">
+                    {/* Botón del sidebar para cursos - solo móvil */}
+                    {onToggleSidebar && (
+                        <Button 
+                            variant="outline" 
+                            size="icon"
+                            onClick={onToggleSidebar}
+                        >
+                            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                        </Button>
+                    )}
+                    <Button variant="outline" size="icon" onClick={() => setShowMobileMenu(true)}>
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Toggle menu</span>
+                    </Button>
+                </div>
                 {showMobileMenu && (
                     <div className="fixed inset-0 z-50 bg-background md:hidden">
                         <div className="flex w-full justify-between h-16 items-center gap-4 border-b bg-background px-4">

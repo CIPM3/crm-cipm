@@ -7,6 +7,7 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  
   output: 'standalone',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
@@ -35,7 +36,8 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   experimental: {
-    webpackBuildWorker: true,
+    // Production optimizations
+    webpackBuildWorker: process.env.NODE_ENV === 'production',
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
     serverComponentsExternalPackages: ['firebase', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
@@ -51,6 +53,7 @@ const nextConfig = {
   },
   // Bundle analysis and performance
   webpack: (config, { dev, isServer }) => {
+    
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,
@@ -81,7 +84,9 @@ const nextConfig = {
   },
   // Headers for security and performance
   async headers() {
-    return [
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    
+    const baseHeaders = [
       {
         source: '/(.*)',
         headers: [
@@ -108,7 +113,11 @@ const nextConfig = {
           },
         ],
       },
-      {
+    ]
+
+    if (!isDevelopment) {
+      // Production: Enable caching for static assets
+      baseHeaders.push({
         source: '/_next/static/:path*',
         headers: [
           {
@@ -116,8 +125,10 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
-    ]
+      })
+    }
+
+    return baseHeaders
   },
 }
 

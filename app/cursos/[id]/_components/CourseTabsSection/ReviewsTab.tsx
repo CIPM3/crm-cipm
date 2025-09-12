@@ -3,7 +3,7 @@ import { Course, CourseComment, CommentWithReplies } from "@/types"
 import { Star, MessageCircle, Heart, Reply, MoreVertical, Edit, Trash2, Pin, Flag, RefreshCw } from "lucide-react"
 import { useState, useMemo, useEffect } from "react"
 import { useAuthStore } from "@/store/useAuthStore"
-import { useGetCourseComments, useGetCommentStats, useCommentInteractions, useCommentsObserver } from "@/hooks/queries"
+import { useGetOpinionComments, useGetCommentStats, useCommentInteractions, useCommentsObserver } from "@/hooks/queries/useComments"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
@@ -55,13 +55,13 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
   // Set up real-time observer for comments
   useCommentsObserver(course.id)
 
-  // Fetch all comments and organize them client-side
+  // Fetch only opinion comments for reviews section
   const { 
     data: allComments = [], 
     isLoading: loadingComments, 
     error: commentsError,
     refetch: refetchComments
-  } = useGetCourseComments(course.id, {})
+  } = useGetOpinionComments(course.id)
   
   const {
     data: stats
@@ -149,6 +149,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
         courseId: course.id,
         content: newComment.trim(),
         parentId: replyingTo || null,
+        commentType: 'opinion' as const, // Force opinion type for reviews section
         userId: user.id,
         userName: user.name || user.email || 'Usuario',
         userRole: user.role || 'cliente',
@@ -319,13 +320,13 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
   
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
       {/* Rating Overview */}
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start lg:items-center mb-6 lg:mb-8">
+      <div className="flex flex-col xl:flex-row gap-4 sm:gap-6 xl:gap-8 items-start xl:items-center mb-4 sm:mb-6 xl:mb-8">
         {/* Overall Rating */}
-        <div className="text-center sm:text-left w-full lg:w-auto">
-          <div className="text-4xl sm:text-5xl font-bold">{course.rating}</div>
-          <div className="flex items-center justify-center sm:justify-start mt-2">
+        <div className="text-center xl:text-left w-full xl:w-auto">
+          <div className="text-3xl sm:text-4xl xl:text-5xl font-bold">{course.rating}</div>
+          <div className="flex items-center justify-center xl:justify-start mt-2">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
@@ -343,7 +344,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
         </div>
 
         {/* Rating Distribution */}
-        <div className="flex-1 space-y-2 w-full max-w-md lg:max-w-lg">
+        <div className="flex-1 space-y-1.5 sm:space-y-2 w-full max-w-sm sm:max-w-md xl:max-w-lg">
           {ratingDistribution.map(({ stars, percentage, count }) => (
             <RatingBar
               key={stars}
@@ -358,8 +359,8 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
       {/* Comment Creation Form */}
       {isAuthenticated && (
         <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="space-y-4">
+          <CardContent className="p-3 sm:p-4 lg:p-6">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-start gap-2 sm:gap-3">
                 <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                   <AvatarImage src={user?.avatar} />
@@ -372,12 +373,12 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
                     placeholder={replyingTo ? "Escribe tu respuesta..." : "Comparte tu experiencia con este curso..."}
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="min-h-[80px] sm:min-h-[100px] resize-none"
+                    className="min-h-[70px] sm:min-h-[80px] lg:min-h-[100px] resize-none text-sm"
                   />
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
                 {replyingTo && (
                   <Button
                     variant="ghost"
@@ -386,7 +387,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
                       setReplyingTo(null)
                       setNewComment("")
                     }}
-                    className="text-sm"
+                    className="text-xs sm:text-sm"
                   >
                     Cancelar respuesta
                   </Button>
@@ -398,7 +399,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
                     size="sm"
                     onClick={() => setNewComment("")}
                     disabled={!newComment.trim()}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none text-xs sm:text-sm"
                   >
                     Cancelar
                   </Button>
@@ -406,7 +407,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
                     size="sm"
                     onClick={handleCreateComment}
                     disabled={!newComment.trim() || isCreating}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none text-xs sm:text-sm"
                   >
                     {isCreating ? 'Enviando...' : replyingTo ? 'Responder' : 'Comentar'}
                   </Button>
@@ -419,7 +420,7 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
 
       {/* Comments Statistics */}
       {stats && (
-        <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 lg:gap-6 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-2 flex-shrink-0">
             <MessageCircle className="h-4 w-4" />
             <span className="whitespace-nowrap">{stats.totalComments} comentarios</span>
@@ -437,14 +438,14 @@ export default function ReviewsTab({ course }: ReviewsTabProps) {
 
       {/* Comments List */}
       <section>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold">Comentarios de los estudiantes</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-6">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">Comentarios de los estudiantes</h2>
         </div>
         
         {commentsWithReplies.length === 0 ? (
           <EmptyCommentsState />
         ) : (
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
             {commentsWithReplies.map((comment: CommentWithReplies) => (
               <CommentWithRepliesCard
                 key={`comment-${comment.id}-${comment.updatedAt?.seconds || comment.createdAt?.seconds}`}
@@ -613,18 +614,18 @@ interface RatingBarProps {
 
 function RatingBar({ stars, percentage, count }: RatingBarProps) {
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
-      <div className="flex items-center gap-1 w-10 sm:w-12 flex-shrink-0">
-        <span className="text-sm">{stars}</span>
+    <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+      <div className="flex items-center gap-1 w-8 sm:w-10 lg:w-12 flex-shrink-0">
+        <span className="text-xs sm:text-sm">{stars}</span>
         <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-500 text-yellow-500" />
       </div>
-      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden min-w-0">
+      <div className="flex-1 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden min-w-0">
         <div 
           className="h-full bg-yellow-500 rounded-full transition-all duration-300" 
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <span className="text-xs sm:text-sm text-muted-foreground w-8 sm:w-10 text-right flex-shrink-0">
+      <span className="text-xs sm:text-sm text-muted-foreground w-6 sm:w-8 lg:w-10 text-right flex-shrink-0">
         {count}
       </span>
     </div>
@@ -670,8 +671,8 @@ function CommentWithRepliesCard({
       
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-4 sm:ml-8 lg:ml-12 space-y-3 sm:space-y-4 border-l-2 border-gray-100 pl-3 sm:pl-4 lg:pl-6">
-          <div className="text-xs sm:text-sm text-gray-500 font-medium">
+        <div className="ml-2 sm:ml-4 lg:ml-8 xl:ml-12 space-y-2 sm:space-y-3 lg:space-y-4 border-l-2 border-gray-100 pl-2 sm:pl-3 lg:pl-4 xl:pl-6">
+          <div className="text-xs text-gray-500 font-medium">
             {comment.replies.length} respuesta{comment.replies.length !== 1 ? 's' : ''}
           </div>
           {comment.replies.map((reply: CourseComment) => (
@@ -744,16 +745,16 @@ function CommentCard({
   }
 
   return (
-    <Card className={`${comment.isPinned ? 'ring-2 ring-blue-200 bg-blue-50/30' : ''} ${isReply ? 'bg-gray-50/50' : ''}`}>
-      <CardContent className={`${isReply ? 'p-3 sm:p-4' : 'p-4 sm:p-6'}`}>
-        <div className="space-y-3 sm:space-y-4">
+    <Card className={`${comment.isPinned ? 'ring-1 sm:ring-2 ring-blue-200 bg-blue-50/30' : ''} ${isReply ? 'bg-gray-50/50' : ''}`}>
+      <CardContent className={`${isReply ? 'p-2 sm:p-3 lg:p-4' : 'p-3 sm:p-4 lg:p-6'}`}>
+        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
           {/* Comment Header */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-1 sm:gap-2">
+            <div className="flex items-start gap-1.5 sm:gap-2 lg:gap-3 flex-1 min-w-0">
               {isReply && (
-                <Reply className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                <Reply className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0 mt-0.5" />
               )}
-              <Avatar className={`${isReply ? 'h-7 w-7 sm:h-8 sm:w-8' : 'h-8 w-8 sm:h-10 sm:w-10'} flex-shrink-0`}>
+              <Avatar className={`${isReply ? 'h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8' : 'h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10'} flex-shrink-0`}>
                 <AvatarImage src={comment.userAvatar} />
                 <AvatarFallback>
                   {comment.userName.charAt(0).toUpperCase()}
@@ -761,11 +762,11 @@ function CommentCard({
               </Avatar>
               
               <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
                   {isReply && (
-                    <span className="text-xs text-gray-500 hidden sm:inline">Respondiendo:</span>
+                    <span className="text-xs text-gray-500 hidden lg:inline">Respondiendo:</span>
                   )}
-                  <h4 className={`font-semibold ${isReply ? 'text-xs sm:text-sm' : 'text-sm'} truncate`}>
+                  <h4 className={`font-semibold ${isReply ? 'text-xs sm:text-sm' : 'text-xs sm:text-sm lg:text-base'} truncate`}>
                     {comment.userName}
                   </h4>
                   {getRoleBadge(comment.userRole)}
@@ -779,7 +780,7 @@ function CommentCard({
                     { addSuffix: true, locale: es }
                   )}
                   {comment.isEdited && (
-                    <span className="ml-1 sm:ml-2">(editado)</span>
+                    <span className="ml-1">(editado)</span>
                   )}
                 </p>
               </div>
@@ -790,7 +791,7 @@ function CommentCard({
               <div className="flex-shrink-0">
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0">
+                    <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 p-0">
                       <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -849,29 +850,29 @@ function CommentCard({
           </div>
 
           {/* Comment Content */}
-          <p className="text-sm sm:text-base text-gray-700 leading-relaxed break-words">{comment.content}</p>
+          <p className="text-xs sm:text-sm lg:text-base text-gray-700 leading-relaxed break-words">{comment.content}</p>
 
           {/* Comment Actions */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 lg:gap-4 pt-1 sm:pt-2">
             <button
               onClick={() => onLike(comment.id)}
-              className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0 ${
+              className={`flex items-center gap-1 text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0 ${
                 hasLiked ? 'text-red-600 bg-red-50' : 'text-gray-500'
               }`}
               disabled={!currentUserId}
             >
               <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${hasLiked ? 'fill-current' : ''}`} />
-              <span className="whitespace-nowrap">{comment.likes || 0}</span>
+              <span className="whitespace-nowrap text-xs">{comment.likes || 0}</span>
             </button>
             
             {!isReply && (
               <button
                 onClick={() => onReply(comment.id)}
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition-colors flex-shrink-0"
+                className="flex items-center gap-1 text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition-colors flex-shrink-0"
                 disabled={!currentUserId}
               >
                 <Reply className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="whitespace-nowrap">Responder</span>
+                <span className="whitespace-nowrap hidden sm:inline">Responder</span>
               </button>
             )}
           </div>
@@ -916,15 +917,15 @@ function CommentsLoadingSkeleton() {
 
 function EmptyCommentsState() {
   return (
-    <div className="text-center py-12">
-      <MessageCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
+    <div className="text-center py-8 sm:py-12">
+      <MessageCircle className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+      <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
         No hay comentarios aún
       </h3>
-      <p className="text-gray-500 mb-4">
+      <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-4">
         Sé el primero en compartir tu experiencia con este curso
       </p>
-      <p className="text-sm text-gray-400">
+      <p className="text-xs sm:text-sm text-gray-400">
         Los comentarios ayudan a otros estudiantes a decidirse
       </p>
     </div>

@@ -37,6 +37,7 @@ export default function CourseDetailClient({ params }: CourseDetailClientProps) 
 
   // Estados locales
   const [showPlayer, setShowPlayer] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   // Memoized values
   const contentsByModule: ContentsByModule = useMemo(() => {
@@ -70,10 +71,13 @@ export default function CourseDetailClient({ params }: CourseDetailClientProps) 
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <HeaderCliente />
+    <div className="flex min-h-screen  flex-col">
+      <HeaderCliente 
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+      />
       <main className="flex-1">
-        <div className="container mx-auto py-12">
+        <div className="px-4 md:container  mx-auto py-12">
           <BreadcrumbNav title={course.title} />
           
           {!showPlayer ? (
@@ -101,6 +105,8 @@ export default function CourseDetailClient({ params }: CourseDetailClientProps) 
               modules={modules}
               contentsByModule={contentsByModule}
               onBack={() => setShowPlayer(false)}
+              sidebarOpen={sidebarOpen}
+              onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             />
           )}
         </div>
