@@ -60,14 +60,24 @@ export const useGetContentById = (id: string) => {
       try {
         const result = await getContentById(id)
         setContent(result || null)
-      } catch (err) {
-        setError(err as Error)
+      } catch (err: any) {
+        // Handle "document not found" errors gracefully
+        if (err.code === 'not-found' || err.message?.includes('Document not found')) {
+          console.warn(`Content with ID "${id}" not found, setting to null`)
+          setContent(null)
+          setError(null) // Don't treat missing content as an error
+        } else {
+          console.error('Error fetching content:', err)
+          setError(err as Error)
+        }
       } finally {
         setLoading(false)
       }
     }
 
-    fetchData()
+    if (id) {
+      fetchData()
+    }
   }, [id])
 
   return { content, loading, error }

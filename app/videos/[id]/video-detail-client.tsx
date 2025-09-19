@@ -55,7 +55,10 @@ export default function VideoDetailClient({ params }: VideoDetailClientProps) {
                 />
               )}
               
-              <CommentsSection />
+              <CommentsSection 
+                videoId={params.id}
+                videoTitle={videoDetailData.videoData.title}
+              />
             </div>
             
             {/* Sidebar */}

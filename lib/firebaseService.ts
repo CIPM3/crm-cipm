@@ -152,6 +152,7 @@ export const fetchItem = async <T extends DocumentData>(
     const docSnap = await getDoc(docRef)
     
     if (!docSnap.exists()) {
+      console.warn(`Document with ID "${id}" not found in collection "${collectionName}"`)
       throw new FirebaseServiceError(
         'Document not found',
         'not-found',

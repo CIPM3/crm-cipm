@@ -12,6 +12,7 @@ import {
   getCommentsWithReplies,
   getCommentsByType,
   getVideoComments,
+  getStandaloneVideoComments,
   getOpinionComments,
   getCommentStats,
   createCourseComment,
@@ -44,27 +45,38 @@ import { useAuthStore } from '@/store/useAuthStore'
  * Real-time comment observer hook
  * Sets up Firebase listener to invalidate queries when comments change
  */
-export const useCommentsObserver = (courseId: string) => {
+export const useCommentsObserver = (courseId: string, contentId?: string) => {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (!courseId) return
+    // For standalone videos, we observe using contentId instead of courseId
+    const isStandaloneVideo = !courseId || courseId === ''
+    
+    if (!courseId && !contentId) return
 
-    // Create Firebase query for this course's comments
+    // Create Firebase query
     const commentsRef = collection(db, 'CourseComments')
-    const q = query(commentsRef, where('courseId', '==', courseId))
+    const q = isStandaloneVideo && contentId
+      ? query(commentsRef, where('contentId', '==', contentId), where('commentType', '==', 'video'))
+      : query(commentsRef, where('courseId', '==', courseId))
 
     // Set up real-time listener
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      // Invalidate comments queries to trigger refetch
-      queryClient.invalidateQueries({ 
-        queryKey: queryKeys.comentariosByCurso(courseId) 
-      })
+      // Invalidate appropriate queries to trigger refetch
+      if (isStandaloneVideo && contentId) {
+        queryClient.invalidateQueries({ 
+          queryKey: ['comentarios', 'standalone-video', contentId]
+        })
+      } else {
+        queryClient.invalidateQueries({ 
+          queryKey: queryKeys.comentariosByCurso(courseId) 
+        })
+      }
     })
 
     // Cleanup listener on unmount
     return () => unsubscribe()
-  }, [courseId, queryClient])
+  }, [courseId, contentId, queryClient])
 }
 
 /**
@@ -867,15 +879,24 @@ export const useGetVideoComments = (
   contentId: string,
   enabled: boolean = true
 ) => {
+  // Determine if this is a standalone video (no courseId or empty courseId)
+  const isStandaloneVideo = !courseId || courseId === ''
+  
   return useServerOptimizedQuery({
-    queryKey: [...queryKeys.comentariosByCurso(courseId), 'video', contentId],
+    queryKey: isStandaloneVideo 
+      ? ['comentarios', 'standalone-video', contentId]
+      : [...queryKeys.comentariosByCurso(courseId), 'video', contentId],
     queryFn: async () => {
-      console.log('📹 FETCHING VIDEO COMMENTS:', { courseId, contentId })
-      const result = await getVideoComments(courseId, contentId)
+      console.log('📹 FETCHING VIDEO COMMENTS:', { courseId, contentId, isStandaloneVideo })
+      
+      const result = isStandaloneVideo 
+        ? await getStandaloneVideoComments(contentId)
+        : await getVideoComments(courseId, contentId)
+        
       console.log('✅ Video comments fetched:', result.length)
       return result
     },
-    enabled: !!courseId && !!contentId && enabled,
+    enabled: !!contentId && enabled,
     staleTime: 1 * 60 * 1000, // 1 minute - video comments change more frequently
     gcTime: 5 * 60 * 1000,
     select: useCallback((data: CourseComment[]) => {

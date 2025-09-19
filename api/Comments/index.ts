@@ -237,6 +237,27 @@ export const getVideoComments = async (courseId: string, contentId: string): Pro
 }
 
 /**
+ * Get comments for standalone videos (not part of a course)
+ */
+export const getStandaloneVideoComments = async (videoId: string): Promise<CourseComment[]> => {
+  // For standalone videos, we need to check for null courseId and specific contentId
+  const allComments = await fetchItems<CourseComment>(collectionName)
+  
+  const filtered = allComments.filter(comment => 
+    comment.commentType === "video" &&
+    comment.contentId === videoId &&
+    (comment.courseId === null || comment.courseId === "")
+  )
+  
+  // Sort in memory by creation date (ascending for chronological order)
+  return filtered.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0
+    const bTime = b.createdAt?.seconds || 0
+    return aTime - bTime
+  })
+}
+
+/**
  * Get opinion comments for a course
  */
 export const getOpinionComments = async (courseId: string): Promise<CourseComment[]> => {

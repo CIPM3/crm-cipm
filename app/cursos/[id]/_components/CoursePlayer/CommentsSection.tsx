@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react"
 import { MessageCircle, Heart, Pin, MoreHorizontal, Loader2, AlertCircle, Send, Video, BookOpen } from "lucide-react"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { useAuthStore } from "@/store/useAuthStore"
 import { 
   useGetCommentsWithReplies, 
@@ -220,112 +221,185 @@ export default function CommentsSection({ courseId, contentId, contentTitle }: C
 
   return (
     <div className="mt-6 sm:mt-8 ">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-3 lg:gap-4">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-muted-foreground" />
-          <span className="font-semibold text-lg">
-            Comentarios ({comments.length})
-          </span>
-          {error && (
-            <AlertCircle className="h-4 w-4 text-destructive ml-2" />
-          )}
+      {/* Enhanced Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4 lg:gap-6">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-sm"></div>
+            <div className="relative bg-primary/10 p-2.5 rounded-full">
+              <MessageCircle className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+          <div>
+            <h2 className="font-bold text-xl tracking-tight">
+              Comentarios
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {comments.length} {comments.length === 1 ? 'comentario' : 'comentarios'}
+              {error && (
+                <span className="inline-flex items-center gap-1 ml-2 text-destructive">
+                  <AlertCircle className="h-3 w-3" />
+                  Error al cargar
+                </span>
+              )}
+            </p>
+          </div>
         </div>
         
-        {/* Comment Type Filter */}
-        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1 overflow-x-auto scrollbar-hide">
+        {/* Enhanced Comment Type Filter */}
+        <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-xl p-1.5 border shadow-sm overflow-x-auto scrollbar-hide">
           {contentId && (
             <Button
-              variant={commentTypeFilter === 'video' ? "secondary" : "ghost"}
+              variant={commentTypeFilter === 'video' ? "default" : "ghost"}
               size="sm"
-              className="h-8 px-3 text-xs"
+              className={`h-9 px-4 text-sm font-medium transition-all duration-200 ${
+                commentTypeFilter === 'video' 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'hover:bg-muted/80'
+              }`}
               onClick={() => setCommentTypeFilter('video')}
             >
-              <Video className="h-3 w-3 mr-1" />
+              <Video className="h-4 w-4 mr-2" />
               Video
             </Button>
           )}
           <Button
-            variant={commentTypeFilter === 'opinion' ? "secondary" : "ghost"}
+            variant={commentTypeFilter === 'opinion' ? "default" : "ghost"}
             size="sm"
-            className="h-8 px-3 text-xs"
+            className={`h-9 px-4 text-sm font-medium transition-all duration-200 ${
+              commentTypeFilter === 'opinion' 
+                ? 'bg-primary text-primary-foreground shadow-md' 
+                : 'hover:bg-muted/80'
+            }`}
             onClick={() => setCommentTypeFilter('opinion')}
           >
-            <MessageCircle className="h-3 w-3 mr-1" />
+            <MessageCircle className="h-4 w-4 mr-2" />
             Opiniones
           </Button>
           <Button
-            variant={commentTypeFilter === 'all' ? "secondary" : "ghost"}
+            variant={commentTypeFilter === 'all' ? "default" : "ghost"}
             size="sm"
-            className="h-8 px-3 text-xs"
+            className={`h-9 px-4 text-sm font-medium transition-all duration-200 ${
+              commentTypeFilter === 'all' 
+                ? 'bg-primary text-primary-foreground shadow-md' 
+                : 'hover:bg-muted/80'
+            }`}
             onClick={() => setCommentTypeFilter('all')}
           >
-            <BookOpen className="h-3 w-3 mr-1" />
+            <BookOpen className="h-4 w-4 mr-2" />
             Todos
           </Button>
         </div>
       </div>
       
-      {/* Context Indicator */}
-      <div className="mb-4 text-sm text-muted-foreground">
-        {commentTypeFilter === 'video' && contentId ? (
-          <span>Comentarios del video: <strong>{contentTitle || 'Esta lección'}</strong></span>
-        ) : commentTypeFilter === 'opinion' ? (
-          <span>Opiniones y reseñas del curso</span>
-        ) : (
-          <span>Todos los comentarios del curso</span>
-        )}
+      {/* Enhanced Context Indicator */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-primary/5 via-background to-primary/5 border border-primary/10 rounded-xl">
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 bg-primary/10 rounded-lg">
+            {commentTypeFilter === 'video' && contentId ? (
+              <Video className="h-4 w-4 text-primary" />
+            ) : commentTypeFilter === 'opinion' ? (
+              <MessageCircle className="h-4 w-4 text-primary" />
+            ) : (
+              <BookOpen className="h-4 w-4 text-primary" />
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium">
+              {commentTypeFilter === 'video' && contentId ? (
+                <>Comentarios del video: <span className="text-primary font-semibold">{contentTitle || 'Esta lección'}</span></>
+              ) : commentTypeFilter === 'opinion' ? (
+                'Opiniones y reseñas del curso'
+              ) : (
+                'Todos los comentarios del curso'
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {commentTypeFilter === 'video' 
+                ? 'Comparte tus dudas o reflexiones sobre este contenido específico'
+                : commentTypeFilter === 'opinion'
+                  ? 'Ayuda a otros estudiantes compartiendo tu experiencia'
+                  : 'Vista completa de toda la conversación del curso'
+              }
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Add Comment Form */}
+      {/* Enhanced Add Comment Form */}
       {user ? (
-        <form onSubmit={handleSubmit} className="mb-4 sm:mb-6">
-          {replyingTo && (
-            <div className="bg-muted/30 border-l-4 border-primary px-3 py-2 mb-2 text-sm">
-              <span className="font-medium">Respondiendo a comentario</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="ml-2 h-6 px-2 text-xs"
-                onClick={() => setReplyingTo(null)}
-              >
-                Cancelar
-              </Button>
+        <div className="mb-6 p-6 bg-gradient-to-br from-background via-background to-muted/20 border border-border/50 rounded-xl shadow-sm">
+          <form onSubmit={handleSubmit}>
+            {replyingTo && (
+              <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 bg-primary/20 rounded-full">
+                      <MessageCircle className="h-3 w-3 text-primary" />
+                    </div>
+                    <span className="font-medium text-sm">Respondiendo a comentario</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs hover:bg-primary/10"
+                    onClick={() => setReplyingTo(null)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex gap-3">
+              <UserAvatar 
+                user={user} 
+                size="lg"
+                className="flex-shrink-0 mt-1 shadow-sm ring-2 ring-background"
+              />
+              
+              <div className="flex-1 relative">
+                <textarea
+                  id="comment-textarea"
+                  className="w-full border-2 border-muted-foreground/20 rounded-xl p-4 pr-14 resize-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 bg-background/80 backdrop-blur-sm text-sm transition-all duration-200 placeholder:text-muted-foreground/60"
+                  rows={3}
+                  placeholder={
+                    replyingTo 
+                      ? "Escribe tu respuesta..." 
+                      : commentTypeFilter === 'video' && contentId
+                        ? `Comenta sobre este video: "${contentTitle || 'esta lección'}"...`
+                        : commentTypeFilter === 'opinion'
+                          ? "Comparte tu opinión sobre el curso..."
+                          : "Escribe tu comentario..."
+                  }
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <Button
+                  type="submit"
+                  size="icon"
+                  className="absolute bottom-3 right-3 h-8 w-8 rounded-lg shadow-md transition-all duration-200 hover:scale-105"
+                  disabled={!input.trim() || isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-          )}
-          <div className="relative">
-            <textarea
-              id="comment-textarea"
-              className="w-full border rounded-lg p-3 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 pr-12 text-sm"
-              rows={3}
-              placeholder={
-                replyingTo 
-                  ? "Escribe tu respuesta..." 
-                  : commentTypeFilter === 'video' && contentId
-                    ? `Comenta sobre este video: "${contentTitle || 'esta lección'}"...`
-                    : commentTypeFilter === 'opinion'
-                      ? "Comparte tu opinión sobre el curso..."
-                      : "Escribe tu comentario..."
-              }
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              disabled={isSubmitting}
-            />
-            <Button
-              type="submit"
-              size="icon"
-              className="absolute bottom-4 right-2 h-8 w-8 sm:h-10 sm:w-10"
-              disabled={!input.trim() || isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </form>
+            
+            <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                💡 Mantén un lenguaje respetuoso y constructivo
+              </span>
+              <span>{input.length}/500</span>
+            </div>
+          </form>
+        </div>
       ) : (
         <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted/50 rounded-lg text-center">
           <p className="text-sm text-muted-foreground">Inicia sesión para participar en la conversación</p>
@@ -464,39 +538,64 @@ function CommentItem({
   }
   
   return (
-    <div className={`rounded-lg p-4 ${
+    <div className={`transition-all duration-200 hover:shadow-md group rounded-xl p-5 ${
       comment.isPinned 
-        ? 'bg-primary/5 border border-primary/20' 
-        : 'bg-muted/50'
+        ? 'bg-gradient-to-br from-primary/8 via-primary/4 to-transparent border border-primary/30 shadow-lg relative' 
+        : 'bg-gradient-to-br from-background via-background to-muted/10 border border-border/30'
     } ${
       comment.isModerated 
         ? 'opacity-60' 
         : ''
     }`}>
-      {/* Comment Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {comment.isPinned && (
-            <Pin className="h-4 w-4 text-primary" />
-          )}
-          <div className="rounded-full bg-gradient-to-br from-primary/20 to-primary/10 h-8 w-8 flex items-center justify-center text-xs font-bold text-primary">
-            {(comment.userName || 'U')[0].toUpperCase()}
+      {comment.isPinned && (
+        <div className="absolute -top-2 -right-2 p-1.5 bg-primary rounded-full shadow-lg">
+          <Pin className="h-3 w-3 text-primary-foreground" />
+        </div>
+      )}
+      {/* Enhanced Comment Header */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start gap-3">
+          <div className="relative">
+            <UserAvatar 
+              user={{
+                id: comment.userId,
+                name: comment.userName,
+                email: '',
+                role: comment.userRole,
+                avatar: comment.userAvatar || ''
+              }}
+              size="lg"
+              className="shadow-sm ring-2 ring-background"
+            />
+            {['admin', 'instructor'].includes(comment.userRole?.toLowerCase() || '') && (
+              <div className="absolute -bottom-1 -right-1 p-0.5 bg-primary rounded-full">
+                <MessageCircle className="h-2.5 w-2.5 text-primary-foreground" />
+              </div>
+            )}
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">{comment.userName || 'Usuario'}</span>
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-sm">{comment.userName || 'Usuario'}</span>
               {['admin', 'instructor'].includes(comment.userRole?.toLowerCase() || '') && (
-                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary text-xs px-2 py-1 rounded-full border border-primary/20 font-medium">
                   {comment.userRole === 'admin' ? 'Admin' : 'Instructor'}
                 </span>
               )}
               {comment.isEdited && (
-                <span className="text-xs text-muted-foreground">(editado)</span>
+                <span className="text-xs text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">(editado)</span>
               )}
             </div>
-            <span className="text-xs text-muted-foreground">
-              {formatTime(comment.createdAt)}
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">
+                {formatTime(comment.createdAt)}
+              </span>
+              {comment.commentType && (
+                <span className="text-xs text-muted-foreground bg-muted/30 px-1.5 py-0.5 rounded">
+                  {comment.commentType === 'video' ? 'Video' : comment.commentType === 'opinion' ? 'Opinión' : 'General'}
+                </span>
+              )}
+            </div>
           </div>
         </div>
         
@@ -633,9 +732,17 @@ function CommentItem({
           {comment.replies.map(reply => (
             <div key={reply.id} className="bg-background/80 rounded-lg p-2 sm:p-3">
               <div className="flex items-center gap-2 mb-2">
-                <div className="rounded-full bg-gradient-to-br from-muted to-muted/50 h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center text-xs font-medium">
-                  {(reply.userName || 'U')[0].toUpperCase()}
-                </div>
+                <UserAvatar 
+                  user={{
+                    id: reply.userId,
+                    name: reply.userName,
+                    email: '',
+                    role: reply.userRole,
+                    avatar: reply.userAvatar || ''
+                  }}
+                  size="sm"
+                  className="shadow-sm"
+                />
                 <span className="font-medium text-xs sm:text-sm">{reply.userName || 'Usuario'}</span>
                 {['admin', 'instructor'].includes(reply.userRole?.toLowerCase() || '') && (
                   <span className="bg-primary/10 text-primary text-xs px-1.5 py-0.5 rounded-full">
