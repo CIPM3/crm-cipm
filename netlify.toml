@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build:netlify"
+  command = "npm run build:optimized"
   publish = ".next"
 
 [build.environment]
@@ -7,6 +7,9 @@
   NPM_VERSION = "9.6.7"
   NPM_FLAGS = "--no-fund --no-audit --silent"
   NETLIFY_NEXT_PLUGIN_SKIP = "false"
+  NODE_OPTIONS = "--max-old-space-size=2048"
+  NEXT_TELEMETRY_DISABLED = "1"
+  GENERATE_SOURCEMAP = "false"
   # Skip ESLint during builds to prevent failures
   SKIP_ESLINT = "true"
   # Disable TypeScript checking during builds

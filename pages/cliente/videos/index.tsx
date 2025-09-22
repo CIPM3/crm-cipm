@@ -1,17 +1,31 @@
 "use client"
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link"
 import { modules, getCourseById } from "@/lib/utils"
 import { Play, Clock } from 'lucide-react';
 import { Badge } from "@/components/ui/badge"
-import HeaderCliente from "@/components/header/header-cliente"
-import FiltersSearch from "@/components/filters/filters-search"
-import VideoCard from "@/components/card/video-card";
-import Footer from "@/pages/cliente/main/footer";
-import InfoAdicional from "../cursos/info-adicional";
 import { useFetchVideos } from "@/hooks/videos";
 import CursoCardSkeleton from "@/components/card/curso-skeleton-card";
-import { useState } from "react";
+
+// Lazy load heavy components
+const HeaderCliente = dynamic(() => import("@/components/header/header-cliente"), { 
+  ssr: true 
+});
+const FiltersSearch = dynamic(() => import("@/components/filters/filters-search"), { 
+  ssr: true 
+});
+const VideoCard = dynamic(() => import("@/components/card/video-card"), {
+  ssr: true,
+  loading: () => <CursoCardSkeleton />
+});
+const Footer = dynamic(() => import("@/pages/cliente/main/footer"), { 
+  ssr: false 
+});
+const InfoAdicional = dynamic(() => import("../cursos/info-adicional"), { 
+  ssr: false 
+});
 
 export default function VideosPage() {
   const { videos, loading, error } = useFetchVideos();

@@ -1,10 +1,16 @@
 "use client"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Ban, Plus, ShieldAlert } from "lucide-react"
-import VideoCard from "@/components/card/video-card.lonely"
 import { useFetchVideos } from "@/hooks/videos"
 import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
+
+// Lazy load heavy components
+const VideoCard = dynamic(() => import("@/components/card/video-card.lonely"), {
+  ssr: true,
+  loading: () => <CursoCardSkeleton />
+})
 
 export default function AdminVideosPage() {
 

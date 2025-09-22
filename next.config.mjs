@@ -28,6 +28,15 @@ const nextConfig = {
     lodash: {
       transform: 'lodash/{{member}}',
     },
+    '@radix-ui/react-icons': {
+      transform: '@radix-ui/react-icons/dist/{{member}}',
+    },
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    },
+    'date-fns': {
+      transform: 'date-fns/{{member}}',
+    },
   },
   images: {
     domains: ['firebasestorage.googleapis.com'],
@@ -42,8 +51,22 @@ const nextConfig = {
     parallelServerCompiles: true,
     serverComponentsExternalPackages: ['firebase', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
     typedRoutes: true,
-    // Desactivado: causaba problemas de importación con componentes de iconos (undefined en SSR)
-    // optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Enable package optimization for better tree shaking
+    optimizePackageImports: [
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog', 
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@tanstack/react-query',
+      'framer-motion',
+      'recharts',
+      'date-fns',
+      'formik',
+      'yup',
+      'zod'
+    ],
     // Habilitar PPR solo es compatible con canary. Con Next estable lo desactivamos.
     ppr: false, // Partial Prerendering
   },
@@ -52,34 +75,128 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   // Bundle analysis and performance
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev, isServer, webpack }) => {
+    
+    // Add bundle analyzer
+    if (process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          reportFilename: isServer ? '../analyze/server.html' : '../analyze/client.html',
+          openAnalyzer: false,
+        })
+      )
+    }
     
     if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        cacheGroups: {
-          ...config.optimization.splitChunks.cacheGroups,
-          firebase: {
-            name: 'firebase',
-            test: /[\/\\]node_modules[\/\\](firebase|@firebase)[\/\\]/,
-            chunks: 'all',
-            priority: 30,
-          },
-          ui: {
-            name: 'ui',
-            test: /[\/\\]node_modules[\/\\](@radix-ui|@tanstack)[\/\\]/,
-            chunks: 'all',
-            priority: 25,
-          },
-          commons: {
-            name: 'commons',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 10,
+      // Aggressive code splitting for production builds
+      config.optimization = {
+        ...config.optimization,
+        usedExports: true,
+        sideEffects: false,
+        splitChunks: {
+          chunks: 'all',
+          minSize: 20000,
+          maxSize: 244000,
+          minChunks: 1,
+          maxAsyncRequests: 30,
+          maxInitialRequests: 30,
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            framework: {
+              name: 'framework',
+              test: /[\/\\]node_modules[\/\\](react|react-dom|scheduler|prop-types|use-subscription)[\/\\]/,
+              priority: 40,
+              enforce: true,
+              reuseExistingChunk: true,
+            },
+            firebase: {
+              name: 'firebase',
+              test: /[\/\\]node_modules[\/\\](firebase|@firebase)[\/\\]/,
+              chunks: 'all',
+              priority: 35,
+              enforce: true,
+              reuseExistingChunk: true,
+            },
+            radixui: {
+              name: 'radixui',
+              test: /[\/\\]node_modules[\/\\]@radix-ui[\/\\]/,
+              chunks: 'all',
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+            tanstack: {
+              name: 'tanstack',
+              test: /[\/\\]node_modules[\/\\]@tanstack[\/\\]/,
+              chunks: 'all',
+              priority: 28,
+              reuseExistingChunk: true,
+            },
+            animations: {
+              name: 'animations',
+              test: /[\/\\]node_modules[\/\\](framer-motion|gsap)[\/\\]/,
+              chunks: 'async',
+              priority: 25,
+              reuseExistingChunk: true,
+            },
+            forms: {
+              name: 'forms',
+              test: /[\/\\]node_modules[\/\\](formik|yup|zod|react-hook-form|@hookform)[\/\\]/,
+              chunks: 'async',
+              priority: 22,
+              reuseExistingChunk: true,
+            },
+            charts: {
+              name: 'charts',
+              test: /[\/\\]node_modules[\/\\](recharts|d3-.*)[\/\\]/,
+              chunks: 'async',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            icons: {
+              name: 'icons',
+              test: /[\/\\]node_modules[\/\\](lucide-react|@radix-ui\/react-icons)[\/\\]/,
+              chunks: 'async',
+              priority: 18,
+              reuseExistingChunk: true,
+            },
+            utils: {
+              name: 'utils',
+              test: /[\/\\]node_modules[\/\\](clsx|class-variance-authority|tailwind-merge|date-fns|uuid)[\/\\]/,
+              chunks: 'all',
+              priority: 15,
+              reuseExistingChunk: true,
+            },
+            lib: {
+              test: /[\/\\]lib[\/\\]/,
+              name: 'lib',
+              chunks: 'all',
+              priority: 12,
+              reuseExistingChunk: true,
+            },
+            shared: {
+              name: 'shared',
+              minChunks: 2,
+              chunks: 'async',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
           },
         },
       }
+
+      // Add webpack ignore plugin for unused locales
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^\.\/locale$/,
+          contextRegExp: /moment$/,
+        })
+      )
     }
+    
     return config
   },
   // Headers for security and performance

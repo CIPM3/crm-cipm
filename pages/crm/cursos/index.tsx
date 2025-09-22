@@ -1,10 +1,16 @@
 "use client"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import CursoCard from "@/components/card/curso-card"
 import { useFetchCourses } from "@/hooks/cursos"
 import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
+
+// Lazy load heavy components
+const CursoCard = dynamic(() => import("@/components/card/curso-card"), {
+  ssr: true,
+  loading: () => <CursoCardSkeleton />
+})
 
 export default function AdminCoursesPage() {
   const { courses, loading, error } = useFetchCourses()

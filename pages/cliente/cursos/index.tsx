@@ -1,14 +1,28 @@
 "use client"
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
-import HeaderCliente from "@/components/header/header-cliente"
-import Footer from "@/pages/cliente/main/footer"
-import CursoCard from "@/components/card/curso-card"
-import InfoAdicional from "./info-adicional"
 import { Search } from "lucide-react"
 import { useFetchCourses } from "@/hooks/cursos"
 import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
-import { motion } from "framer-motion"
+
+// Lazy load heavy components
+const HeaderCliente = dynamic(() => import("@/components/header/header-cliente"), { 
+  ssr: true 
+})
+const Footer = dynamic(() => import("@/pages/cliente/main/footer"), { 
+  ssr: false 
+})
+const CursoCard = dynamic(() => import("@/components/card/curso-card"), { 
+  ssr: true,
+  loading: () => <CursoCardSkeleton />
+})
+const InfoAdicional = dynamic(() => import("./info-adicional"), { 
+  ssr: false 
+})
+const motion = dynamic(() => import("framer-motion").then(mod => mod.motion), {
+  ssr: false
+}) as any
 
 export default function CoursesPage() {
   // Estados para filtros y búsqueda
