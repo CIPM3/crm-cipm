@@ -6,23 +6,12 @@ import { Search } from "lucide-react"
 import { useFetchCourses } from "@/hooks/cursos"
 import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
 
-// Lazy load heavy components
-const HeaderCliente = dynamic(() => import("@/components/header/header-cliente"), { 
-  ssr: true 
-})
-const Footer = dynamic(() => import("@/pages/cliente/main/footer"), { 
-  ssr: false 
-})
-const CursoCard = dynamic(() => import("@/components/card/curso-card"), { 
-  ssr: true,
-  loading: () => <CursoCardSkeleton />
-})
-const InfoAdicional = dynamic(() => import("./info-adicional"), { 
-  ssr: false 
-})
-const motion = dynamic(() => import("framer-motion").then(mod => mod.motion), {
-  ssr: false
-}) as any
+// Import heavy components normally for now to fix the issue
+import HeaderCliente from "@/components/header/header-cliente"
+import Footer from "@/pages/cliente/main/footer"
+import CursoCard from "@/components/card/curso-card"
+import InfoAdicional from "./info-adicional"
+import { motion } from "framer-motion"
 
 export default function CoursesPage() {
   // Estados para filtros y búsqueda

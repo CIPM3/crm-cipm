@@ -1,22 +1,20 @@
-// lib/firebaseService.ts
-// This file has been refactored and modularized for better maintainability
-// All functionality has been moved to the /lib/firebase/ directory
+// lib/firebase/index.ts
+// Centralized exports for all Firebase services
 
-// Re-export all Firebase services for backward compatibility
-export * from './firebase/index'
+// Base functionality
+export * from './base'
+export * from './auth'
 
-// Types and interfaces
-export type {
-  QueryOptions,
-  PaginatedResult
-} from './firebase/base'
+// Domain-specific services
+export * from './users'
+export * from './instructors'
+export * from './courses'
+export * from './videos'
+export * from './formacion'
+export * from './comments'
 
-export {
-  FirebaseServiceError
-} from './firebase/base'
-
-// Legacy exports - these are the original exports from this file
-// All functionality is now properly modularized by domain
+// Legacy compatibility - re-export everything that was in the original firebaseService.ts
+// This ensures backward compatibility for existing imports
 
 // Base operations
 export { 
@@ -30,12 +28,12 @@ export {
   batchUpdateItems,
   incrementField,
   fetchItemsPaginated
-} from './firebase/index'
+} from './base'
 
 // Auth operations  
-export { loginUser, registerUser } from './firebase/index'
+export { loginUser, registerUser } from './auth'
 
-// Users & Students
+// Users
 export {
   getAllUsuarios,
   getUsuarioById,
@@ -47,7 +45,7 @@ export {
   createEstudiante,
   updateEstudiante,
   deleteEstudiante
-} from './firebase/index'
+} from './users'
 
 // Instructors
 export {
@@ -56,7 +54,7 @@ export {
   createInstructor,
   updateInstructor,
   deleteInstructor
-} from './firebase/index'
+} from './instructors'
 
 // Formacion
 export {
@@ -65,7 +63,7 @@ export {
   createStudentFormacion,
   updateStudentFormacion,
   deleteStudentFormacion
-} from './firebase/index'
+} from './formacion'
 
 // Courses
 export {
@@ -74,7 +72,7 @@ export {
   createCurso,
   updateCurso,
   deleteCurso
-} from './firebase/index'
+} from './courses'
 
 // Videos
 export {
@@ -83,7 +81,7 @@ export {
   createVideo,
   updateVideo,
   deleteVideo
-} from './firebase/index'
+} from './videos'
 
 // Comments
 export {
@@ -100,4 +98,4 @@ export {
   likeComment,
   pinComment,
   moderateComment
-} from './firebase/index'
+} from './comments'
