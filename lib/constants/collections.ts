@@ -11,7 +11,7 @@ export const COLLECTIONS = {
   COURSES: 'Cursos',                    // Course catalog
   VIDEOS: 'Videos',                     // Video content library
   MODULES: 'Modulos',                   // Course modules
-  CONTENTS: 'Contenidos',               // Module contents (videos, docs, quizzes)
+  CONTENTS: 'Content',                  // Module contents (videos, docs, quizzes)
   COURSE_COMMENTS: 'CourseComments',    // Course comments and discussions
   
   // === EDUCATIONAL MANAGEMENT ===

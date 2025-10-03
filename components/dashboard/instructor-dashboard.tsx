@@ -27,12 +27,12 @@ export function InstructorDashboard() {
   const isLoading = loadingInstructores || loadingAgendados || loadingEstudiantes;
 
   const CalendarAgendados = (Agendados || []).filter((agendado) => {
-    if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
+    if (User?.role === "admin" || User?.role === "develop" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
     else return agendado.quienAgendo === User?.id;
   });
 
   const InstructorAgendados = (Estudiantes || []).filter((agendado) => {
-    if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Estudiantes;
+    if (User?.role === "admin" || User?.role === "develop" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Estudiantes;
     else return agendado.maestro === User?.id;
   });
 

@@ -84,10 +84,19 @@ export const fetchItems = async <T extends DocumentData>(
     }
 
     const querySnapshot = await getDocs(q)
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as (T & { id: string })[]
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+
+      // Map 'rol' to 'role' for backwards compatibility with user documents
+      const normalizedData = collectionName === 'usuarios' && data.rol && !data.role
+        ? { ...data, role: data.rol }
+        : data;
+
+      return {
+        id: doc.id,
+        ...normalizedData
+      };
+    }) as (T & { id: string })[]
   } catch (error: any) {
     throw new FirebaseServiceError(
       `Error fetching items from ${collectionName}: ${error.message}`,
@@ -142,9 +151,16 @@ export const fetchItem = async <T extends DocumentData>(
       return null
     }
 
+    const data = docSnap.data();
+
+    // Map 'rol' to 'role' for backwards compatibility with user documents
+    const normalizedData = collectionName === 'usuarios' && data.rol && !data.role
+      ? { ...data, role: data.rol }
+      : data;
+
     return {
       id: docSnap.id,
-      ...docSnap.data()
+      ...normalizedData
     } as T & { id: string }
   } catch (error: any) {
     throw new FirebaseServiceError(

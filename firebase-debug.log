@@ -1,0 +1,130 @@
+[debug] [2025-10-01T21:47:55.782Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T21:47:55.783Z] Command:       /opt/homebrew/Cellar/node/21.7.1/bin/node /Users/pedroduran/Desktop/Proyectos/crm-system/node_modules/.bin/firebase deploy --only firestore:rules
+[debug] [2025-10-01T21:47:55.783Z] CLI Version:   12.9.1
+[debug] [2025-10-01T21:47:55.783Z] Platform:      darwin
+[debug] [2025-10-01T21:47:55.783Z] Node Version:  v21.7.1
+[debug] [2025-10-01T21:47:55.784Z] Time:          Wed Oct 01 2025 17:47:55 GMT-0400 (Venezuela Time)
+[debug] [2025-10-01T21:47:55.784Z] ----------------------------------------------------------------------
+[debug] 
+[error] 
+[error] Error: No currently active project.
+To run this command, you need to specify a project. You have two options:
+- Run this command with --project <alias_or_project_id>.
+- Set an active project by running firebase use --add, then rerun this command.
+To list all the Firebase projects to which you have access, run firebase projects:list.
+To learn about active projects for the CLI, visit https://firebase.google.com/docs/cli#project_aliases
+
+
+[debug] [2025-10-01T21:48:01.570Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T21:48:01.571Z] Command:       /opt/homebrew/Cellar/node/21.7.1/bin/node /Users/pedroduran/Desktop/Proyectos/crm-system/node_modules/.bin/firebase deploy --only firestore:rules --project crm-cipm
+[debug] [2025-10-01T21:48:01.571Z] CLI Version:   12.9.1
+[debug] [2025-10-01T21:48:01.571Z] Platform:      darwin
+[debug] [2025-10-01T21:48:01.571Z] Node Version:  v21.7.1
+[debug] [2025-10-01T21:48:01.571Z] Time:          Wed Oct 01 2025 17:48:01 GMT-0400 (Venezuela Time)
+[debug] [2025-10-01T21:48:01.572Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-01T21:48:01.597Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-01T21:48:01.597Z] > authorizing via signed-in user (pedroduran2710@gmail.com)
+[debug] [2025-10-01T21:48:01.597Z] [iam] checking project crm-cipm for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2025-10-01T21:48:01.598Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions [none]
+[debug] [2025-10-01T21:48:01.598Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions x-goog-quota-user=projects/crm-cipm
+[debug] [2025-10-01T21:48:01.598Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2025-10-01T21:48:01.971Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions 200
+[debug] [2025-10-01T21:48:01.971Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'crm-cipm'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2025-10-01T21:48:01.977Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test [none]
+[debug] [2025-10-01T21:48:01.978Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test [omitted]
+[debug] [2025-10-01T21:48:02.396Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test 200
+[debug] [2025-10-01T21:48:02.396Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2025-10-01T21:48:02.397Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases pageSize=10&pageToken=
+[debug] [2025-10-01T21:48:02.557Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases 200
+[debug] [2025-10-01T21:48:02.557Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases {"releases":[{"name":"projects/crm-cipm/releases/cloud.firestore","rulesetName":"projects/crm-cipm/rulesets/b3580d8c-2dd5-4497-ba29-b9e2847902c3","createTime":"2025-03-06T21:05:15.470203Z","updateTime":"2025-03-06T21:07:13.904789Z"}]}
+[debug] [2025-10-01T21:48:02.557Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/b3580d8c-2dd5-4497-ba29-b9e2847902c3 [none]
+[debug] [2025-10-01T21:48:02.776Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/b3580d8c-2dd5-4497-ba29-b9e2847902c3 200
+[debug] [2025-10-01T21:48:02.776Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/b3580d8c-2dd5-4497-ba29-b9e2847902c3 [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2025-10-01T21:48:02.777Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets [none]
+[debug] [2025-10-01T21:48:02.777Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets [omitted]
+[debug] [2025-10-01T21:48:03.128Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets 200
+[debug] [2025-10-01T21:48:03.128Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets {"name":"projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // Allow authenticated users to read and write their own user documents\n    match /USUARIOS/{userId} {\n      allow read, write: if request.auth != null && request.auth.uid == userId;\n      allow read: if request.auth != null && \n        (get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor']);\n    }\n    \n    // Course Comments - allow authenticated users to read/write\n    match /CourseComments/{commentId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null && \n        (request.auth.uid == resource.data.userId || \n         get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor']);\n      allow create: if request.auth != null;\n    }\n    \n    // Courses - allow read for authenticated users, write for admin/instructor\n    match /Cursos/{courseId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null && \n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n    \n    // Videos - allow read for authenticated users, write for admin/instructor\n    match /Videos/{videoId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    // Modules - allow read for authenticated users, write for admin/instructor\n    match /modules/{moduleId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    // Lowercase collections for migration compatibility\n    match /cursos/{courseId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    match /videos/{videoId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n    \n    // Other collections - allow read/write for authenticated users with proper roles\n    match /AGENDADOR/{documentId} {\n      allow read, write: if request.auth != null && \n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'agendador', 'instructor'];\n    }\n    \n    match /FORMACION_GRUPO/{documentId} {\n      allow read, write: if request.auth != null && \n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'formacion de grupo'];\n    }\n    \n    match /INSTRUCTOR/{documentId} {\n      allow read, write: if request.auth != null && \n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n    \n    // Default deny all other documents\n    match /{document=**} {\n      allow read, write: if false;\n    }\n  }\n}","name":"firestore.rules"}]},"createTime":"2025-10-01T21:48:05.226127Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2025-10-01T21:48:03.128Z] [rules] created ruleset projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f
+[debug] [2025-10-01T21:48:03.128Z] [rules] releasing cloud.firestore/(default) with ruleset projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f
+[debug] [2025-10-01T21:48:03.128Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) [none]
+[debug] [2025-10-01T21:48:03.128Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) {"release":{"name":"projects/crm-cipm/releases/cloud.firestore/(default)","rulesetName":"projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f"}}
+[debug] [2025-10-01T21:48:03.515Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) 200
+[debug] [2025-10-01T21:48:03.516Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) {"name":"projects/crm-cipm/releases/cloud.firestore","rulesetName":"projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f","createTime":"2025-03-06T21:05:15.470203Z","updateTime":"2025-10-01T21:48:05.601809Z"}
+[debug] [2025-10-01T21:48:03.516Z] [rules] updated release projects/crm-cipm/releases/cloud.firestore
+[info] ✔  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/crm-cipm/overview
+[debug] [2025-10-01T21:50:16.966Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T21:50:16.967Z] Command:       /opt/homebrew/Cellar/node/21.7.1/bin/node /Users/pedroduran/Desktop/Proyectos/crm-system/node_modules/.bin/firebase deploy --only firestore:rules --project crm-cipm
+[debug] [2025-10-01T21:50:16.967Z] CLI Version:   12.9.1
+[debug] [2025-10-01T21:50:16.968Z] Platform:      darwin
+[debug] [2025-10-01T21:50:16.968Z] Node Version:  v21.7.1
+[debug] [2025-10-01T21:50:16.968Z] Time:          Wed Oct 01 2025 17:50:16 GMT-0400 (Venezuela Time)
+[debug] [2025-10-01T21:50:16.968Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-01T21:50:16.994Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-01T21:50:16.994Z] > authorizing via signed-in user (pedroduran2710@gmail.com)
+[debug] [2025-10-01T21:50:16.994Z] [iam] checking project crm-cipm for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2025-10-01T21:50:16.995Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions [none]
+[debug] [2025-10-01T21:50:16.995Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions x-goog-quota-user=projects/crm-cipm
+[debug] [2025-10-01T21:50:16.995Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2025-10-01T21:50:17.285Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions 200
+[debug] [2025-10-01T21:50:17.286Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-cipm:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'crm-cipm'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2025-10-01T21:50:17.289Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test [none]
+[debug] [2025-10-01T21:50:17.289Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test [omitted]
+[debug] [2025-10-01T21:50:17.594Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test 200
+[debug] [2025-10-01T21:50:17.594Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2025-10-01T21:50:17.596Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases pageSize=10&pageToken=
+[debug] [2025-10-01T21:50:17.797Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases 200
+[debug] [2025-10-01T21:50:17.798Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases {"releases":[{"name":"projects/crm-cipm/releases/cloud.firestore","rulesetName":"projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f","createTime":"2025-03-06T21:05:15.470203Z","updateTime":"2025-10-01T21:48:05.601809Z"}]}
+[debug] [2025-10-01T21:50:17.798Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f [none]
+[debug] [2025-10-01T21:50:18.008Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f 200
+[debug] [2025-10-01T21:50:18.008Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets/0c1ade30-8394-481b-90d2-620965a67a9f [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2025-10-01T21:50:18.009Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets [none]
+[debug] [2025-10-01T21:50:18.009Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets [omitted]
+[debug] [2025-10-01T21:50:18.347Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets 200
+[debug] [2025-10-01T21:50:18.347Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/crm-cipm/rulesets {"name":"projects/crm-cipm/rulesets/4ef0fcd4-b694-458b-b7a4-fa9060ddcd6d","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // TEMPORARY: Allow all writes for migration\n    match /cursos/{courseId} {\n      allow read, write: if true;\n    }\n\n    match /modules/{moduleId} {\n      allow read, write: if true;\n    }\n\n    match /videos/{videoId} {\n      allow read, write: if true;\n    }\n\n    // Allow authenticated users to read and write their own user documents\n    match /USUARIOS/{userId} {\n      allow read, write: if request.auth != null && request.auth.uid == userId;\n      allow read: if request.auth != null &&\n        (get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor']);\n    }\n\n    // Course Comments - allow authenticated users to read/write\n    match /CourseComments/{commentId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        (request.auth.uid == resource.data.userId ||\n         get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor']);\n      allow create: if request.auth != null;\n    }\n\n    // Courses - allow read for authenticated users, write for admin/instructor\n    match /Cursos/{courseId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    // Videos - allow read for authenticated users, write for admin/instructor\n    match /Videos/{videoId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    // Other collections - allow read/write for authenticated users with proper roles\n    match /AGENDADOR/{documentId} {\n      allow read, write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'agendador', 'instructor'];\n    }\n\n    match /FORMACION_GRUPO/{documentId} {\n      allow read, write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'formacion de grupo'];\n    }\n\n    match /INSTRUCTOR/{documentId} {\n      allow read, write: if request.auth != null &&\n        get(/databases/$(database)/documents/USUARIOS/$(request.auth.uid)).data.role in ['admin', 'instructor'];\n    }\n\n    // Default deny all other documents\n    match /{document=**} {\n      allow read, write: if false;\n    }\n  }\n}\n","name":"firestore.rules"}]},"createTime":"2025-10-01T21:50:20.421487Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2025-10-01T21:50:18.347Z] [rules] created ruleset projects/crm-cipm/rulesets/4ef0fcd4-b694-458b-b7a4-fa9060ddcd6d
+[debug] [2025-10-01T21:50:18.348Z] [rules] releasing cloud.firestore/(default) with ruleset projects/crm-cipm/rulesets/4ef0fcd4-b694-458b-b7a4-fa9060ddcd6d
+[debug] [2025-10-01T21:50:18.349Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) [none]
+[debug] [2025-10-01T21:50:18.349Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) {"release":{"name":"projects/crm-cipm/releases/cloud.firestore/(default)","rulesetName":"projects/crm-cipm/rulesets/4ef0fcd4-b694-458b-b7a4-fa9060ddcd6d"}}
+[debug] [2025-10-01T21:50:18.706Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) 200
+[debug] [2025-10-01T21:50:18.707Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/crm-cipm/releases/cloud.firestore/(default) {"name":"projects/crm-cipm/releases/cloud.firestore","rulesetName":"projects/crm-cipm/rulesets/4ef0fcd4-b694-458b-b7a4-fa9060ddcd6d","createTime":"2025-03-06T21:05:15.470203Z","updateTime":"2025-10-01T21:50:20.813836Z"}
+[debug] [2025-10-01T21:50:18.707Z] [rules] updated release projects/crm-cipm/releases/cloud.firestore
+[info] ✔  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/crm-cipm/overview
+[debug] [2025-10-03T15:19:10.733Z] ----------------------------------------------------------------------
+[debug] [2025-10-03T15:19:10.734Z] Command:       /opt/homebrew/Cellar/node/21.7.1/bin/node /Users/pedroduran/Desktop/Proyectos/crm-system/node_modules/.bin/firebase login --no-localhost
+[debug] [2025-10-03T15:19:10.735Z] CLI Version:   12.9.1
+[debug] [2025-10-03T15:19:10.735Z] Platform:      darwin
+[debug] [2025-10-03T15:19:10.735Z] Node Version:  v21.7.1
+[debug] [2025-10-03T15:19:10.735Z] Time:          Fri Oct 03 2025 11:19:10 GMT-0400 (Venezuela Time)
+[debug] [2025-10-03T15:19:10.735Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-03T15:19:10.736Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[error] 
+[error] Error: Cannot run login in non-interactive mode. See login:ci to generate a token for use in non-interactive environments.
+[debug] [2025-10-03T15:19:11.311Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-10-03T15:19:11.311Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}

@@ -8,7 +8,7 @@ import CursoCardSkeleton from "@/components/card/curso-skeleton-card"
 
 // Import heavy components normally for now to fix the issue
 import HeaderCliente from "@/components/header/header-cliente"
-import Footer from "@/pages/cliente/main/footer"
+import Footer from "../main/footer"
 import CursoCard from "@/components/card/curso-card"
 import InfoAdicional from "./info-adicional"
 import { motion } from "framer-motion"

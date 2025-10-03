@@ -234,6 +234,7 @@ export function DynamicDashboard() {
 
   switch ((user as UsersType & { rol?: string }).role) {
     case 'admin':
+    case 'develop':
       DashboardComponent = dynamicComponents.adminDashboard
       break
     case 'instructor':

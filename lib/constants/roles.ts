@@ -139,3 +139,17 @@ export const getSubordinateRoles = (role: UserRole): UserRole[] => {
     .filter(([_, level]) => level < roleLevel)
     .map(([roleName]) => roleName as UserRole)
 }
+
+/**
+ * Check if user has admin-level permissions (admin or develop)
+ */
+export const isAdminRole = (role?: string): boolean => {
+  return role === ROLES.ADMIN || role === ROLES.DEVELOP
+}
+
+/**
+ * Check if user has admin-level permissions including specific user ID
+ */
+export const hasAdminAccess = (role?: string, userId?: string): boolean => {
+  return isAdminRole(role) || userId === "fZBbWtrIihQvkITliDfLHHhK6rA3"
+}

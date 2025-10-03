@@ -31,8 +31,22 @@ const persistUserFromCredential = async (result: UserCredential): Promise<UsersT
     let userData: UsersType;
 
     if (userDoc.exists()) {
-        userData = userDoc.data() as UsersType;
+        // Usuario YA existe - NO sobrescribir, solo leer
+        const data = userDoc.data();
+        // Map 'rol' to 'role' if it exists (for backwards compatibility)
+        userData = {
+            ...data,
+            id: user.uid,
+            role: data.role || data.rol || 'cliente',
+        } as UsersType;
+
+        console.log('✅ Usuario existente encontrado:', {
+            id: userData.id,
+            email: userData.email,
+            role: userData.role
+        });
     } else {
+        // Usuario NUEVO - crear con rol 'cliente'
         userData = {
             id: user.uid,
             email: user.email,
@@ -42,6 +56,7 @@ const persistUserFromCredential = async (result: UserCredential): Promise<UsersT
             createdAt: new Date().toISOString(),
         } as UsersType;
         await setDoc(userDocRef, userData);
+        console.log('✅ Usuario nuevo creado con rol cliente');
     }
 
     return userData;

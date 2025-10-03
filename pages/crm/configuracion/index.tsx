@@ -27,7 +27,7 @@ export default function ConfigurationPage() {
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
           <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
           <TabsTrigger value="apariencia">Apariencia</TabsTrigger>
-          {(currentUser?.role === "admin" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
+          {(currentUser?.role === "admin" || currentUser?.role === "develop" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
             <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
           )}
           <TabsTrigger value="sistema">Sistema</TabsTrigger>
@@ -42,7 +42,7 @@ export default function ConfigurationPage() {
         <TabsContent value="apariencia" className="space-y-6">
           <AparienciaTab />
         </TabsContent>
-        {(currentUser?.role === "admin" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
+        {(currentUser?.role === "admin" || currentUser?.role === "develop" || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") && (
           <TabsContent value="usuarios" className="space-y-6">
             <UsuariosTab />
           </TabsContent>

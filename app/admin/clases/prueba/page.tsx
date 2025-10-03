@@ -9,9 +9,10 @@ import { useAuthStore } from '@/store/useAuthStore'
 export default function TrialClassesPage() {
     const currentUser = useAuthStore((state) => state.user)
 
-    const canViewAgendarClase = currentUser?.role === 'agendador' || currentUser?.role === 'admin' || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
-    const canViewInstructor = currentUser?.role === 'instructor' || currentUser?.role === 'admin' || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
-    const canViewFormacionGrupo = currentUser?.role === 'formacion de grupo' || currentUser?.role === 'admin' || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'develop'
+    const canViewAgendarClase = currentUser?.role === 'agendador' || isAdmin || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
+    const canViewInstructor = currentUser?.role === 'instructor' || isAdmin || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
+    const canViewFormacionGrupo = currentUser?.role === 'formacion de grupo' || isAdmin || currentUser?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3"
 
     return (
         <div className="space-y-6 h-[86dvh]">

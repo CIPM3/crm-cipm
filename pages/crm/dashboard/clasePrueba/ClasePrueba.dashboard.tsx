@@ -42,7 +42,7 @@ const ClasePruebaDashboard = () => {
 
 
         {/* Selector de rol (solo para demostración) */}
-        {User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3" ? (
+        {(User?.role === "admin" || User?.role === "develop") || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3" ? (
           <div className="flex items-center gap-2">
             <UserCog className="h-5 w-5 text-muted-foreground" />
             <Select value={selectedRole || undefined} onValueChange={(value: UserRole) => setSelectedRole(value)}>

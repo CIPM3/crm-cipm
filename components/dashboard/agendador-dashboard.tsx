@@ -58,7 +58,7 @@ export function AgendadorDashboard() {
   const User = useAuthStore((state) => state.user);
 
   const agendadosFiltered = (Agendados || []).filter((agendado) => {
-    if (User?.role === "admin" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
+    if (User?.role === "admin" || User?.role === "develop" || User?.id === "fZBbWtrIihQvkITliDfLHHhK6rA3") return Agendados;
     else return agendado.quienAgendo === User?.id;
   });
 
