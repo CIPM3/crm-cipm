@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -6,8 +6,16 @@ import { useAuthStore } from '@/store/useAuthStore';
 export default function FixUserRolePage() {
   const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { user: storeUser } = useAuthStore();
-  const currentUser = auth.currentUser;
+  
+  // Prevent hydration issues by only accessing auth after mount
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    setCurrentUser(auth.currentUser);
+  }, []);
 
   const checkCurrentUser = async () => {
     setLoading(true);
@@ -130,6 +138,16 @@ export default function FixUserRolePage() {
       setLoading(false);
     }
   };
+
+  // Don't render until mounted to prevent SSR issues
+  if (!mounted) {
+    return (
+      <div style={{ padding: '40px', fontFamily: 'monospace', maxWidth: '900px', margin: '0 auto' }}>
+        <h1>🔧 Fix User Role</h1>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '40px', fontFamily: 'monospace', maxWidth: '900px', margin: '0 auto' }}>
