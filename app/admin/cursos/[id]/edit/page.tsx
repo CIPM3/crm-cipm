@@ -46,13 +46,16 @@ export default function EditCursoPage({ params }: { params: { id: string } }) {
     setIsSubmitting(true)
 
     try {
-      await UpdateCurso(params.id, values)
+      console.log('📝 Updating course:', { id: params.id, data: values })
+      await UpdateCurso({ id: params.id, data: values })
+      console.log('✅ Course updated successfully')
 
       // Redirigir a la página de detalle del curso
       router.push(`/admin/cursos/${params.id}`)
       router.refresh()
     } catch (error) {
-      console.error("Error al actualizar el curso:", error)
+      console.error("❌ Error al actualizar el curso:", error)
+      alert("Error al actualizar el curso. Por favor intenta de nuevo.")
     } finally {
       setIsSubmitting(false)
     }

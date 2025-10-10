@@ -10389,34 +10389,6 @@
   ],
   "cursos": [
     {
-      "id": "1d3854dd1d6f40a25d9064e89",
-      "title": "Toefl Listening",
-      "description": "4 Exámenes de prueaba - parte de listening",
-      "price": 500,
-      "duration": "00:10:00",
-      "status": "Activo",
-      "enrollments": 194,
-      "rating": 4.5,
-      "modules": [
-        "module-1d3854dd1d6f40a25d9064e89"
-      ],
-      "type": "online"
-    },
-    {
-      "id": "215c23359a99c235fe999204b",
-      "title": "Toefl Introdución General",
-      "description": "Explica lo que el examen pide de ti y sus partes.",
-      "price": 500,
-      "duration": "00:15:00",
-      "status": "Activo",
-      "enrollments": 198,
-      "rating": 4.5,
-      "modules": [
-        "module-215c23359a99c235fe999204b"
-      ],
-      "type": "online"
-    },
-    {
       "id": "4e89e619528c2426712d93068",
       "title": "Estructuras del Lenguaje",
       "description": "Estructuras del lenguaje-500 palabras mas comúnes-interferencias de español",
@@ -10427,20 +10399,6 @@
       "rating": 4.5,
       "modules": [
         "module-4e89e619528c2426712d93068"
-      ],
-      "type": "online"
-    },
-    {
-      "id": "7bf985eebce0e1a0e3a0e9870",
-      "title": "Toefl Writting ",
-      "description": "preguntas de la parte de writting y como usar el app",
-      "price": 500,
-      "duration": "00:10:00",
-      "status": "Activo",
-      "enrollments": 195,
-      "rating": 4.5,
-      "modules": [
-        "module-7bf985eebce0e1a0e3a0e9870"
       ],
       "type": "online"
     },

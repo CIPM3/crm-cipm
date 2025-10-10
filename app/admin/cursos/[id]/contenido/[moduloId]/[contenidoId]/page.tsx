@@ -1,79 +1,48 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { ContentForm, type ContentFormValues } from "@/components/form/content-form"
-import { getModulesByCourseId } from "@/lib/utils"
+import { useGetModulesByCourseId } from "@/hooks/modulos"
+import { useGetContentById, useUpdateContent } from "@/hooks/contenidos"
+import { toast } from "sonner"
 
-export default function EditContentPage({ params }: { params: { id: string; contentId: string } }) {
+export default function EditContentPage({ params }: { params: { id: string; moduloId: string; contenidoId: string } }) {
   const router = useRouter()
   const courseId = params.id
-  const contentId = params.contentId
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [content, setContent] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const contentId = params.contenidoId
 
   // Obtener los módulos del curso
-  const modules = getModulesByCourseId(courseId)
+  const { modules, loading: loadingModules, error: errorModules } = useGetModulesByCourseId(courseId)
 
-  // Simular la carga del contenido desde la API
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        // Aquí iría la lógica para obtener el contenido de la base de datos
-        // Simulamos la obtención del contenido
-        await new Promise((resolve) => setTimeout(resolve, 500))
+  // Obtener el contenido por ID
+  const { content, loading: loadingContent, error: errorContent } = useGetContentById(contentId)
 
-        // Buscar el contenido en los módulos
-        let foundContent: any = null
-        let moduleId = ""
+  // Hook para actualizar contenido
+  const { update: updateContentData, loading: isSubmitting } = useUpdateContent()
 
-        for (const module of modules) {
-          const found = module.content.find((c: any) => c.id === contentId)
-          if (found) {
-            foundContent = found
-            moduleId = module.id
-            break
-          }
-        }
-
-        if (foundContent) {
-          setContent({
-            ...foundContent,
-            moduleId,
-          })
-        }
-      } catch (error) {
-        console.error("Error al cargar el contenido:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchContent()
-  }, [contentId, modules])
+  const isLoading = loadingModules || loadingContent
 
   const handleSubmit = async (values: ContentFormValues) => {
-    setIsSubmitting(true)
-
     try {
-      // Aquí iría la lógica para actualizar el contenido en la base de datos
-      console.log("Actualizando contenido:", contentId, values)
-
-      // Simular una petición a la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Redirigir a la página del curso con la pestaña de contenido activa
+      await updateContentData(contentId, {
+        title: values.title,
+        type: values.type,
+        moduleId: values.moduleId,
+        url: values.url,
+        duration: values.duration,
+        description: values.description,
+        questions: values.questions ? Number(values.questions) : undefined,
+      })
+      toast.success("Contenido actualizado exitosamente")
       router.push(`/admin/cursos/${courseId}?tab=content`)
       router.refresh()
     } catch (error) {
       console.error("Error al actualizar el contenido:", error)
-    } finally {
-      setIsSubmitting(false)
+      toast.error("Error al actualizar el contenido")
     }
   }
 
@@ -88,17 +57,32 @@ export default function EditContentPage({ params }: { params: { id: string; cont
     )
   }
 
-  if (!content) {
+  if (errorContent || errorModules) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <h2 className="text-xl font-semibold mb-2 text-red-500">Error al cargar</h2>
+        <p className="text-muted-foreground mb-4">
+          {errorContent?.message || errorModules?.message || "Ocurrió un error al cargar los datos"}
+        </p>
+        <Button asChild>
+          <Link href={`/admin/cursos/${courseId}?tab=content`}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver al curso
+          </Link>
+        </Button>
+      </div>
+    )
+  }
+
+  if (!content || !modules) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <h2 className="text-xl font-semibold mb-2">Contenido no encontrado</h2>
         <p className="text-muted-foreground mb-4">El contenido que buscas no existe o ha sido eliminado.</p>
         <Button asChild>
           <Link href={`/admin/cursos/${courseId}?tab=content`}>
-            <span className="flex items-center">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Volver al curso
-            </span>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver al curso
           </Link>
         </Button>
       </div>

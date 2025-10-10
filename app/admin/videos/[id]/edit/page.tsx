@@ -7,31 +7,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { ContenidoForm } from "@/components/form/contenido-form"
 import { ContentFormValues } from "@/components/form/content-form"
-import { useGetContentById } from "@/hooks/contenidos"
+import { useGetVideoById, useUpdateVideo } from "@/hooks/videos"
 import { useGetModulesByCourseId } from "@/hooks/modulos"
-import { useState } from "react"
+import { toast } from "sonner"
 
 export default function EditVideoPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const { content: videoData, error, loading } = useGetContentById(params.id)
+  const { video: videoData, error, loading } = useGetVideoById(params.id)
+  const { update: updateVideo, loading: isSubmitting } = useUpdateVideo()
+
   // courseId puede ser undefined en el primer render, está bien pasarlo así al hook
   const courseId = videoData?.courseId
 
   const { modules, loading: loadingModules, error: errorModules } = useGetModulesByCourseId(courseId)
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   const handleSubmit = async (values: ContentFormValues) => {
-    setIsSubmitting(true)
     try {
-      // Aquí iría la lógica para actualizar el video en la base de datos
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await updateVideo(params.id, {
+        title: values.title,
+        description: values.description,
+        url: values.url,
+        duration: values.duration,
+        moduleId: values.moduleId,
+        type: values.type,
+        questions: values.questions ? Number(values.questions) : undefined,
+      })
+      toast.success("Video actualizado exitosamente")
       router.push(`/admin/videos/${params.id}`)
       router.refresh()
     } catch (error) {
       console.error("Error al actualizar el video:", error)
-    } finally {
-      setIsSubmitting(false)
+      toast.error("Error al actualizar el video")
     }
   }
 

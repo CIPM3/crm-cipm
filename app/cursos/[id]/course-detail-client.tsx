@@ -33,7 +33,14 @@ export default function CourseDetailClient({ params }: CourseDetailClientProps) 
   
   // User enrollments
   const userId = user?.id ?? ""
-  const { enrollments: userEnrollments = [] } = useGetEnrollmentsByStudentId(userId)
+  console.log('👤 Current user:', { user, userId })
+  const { enrollments: userEnrollments = [], loading: loadingUserEnrollments } = useGetEnrollmentsByStudentId(userId)
+
+  console.log('📊 User enrollments loaded:', {
+    userEnrollments,
+    count: userEnrollments.length,
+    loading: loadingUserEnrollments
+  })
 
   // Estados locales
   const [showPlayer, setShowPlayer] = useState(false)
@@ -47,13 +54,33 @@ export default function CourseDetailClient({ params }: CourseDetailClientProps) 
     }, {} as ContentsByModule)
   }, [modules, content])
 
-  const isBuyed = useMemo(
-    () => userEnrollments.some((enrollment) => enrollment.courseId === course?.id),
-    [userEnrollments, course?.id]
-  )
+  const isBuyed = useMemo(() => {
+    if (!course?.id || loadingUserEnrollments) {
+      console.log('⏳ Waiting for data:', { courseId: course?.id, loadingUserEnrollments })
+      return false
+    }
+
+    const hasEnrollment = userEnrollments.some((enrollment) => {
+      console.log('🔎 Comparing:', {
+        enrollmentCourseId: enrollment.courseId,
+        currentCourseId: course?.id,
+        match: enrollment.courseId === course?.id,
+        trimmedMatch: enrollment.courseId?.trim() === course?.id?.trim()
+      })
+      return enrollment.courseId === course?.id
+    })
+
+    console.log('🔍 Final enrollment check:', {
+      userId,
+      courseId: course?.id,
+      userEnrollmentsCount: userEnrollments.length,
+      hasEnrollment
+    })
+    return hasEnrollment
+  }, [userEnrollments, course?.id, userId, loadingUserEnrollments])
 
   // Loading state
-  const isLoading = loading || loadingCourses || loadingModules || loadingContent || loadingEnrollments
+  const isLoading = loading || loadingCourses || loadingModules || loadingContent || loadingEnrollments || loadingUserEnrollments
   
   // Error state
   const hasError = error || errorCourses || errorModules || errorContent

@@ -285,11 +285,38 @@ export const useGetStandaloneVideoComments = (
   videoId: string,
   options?: { limit?: number }
 ) => {
-  return useQuery({
+  return useServerOptimizedQuery({
     queryKey: ['comentarios', 'standalone-video', videoId],
     queryFn: () => getStandaloneVideoComments(videoId, options),
     enabled: !!videoId,
     staleTime: 30000
+  })
+}
+
+/**
+ * Hook for getting opinion/review comments for a course
+ */
+export const useGetOpinionComments = (courseId: string) => {
+  return useServerOptimizedQuery({
+    queryKey: [...queryKeys.comentariosByCurso(courseId), 'opinions'],
+    queryFn: async () => {
+      return await getOpinionComments(courseId)
+    },
+    enabled: !!courseId,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    select: useCallback((data: CourseComment[]) => {
+      return data
+        .sort((a, b) => {
+          if (a.isPinned && !b.isPinned) return -1
+          if (!a.isPinned && b.isPinned) return 1
+          return b.createdAt.seconds - a.createdAt.seconds
+        })
+        .map(comment => ({
+          ...comment,
+          timeAgo: new Date(comment.createdAt.seconds * 1000)
+        }))
+    }, [])
   })
 }
 

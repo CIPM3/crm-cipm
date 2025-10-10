@@ -18,10 +18,18 @@ export const useCreateCourse = (): StandardMutationReturn<{ id: string }, Omit<C
   })
 }
 
-export const useUpdateCourse = (): StandardMutationReturn<{ id: string }, { id: string; data: Partial<Course> }> => {
-  return useStandardizedMutation(async ({ id, data }: { id: string; data: Partial<Course> }) => {
-    return await updateCourse(id, data)
+export const useUpdateCourse = () => {
+  const mutation = useStandardizedMutation(async ({ id, data }: { id: string; data: Partial<Course> }) => {
+    console.log('🔧 useUpdateCourse - Calling updateCourse with:', { id, data })
+    const result = await updateCourse(id, data)
+    console.log('✅ useUpdateCourse - Update successful:', result)
+    return result
   })
+
+  return {
+    ...mutation,
+    update: mutation.mutate // Alias for better API compatibility
+  }
 }
 
 export const useDeleteCourse = (): StandardMutationReturn<{ id: string }, string> => {

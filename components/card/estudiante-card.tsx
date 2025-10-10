@@ -1,12 +1,11 @@
 import Link from 'next/link'
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Mail, MoreHorizontal, Phone } from 'lucide-react'
 import { format } from "date-fns"
 import { useGetEnrollmentsByStudentId } from '@/hooks/enrollments'
-import gsap from 'gsap'
 
 interface Props {
     student: {
@@ -28,21 +27,10 @@ function capitalizeWords(str: string) {
 
 const EstudianteCard = ({ student, delay=0 }: Props) => {
     const {enrollments} = useGetEnrollmentsByStudentId(student.id)
-    const cardRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (cardRef.current) {
-            gsap.fromTo(
-                cardRef.current,
-                { opacity: 0, x: -50 },
-                { opacity: 1, x: 0, duration: 0.8, delay, ease: "power2.out" }
-            )
-        }
-    }, [delay])
 
     return (
         <Link href={`/admin/estudiantes/${student.id}`} key={student.id}>
-            <Card ref={cardRef} className="hover:bg-muted/50 transition-colors">
+            <Card className="hover:bg-muted/50 transition-colors">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-lg font-medium">{capitalizeWords(student.name)}</CardTitle>
                     <div className="flex items-center gap-2">

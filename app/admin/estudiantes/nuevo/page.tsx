@@ -11,20 +11,35 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save, User, Mail, Phone, Calendar } from "lucide-react"
+import { useCreateCliente } from "@/hooks/estudiantes/clientes"
+import { toast } from "sonner"
 
 export default function NewStudentPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [status, setStatus] = useState(true)
   const router = useRouter()
+  const { create: createCliente, loading: isSubmitting } = useCreateCliente()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
-    // Simulación de envío de datos
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string || undefined,
+      status: status ? "Activo" : "Inactivo",
+      role: "cliente", // Importante: asignar role de cliente
+      createdAt: new Date().toISOString(),
+    }
 
-    // Redireccionar a la lista de estudiantes
-    router.push("/admin/estudiantes")
+    try {
+      await createCliente(data)
+      toast.success("Estudiante creado exitosamente")
+      router.push("/admin/estudiantes")
+    } catch (error) {
+      console.error("Error al crear estudiante:", error)
+      toast.error("Error al crear el estudiante. Por favor intenta de nuevo.")
+    }
   }
 
   return (
@@ -101,18 +116,12 @@ export default function NewStudentPage() {
                   Determina si el estudiante puede acceder a la plataforma
                 </p>
               </div>
-              <Switch id="status" name="status" defaultChecked />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notas Adicionales</Label>
-              <textarea
-                id="notes"
-                name="notes"
-                placeholder="Información adicional sobre el estudiante..."
-                rows={3}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              ></textarea>
+              <Switch
+                id="status"
+                name="status"
+                checked={status}
+                onCheckedChange={setStatus}
+              />
             </div>
 
             <div className="flex justify-end gap-2">

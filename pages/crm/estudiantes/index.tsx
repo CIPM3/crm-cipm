@@ -1,15 +1,25 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Plus, Search } from "lucide-react"
-import EstudianteCard from "@/components/card/estudiante-card"
 import { useGetUsuarios } from "@/hooks/usuarios/useGetUsuarios"
+
+// Lazy load EstudianteCard to reduce initial bundle
+const EstudianteCard = dynamic(() => import("@/components/card/estudiante-card"), {
+  loading: () => (
+    <div className="h-40 bg-muted rounded-md animate-pulse" />
+  ),
+})
 
 export default function StudentsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const ITEMS_PER_PAGE = 20
 
   const { data: Usuarios, loading, error } = useGetUsuarios()
   const Estudiantes = (Usuarios || []).filter((user) => user.role === "cliente")
@@ -29,6 +39,17 @@ export default function StudentsPage() {
         student.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (statusFilter === "all" || student.status === statusFilter),
   )
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const paginatedStudents = filteredStudents.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, statusFilter])
 
   if (loading) return (
     <div className="flex flex-col h-[86dvh]">
@@ -74,37 +95,97 @@ export default function StudentsPage() {
           <option value="Inactivo">Inactivo</option>
         </select>
       </div>
-      <div className="grid gap-6">
-        {filteredStudents.length > 0 ? (
-          filteredStudents.map((student,idx) => (
-            <EstudianteCard
-              key={student.id}
-              student={{
-                id: student.id,
-                name: student.name,
-                email: student.email,
-                phone: student.phone,
-                status: student.status,
-                lastLogin: student.lastLogin || "N/A",
-              }}
-              delay={idx * 0.15}
-            />
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">
-              {Estudiantes.length === 0 
-                ? "No hay estudiantes registrados con rol 'cliente'"
-                : "No se encontraron estudiantes que coincidan con los filtros"}
-            </p>
-            {Usuarios && Usuarios.length > 0 && Estudiantes.length === 0 && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Total de usuarios en el sistema: {Usuarios.length}
-              </p>
+
+      {filteredStudents.length > 0 ? (
+        <>
+          {/* Info bar */}
+          <div className="flex justify-between items-center mb-4 text-sm text-muted-foreground">
+            <span>
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredStudents.length)} de {filteredStudents.length} estudiantes
+            </span>
+            {totalPages > 1 && (
+              <span>Página {currentPage} de {totalPages}</span>
             )}
           </div>
-        )}
-      </div>
+
+          {/* Simple paginated list */}
+          <div className="grid gap-6">
+            {paginatedStudents.map((student) => (
+              <EstudianteCard
+                key={student.id}
+                student={{
+                  id: student.id,
+                  name: student.name,
+                  email: student.email,
+                  phone: student.phone,
+                  status: student.status,
+                  lastLogin: student.lastLogin || "N/A",
+                }}
+                delay={0}
+              />
+            ))}
+          </div>
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </Button>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number
+                  if (totalPages <= 5) {
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">
+            {Estudiantes.length === 0
+              ? "No hay estudiantes registrados con rol 'cliente'"
+              : "No se encontraron estudiantes que coincidan con los filtros"}
+          </p>
+          {Usuarios && Usuarios.length > 0 && Estudiantes.length === 0 && (
+            <p className="text-sm text-muted-foreground mt-2">
+              Total de usuarios en el sistema: {Usuarios.length}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

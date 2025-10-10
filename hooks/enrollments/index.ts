@@ -97,9 +97,12 @@ export function useGetEnrollmentsByStudentId(studentId: string) {
     setLoading(true)
     setError(null)
     try {
+      console.log('📚 Fetching enrollments for student:', studentId)
       const result = await getEnrollmentsByStudentId(studentId)
+      console.log('✅ Student enrollments:', result)
       setEnrollments(result)
     } catch (err) {
+      console.error('❌ Error fetching student enrollments:', err)
       setError(err as Error)
     } finally {
       setLoading(false)
