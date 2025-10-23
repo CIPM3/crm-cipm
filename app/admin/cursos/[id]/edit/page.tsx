@@ -39,6 +39,7 @@ export default function EditCursoPage({ params }: { params: { id: string } }) {
     duration: course.duration,
     status: course.status as "Activo" | "Inactivo",
     type: course.type as "Online" | "Presencial" | "Híbrido",
+    thumbnail: course.thumbnail || "",
   }
 
 

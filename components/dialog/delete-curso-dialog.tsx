@@ -23,6 +23,7 @@ interface DeleteCursoDialogProps {
   variant?: "outline" | "destructive" | "default"
   size?: "default" | "sm" | "lg" | "icon"
   className?: string
+  onDelete?: () => void // Callback opcional después de eliminar
 }
 
 export function DeleteCursoDialog({
@@ -31,21 +32,30 @@ export function DeleteCursoDialog({
   variant = "outline",
   size = "default",
   className,
+  onDelete,
 }: DeleteCursoDialogProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const { remove } = useDeleteCourse()
+  const { mutate } = useDeleteCourse()
 
   const handleDelete = async () => {
     setIsDeleting(true)
 
     try {
-      await remove(cursoId)
+      await mutate(cursoId)
 
-      // Redirigir a la página de cursos
-      router.push("/admin/cursos")
-      router.refresh()
+      // Cerrar el diálogo
+      setIsOpen(false)
+
+      // Llamar al callback si existe
+      if (onDelete) {
+        onDelete()
+      } else {
+        // Si no hay callback, redirigir a la página de cursos
+        router.push("/admin/cursos")
+        router.refresh()
+      }
     } catch (error) {
       console.error("Error al eliminar el curso:", error)
       setIsOpen(false)

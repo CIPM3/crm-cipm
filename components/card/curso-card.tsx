@@ -12,9 +12,10 @@ interface Props {
   curso: CursoType,
   type?: 'cliente' | 'crm',
   delay?: number // Nueva prop opcional
+  onDelete?: () => void // Callback cuando se elimina un curso
 }
 
-const CursoCard = ({ curso, type, delay = 0 }: Props) => {
+const CursoCard = ({ curso, type, delay = 0, onDelete }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const Thumbnail = curso?.thumbnail!! || "/placeholder.svg?height=200&width=400&text=Curso"
 
@@ -78,6 +79,7 @@ const CursoCard = ({ curso, type, delay = 0 }: Props) => {
                 variant="outline"
                 size="sm"
                 className="flex-1"
+                onDelete={onDelete}
               />
             </div>)
       }

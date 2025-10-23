@@ -28,6 +28,9 @@ const cursoFormSchema = z.object({
   }),
   status: z.enum(["Activo", "Inactivo"]),
   type: z.enum(["Online", "Presencial", "Híbrido"]),
+  thumbnail: z.string().url({
+    message: "La URL de la miniatura debe ser válida.",
+  }).optional().or(z.literal("")),
 })
 
 export type CursoFormValues = z.infer<typeof cursoFormSchema>
@@ -49,6 +52,7 @@ export function CursoForm({ initialValues, onSubmit, onCancel }: CursoFormProps)
     duration: "",
     status: "Activo",
     type: "Online",
+    thumbnail: "",
   }
 
   // Configurar el formulario con react-hook-form
@@ -186,6 +190,23 @@ export function CursoForm({ initialValues, onSubmit, onCancel }: CursoFormProps)
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="thumbnail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL de la Miniatura (Opcional)</FormLabel>
+              <FormControl>
+                <Input type="url" placeholder="https://ejemplo.com/imagen.jpg" {...field} />
+              </FormControl>
+              <FormDescription>
+                URL de la imagen que se usará como miniatura del curso.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>

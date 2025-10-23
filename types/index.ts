@@ -235,6 +235,7 @@ export interface Course {
     enrollments: number
     rating: number
     modules: string[]
+    thumbnail?: string
 }
 
 // types/Module.ts

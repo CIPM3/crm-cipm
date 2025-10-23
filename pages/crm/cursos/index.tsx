@@ -13,7 +13,12 @@ const CursoCard = dynamic(() => import("@/components/card/curso-card"), {
 })
 
 export default function AdminCoursesPage() {
-  const { courses, loading, error } = useFetchCourses()
+  const { courses, loading, error, refetch } = useFetchCourses()
+
+  const handleCourseDeleted = () => {
+    // Refrescar la lista de cursos después de eliminar
+    refetch()
+  }
 
   if (loading) return (
     <div className="flex flex-col h-[86dvh]">
@@ -52,7 +57,13 @@ export default function AdminCoursesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {courses.map((course,idx) => (
-          <CursoCard delay={idx * 0.15} key={course.id} curso={course} type="crm" />
+          <CursoCard
+            delay={idx * 0.15}
+            key={course.id}
+            curso={course}
+            type="crm"
+            onDelete={handleCourseDeleted}
+          />
         ))}
       </div>
     </div>
