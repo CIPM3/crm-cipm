@@ -4,8 +4,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns";
 
 export default function StudentInfoCard({ student }: { student: any }) {
-  const CreatedAt = format(new Date(student.createdAt), "dd/MM/yyyy") || new Date().toISOString();
-  
+  const CreatedAt = (() => {
+    try {
+      if (!student.createdAt) return "N/A";
+      const date = new Date(student.createdAt);
+      return isNaN(date.getTime()) ? "N/A" : format(date, "dd/MM/yyyy");
+    } catch {
+      return "N/A";
+    }
+  })();
+
   return (
     <Card className="col-span-2 lg:col-span-3 xl:col-span-1">
       <CardHeader>

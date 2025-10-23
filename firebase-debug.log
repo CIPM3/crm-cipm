@@ -128,3 +128,43 @@ To learn about active projects for the CLI, visit https://firebase.google.com/do
 [error] Error: Cannot run login in non-interactive mode. See login:ci to generate a token for use in non-interactive environments.
 [debug] [2025-10-03T15:19:11.311Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
 [debug] [2025-10-03T15:19:11.311Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-10-21T19:55:24.965Z] ----------------------------------------------------------------------
+[debug] [2025-10-21T19:55:24.966Z] Command:       /opt/homebrew/Cellar/node/21.7.1/bin/node /Users/pedroduran/Desktop/Proyectos/crm-system/node_modules/.bin/firebase projects:list
+[debug] [2025-10-21T19:55:24.967Z] CLI Version:   12.9.1
+[debug] [2025-10-21T19:55:24.967Z] Platform:      darwin
+[debug] [2025-10-21T19:55:24.967Z] Node Version:  v21.7.1
+[debug] [2025-10-21T19:55:24.967Z] Time:          Tue Oct 21 2025 15:55:24 GMT-0400 (Venezuela Time)
+[debug] [2025-10-21T19:55:24.967Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-21T19:55:24.968Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-10-21T19:55:25.008Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-21T19:55:25.008Z] > authorizing via signed-in user (pedroduran2710@gmail.com)
+[debug] [2025-10-21T19:55:25.008Z] > refreshing access token with scopes: []
+[debug] [2025-10-21T19:55:25.009Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-10-21T19:55:25.009Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-21T19:55:25.208Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-10-21T19:55:25.208Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-21T19:55:25.219Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-10-21T19:55:25.477Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-10-21T19:55:25.478Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-10-21T19:55:25.670Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-10-21T19:55:25.671Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] ┌──────────────────────┬──────────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name │ Project ID           │ Project Number │ Resource Location ID │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ cipmbilling          │ cipmbilling-24963    │ 548094058614   │ us-central           │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ creative-stock       │ creative-stock       │ 872663526293   │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ crm-cipm             │ crm-cipm             │ 546120457044   │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ EarthwDB             │ earthwdb             │ 917015324715   │ us-central           │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ OratoriaCursos       │ oratoriacursos-2d1d2 │ 677349641358   │ us-central           │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ Photograd            │ photograd            │ 219760777780   │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ photoGrafDb          │ photografdb          │ 267956035710   │ us-central           │
+└──────────────────────┴──────────────────────┴────────────────┴──────────────────────┘
+[info] 
+[info] 7 project(s) total.

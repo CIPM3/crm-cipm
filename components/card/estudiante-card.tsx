@@ -54,7 +54,14 @@ const EstudianteCard = ({ student, delay=0 }: Props) => {
                         <div className="flex items-center justify-between mt-2">
                             <div className="text-sm">
                                 <span className="font-medium">Usuario Creado:</span>{" "}
-                                {student.lastLogin ? format(new Date(student.lastLogin), "dd/MM/yyyy") : "N/A"}
+                                {student.createdAt ? (() => {
+                                    try {
+                                        const date = new Date(student.createdAt);
+                                        return isNaN(date.getTime()) ? "N/A" : format(date, "dd/MM/yyyy");
+                                    } catch {
+                                        return "N/A";
+                                    }
+                                })() : "N/A"}
                             </div>
                             <div className="text-sm font-medium">{enrollments.length} cursos inscritos</div>
                         </div>
