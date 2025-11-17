@@ -77,12 +77,6 @@ function matchesPath(pathname: string, patterns: readonly string[]): boolean {
   })
 }
 
-// Helper function to check if user has required role
-function hasRequiredRole(userRole: UserRole, requiredRoles: readonly string[]): boolean {
-  if (requiredRoles.length === 0) return true
-  return requiredRoles.includes(userRole)
-}
-
 // Rate limiting helper (simple in-memory store)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
@@ -125,7 +119,9 @@ export async function middleware(request: NextRequest) {
       // Let the client handle the redirect to avoid loops
       const hasRedirectParam = request.nextUrl.searchParams.has('redirect')
       if (!hasRedirectParam) {
-        const redirectUrl = new URL('/admin/dashboard', request.url)
+        // Redirect to appropriate dashboard based on role
+        const dashboardPath = getDashboardForRole(user.role)
+        const redirectUrl = new URL(dashboardPath, request.url)
         return NextResponse.redirect(redirectUrl)
       }
     }
@@ -135,15 +131,17 @@ export async function middleware(request: NextRequest) {
   // Handle admin routes protection
   if (matchesPath(pathname, ROUTE_CONFIG.admin.paths)) {
     const user = await getAuthUser(request)
-    
+
     if (!user) {
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }
 
-    if (!hasRequiredRole(user.role, [...ROUTE_CONFIG.admin.requiredRoles, 'develop'])) {
-      // Redirect based on user role
+    // Allow admin, develop, instructor, formacion de grupo, and agendador to access admin routes
+    const allowedRoles = ['admin', 'develop', 'instructor', 'formacion de grupo', 'agendador']
+    if (!allowedRoles.includes(user.role)) {
+      // Redirect non-admin roles to their appropriate dashboard
       const dashboardUrl = new URL(getDashboardForRole(user.role), request.url)
       return NextResponse.redirect(dashboardUrl)
     }
@@ -195,17 +193,15 @@ export async function middleware(request: NextRequest) {
 function getDashboardForRole(role: UserRole): string {
   switch (role) {
     case 'develop':
-      return '/admin/dashboard'
     case 'admin':
-      return '/admin/dashboard'
     case 'instructor':
-      return '/instructor/dashboard'
     case 'formacion de grupo':
-      return '/formacion/dashboard'
     case 'agendador':
-      return '/agendador/dashboard'
+      return '/admin/dashboard'
+    case 'base':
+    case 'cliente':
     default:
-      return '/cursos' // Default for clients
+      return '/cursos' // Default for clients and base users
   }
 }
 
