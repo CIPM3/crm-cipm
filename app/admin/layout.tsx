@@ -4,7 +4,7 @@ import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
-import { requireAdminAccess, generatePageMetadata } from "@/lib/server-utils"
+import { requireAdmin, generatePageMetadata } from "@/lib/server-utils"
 
 // Generate optimized metadata
 export const metadata = generatePageMetadata({
@@ -65,9 +65,9 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Server-side authentication check - allows admin, develop, instructor, formacion, agendador
+  // Server-side authentication check
   try {
-    await requireAdminAccess()
+    await requireAdmin()
   } catch (error) {
     redirect('/login')
   }

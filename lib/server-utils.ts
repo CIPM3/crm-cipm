@@ -72,29 +72,26 @@ export async function requireRole(
   return user
 }
 
-// Server-side admin check - allows admin and develop only
+// Server-side admin check
 export async function requireAdmin(): Promise<ServerUser> {
   return requireRole(['admin', 'develop'], '/login')
-}
-
-// Server-side check for admin panel access - allows all administrative roles
-export async function requireAdminAccess(): Promise<ServerUser> {
-  return requireRole(['admin', 'develop', 'instructor', 'formacion de grupo', 'agendador'], '/login')
 }
 
 // Get dashboard URL for role
 export function getDashboardForRole(role: string): string {
   switch (role) {
     case 'develop':
-    case 'admin':
-    case 'instructor':
-    case 'formacion de grupo':
-    case 'agendador':
       return '/admin/dashboard'
-    case 'base':
-    case 'cliente':
+    case 'admin':
+      return '/admin/dashboard'
+    case 'instructor':
+      return '/instructor/dashboard'
+    case 'formacion de grupo':
+      return '/formacion/dashboard'
+    case 'agendador':
+      return '/agendador/dashboard'
     default:
-      return '/cursos' // Default for clients and base users
+      return '/cursos'
   }
 }
 
